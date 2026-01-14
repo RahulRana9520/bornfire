@@ -1,0 +1,11 @@
+{
+  "buildCommand": "cd focus-flow-main && npm run build",
+  "outputDirectory": "focus-flow-main/dist",
+  "installCommand": "cd focus-flow-main && npm install",
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}
