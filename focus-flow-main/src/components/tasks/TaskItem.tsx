@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { Check, Play, Pause, Trash2, Clock, Flag } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -12,26 +12,59 @@ interface TaskItemProps {
 }
 
 export function TaskItem({ task, isEditable }: TaskItemProps) {
-  const { toggleTaskComplete, startTimer, stopTimer, updateTaskTime, deleteTask } = useTaskContext();
-  const [localTime, setLocalTime] = useState(task.timeSpent);
+  const { toggleTaskComplete, startTimer, stopTimer, updateTaskTime, deleteTask, updateTask } = useTaskContext();
+  const [localTime, setLocalTime] = useState(task.remainingTime ?? task.estimatedTime ?? 0);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Sync local time with task remaining time when task changes (but not during active countdown)
+  useEffect(() => {
+    if (!task.isTimerRunning) {
+      setLocalTime(task.remainingTime ?? task.estimatedTime ?? 0);
+    }
+  }, [task.remainingTime, task.estimatedTime, task.isTimerRunning]);
 
   useEffect(() => {
-    setLocalTime(task.timeSpent);
-  }, [task.timeSpent]);
+    // Clear any existing interval
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
 
-  useEffect(() => {
-    let interval: NodeJS.Timeout;
     if (task.isTimerRunning) {
-      interval = setInterval(() => {
-        setLocalTime(prev => {
-          const newTime = prev + 1;
-          updateTaskTime(task.id, newTime);
+      intervalRef.current = setInterval(() => {
+        setLocalTime(prevTime => {
+          const newTime = Math.max(0, prevTime - 1);
+          
+          // Update context less frequently to avoid re-render issues
+          updateTask(task.id, { 
+            remainingTime: newTime,
+            timeSpent: task.timeSpent + 1
+          });
+          
+          // Auto-complete task when timer reaches 0
+          if (newTime === 0) {
+            if (intervalRef.current) {
+              clearInterval(intervalRef.current);
+              intervalRef.current = null;
+            }
+            stopTimer(task.id);
+            setTimeout(() => {
+              toggleTaskComplete(task.id);
+            }, 100);
+          }
+          
           return newTime;
         });
       }, 1000);
     }
-    return () => clearInterval(interval);
-  }, [task.isTimerRunning, task.id, updateTaskTime]);
+
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+    };
+  }, [task.isTimerRunning, task.id]);
 
   const handleTimerToggle = useCallback(() => {
     if (task.isTimerRunning) {
@@ -104,9 +137,10 @@ export function TaskItem({ task, isEditable }: TaskItemProps) {
         <Clock className="w-4 h-4" />
         <span className={cn(
           "font-mono text-sm tabular-nums min-w-[60px] font-medium",
-          task.isTimerRunning && "text-primary"
+          task.isTimerRunning && "text-primary",
+          localTime === 0 && task.isTimerRunning && "text-success animate-pulse"
         )}>
-          {task.estimatedTime ? formatTime(task.estimatedTime, false) : formatTime(localTime, false)}
+          {formatTime(localTime, false)}
         </span>
       </div>
 

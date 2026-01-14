@@ -31,6 +31,7 @@ const initialTasks: Task[] = [
     completed: false,
     timeSpent: 1800,
     estimatedTime: 3600,
+    remainingTime: 3600,
     isTimerRunning: false,
     createdAt: new Date(),
     priority: 'high',
@@ -42,6 +43,7 @@ const initialTasks: Task[] = [
     completed: false,
     timeSpent: 0,
     estimatedTime: 1800,
+    remainingTime: 1800,
     isTimerRunning: false,
     createdAt: new Date(),
     priority: 'medium',
@@ -53,6 +55,7 @@ const initialTasks: Task[] = [
     completed: true,
     timeSpent: 3600,
     estimatedTime: 3600,
+    remainingTime: 0,
     isTimerRunning: false,
     createdAt: new Date(),
     priority: 'high',
@@ -105,6 +108,7 @@ export function TaskProvider({ children }: { children: React.ReactNode }) {
       completed: false,
       timeSpent: 0,
       estimatedTime,
+      remainingTime: estimatedTime,
       isTimerRunning: false,
       createdAt: new Date(),
       priority,
@@ -154,10 +158,16 @@ export function TaskProvider({ children }: { children: React.ReactNode }) {
 
   const startTimer = useCallback((taskId: string) => {
     // Stop any other running timers first
-    setTasks(prev => prev.map(task => ({
-      ...task,
-      isTimerRunning: task.id === taskId ? true : false,
-    })));
+    setTasks(prev => prev.map(task => {
+      if (task.id === taskId) {
+        return {
+          ...task,
+          isTimerRunning: true,
+          remainingTime: task.remainingTime ?? task.estimatedTime ?? 1800,
+        };
+      }
+      return { ...task, isTimerRunning: false };
+    }));
   }, [setTasks]);
 
   const stopTimer = useCallback((taskId: string) => {

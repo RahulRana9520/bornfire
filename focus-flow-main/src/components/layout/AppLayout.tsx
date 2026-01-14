@@ -16,7 +16,7 @@ export function AppLayout({ children }: AppLayoutProps) {
       <main className={cn(
         "flex-1 min-h-screen",
         "transition-all duration-300 ease-out",
-        "lg:ml-0"
+        "lg:ml-72"
       )}>
         <div className="max-w-6xl mx-auto p-4 sm:p-6 lg:p-8 pt-20 lg:pt-8">
           <div className="animate-fade-in">

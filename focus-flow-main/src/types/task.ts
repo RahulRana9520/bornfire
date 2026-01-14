@@ -4,6 +4,7 @@ export interface Task {
   completed: boolean;
   timeSpent: number; // in seconds
   estimatedTime?: number; // in seconds - target duration
+  remainingTime?: number; // in seconds - countdown timer
   isTimerRunning: boolean;
   createdAt: Date;
   priority: 'low' | 'medium' | 'high';

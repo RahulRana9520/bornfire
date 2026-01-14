@@ -49,18 +49,16 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
         className={cn(
           "fixed left-0 top-0 z-50 h-screen w-72 bg-sidebar/95 backdrop-blur-md border-r border-sidebar-border shadow-xl",
           "transform transition-all duration-300 ease-out",
-          "flex flex-col overflow-hidden",
+          "flex flex-col overflow-hidden flex-shrink-0",
           isOpen ? "translate-x-0" : "-translate-x-full",
-          "lg:translate-x-0 lg:static lg:bg-sidebar"
+          "lg:translate-x-0 lg:fixed lg:bg-sidebar"
         )}
       >
         {/* Header */}
         <div className="flex items-center justify-between p-5 border-b border-sidebar-border bg-sidebar/50">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-primary-muted flex items-center justify-center shadow-lg">
-              <Sparkles className="w-5 h-5 text-primary-foreground" />
-            </div>
-            <span className="font-bold text-xl text-foreground tracking-tight">TaskSage</span>
+            <img src="/app.png" alt="FocusFlow Logo" className="w-10 h-10 rounded-xl shadow-lg" />
+            <span className="font-bold text-xl text-foreground tracking-tight">FocusFlow</span>
           </div>
           <Button 
             variant="ghost" 
@@ -164,7 +162,7 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
         variant="default"
         size="icon"
         className={cn(
-          "fixed top-4 left-4 z-30 lg:hidden shadow-lg hover:shadow-xl transition-all",
+          "fixed top-4 left-4 z-[60] lg:hidden shadow-lg hover:shadow-xl transition-all",
           "bg-primary text-primary-foreground",
           isOpen && "opacity-0 pointer-events-none scale-90"
         )}
