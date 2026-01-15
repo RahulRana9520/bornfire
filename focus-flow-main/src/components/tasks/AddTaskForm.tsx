@@ -32,8 +32,8 @@ export function AddTaskForm() {
   ];
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <div className="flex gap-3">
+    <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
+      <div className="flex gap-2 sm:gap-3">
         <Input
           value={title}
           onChange={(e) => {
@@ -42,9 +42,9 @@ export function AddTaskForm() {
           }}
           onFocus={() => setIsExpanded(true)}
           placeholder="Add a new task..."
-          className="flex-1 h-12 text-base bg-card border-border/50 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
+          className="flex-1 h-11 sm:h-12 text-sm sm:text-base bg-card border-border/50 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all rounded-lg"
         />
-        <Button type="submit" size="lg" disabled={!title.trim()} className="shadow-sm hover:shadow-md transition-all">
+        <Button type="submit" size="lg" disabled={!title.trim()} className="shadow-md hover:shadow-lg transition-all h-11 sm:h-12 px-4 sm:px-5">
           <Plus className="w-5 h-5" />
           <span className="hidden sm:inline ml-1.5">Add</span>
         </Button>
@@ -52,11 +52,11 @@ export function AddTaskForm() {
 
       {/* Priority selector */}
       {isExpanded && (
-        <div className="flex flex-col gap-4 animate-slide-up">
-          <div className="flex items-center gap-3">
+        <div className="flex flex-col gap-3 sm:gap-4 animate-slide-up">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
             <div className="flex items-center gap-2">
               <Flag className="w-4 h-4 text-muted-foreground" />
-              <span className="text-sm font-medium text-muted-foreground">Priority:</span>
+              <span className="text-xs sm:text-sm font-semibold text-muted-foreground">Priority:</span>
             </div>
             <div className="flex gap-2">
               {priorities.map((p) => (
@@ -65,9 +65,9 @@ export function AddTaskForm() {
                   type="button"
                   onClick={() => setPriority(p.value)}
                   className={cn(
-                    "px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all hover:scale-105",
+                    "px-3 sm:px-3.5 py-1.5 rounded-full text-xs font-bold transition-all hover:scale-105 active:scale-95",
                     priority === p.value
-                      ? cn(p.color, "ring-2 ring-offset-2 ring-primary/30 shadow-sm")
+                      ? cn(p.color, "ring-2 ring-offset-2 ring-primary/30 shadow-md")
                       : "bg-muted text-muted-foreground hover:bg-muted/80"
                   )}
                 >
@@ -78,10 +78,10 @@ export function AddTaskForm() {
           </div>
 
           {/* Time input */}
-          <div className="flex items-center gap-3">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
             <div className="flex items-center gap-2">
               <Clock className="w-4 h-4 text-muted-foreground" />
-              <span className="text-sm font-medium text-muted-foreground">Estimated time:</span>
+              <span className="text-xs sm:text-sm font-semibold text-muted-foreground">Estimated time:</span>
             </div>
             <div className="flex items-center gap-2">
               <Input
@@ -90,9 +90,9 @@ export function AddTaskForm() {
                 max="480"
                 value={estimatedMinutes}
                 onChange={(e) => setEstimatedMinutes(e.target.value)}
-                className="w-20 h-9 text-sm text-center"
+                className="w-20 h-9 text-sm text-center rounded-lg"
               />
-              <span className="text-sm text-muted-foreground font-medium">minutes</span>
+              <span className="text-xs sm:text-sm text-muted-foreground font-semibold">minutes</span>
             </div>
           </div>
         </div>

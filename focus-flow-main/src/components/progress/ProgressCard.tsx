@@ -24,19 +24,19 @@ export function ProgressCard({
   const percentage = max > 0 ? Math.round((value / max) * 100) : 0;
 
   return (
-    <div className="bg-card rounded-2xl p-5 border border-border/50 shadow-soft hover:shadow-md-enhanced transition-all hover-lift group">
-      <div className="flex items-center justify-between mb-3">
-        <div className="flex items-center gap-2.5">
-          {icon && <span className="text-2xl group-hover:scale-110 transition-transform">{icon}</span>}
-          <span className="text-sm font-semibold text-muted-foreground">{title}</span>
+    <div className="bg-card rounded-xl sm:rounded-2xl p-3.5 sm:p-4 lg:p-5 border border-border/50 shadow-md hover:shadow-lg transition-all hover-lift group">
+      <div className="flex flex-col gap-2 mb-2.5">
+        <div className="flex items-center justify-between">
+          {icon && <span className="text-xl sm:text-2xl group-hover:scale-110 transition-transform">{icon}</span>}
+          <span className="text-lg sm:text-xl font-bold bg-gradient-to-br from-foreground to-foreground/70 bg-clip-text text-transparent">
+            {value}{unit}
+          </span>
         </div>
-        <span className="text-xl font-bold bg-gradient-to-br from-foreground to-foreground/70 bg-clip-text text-transparent">
-          {value}{unit}
-        </span>
+        <span className="text-xs sm:text-sm font-semibold text-muted-foreground">{title}</span>
       </div>
-      <Progress value={percentage} variant={variant} className="h-2.5" />
+      <Progress value={percentage} variant={variant} className="h-2 sm:h-2.5" />
       {showPercentage && max !== 100 && (
-        <p className="text-xs text-muted-foreground mt-2.5 font-medium">
+        <p className="text-[10px] sm:text-xs text-muted-foreground mt-2 font-medium">
           {percentage}% of {max}{unit}
         </p>
       )}

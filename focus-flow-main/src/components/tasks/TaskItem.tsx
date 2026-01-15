@@ -89,11 +89,11 @@ export function TaskItem({ task, isEditable }: TaskItemProps) {
   return (
     <div
       className={cn(
-        "group flex items-center gap-2 sm:gap-3 md:gap-4 p-3 sm:p-4 md:p-5 rounded-xl",
-        "bg-card border border-border/50 shadow-soft",
-        "transition-all duration-200 hover:shadow-md-enhanced hover:border-border hover:-translate-y-0.5",
-        task.completed && "opacity-70",
-        task.isTimerRunning && "border-primary/50 shadow-glow-primary ring-2 ring-primary/10"
+        "group flex items-center gap-2.5 sm:gap-3 md:gap-4 p-3 sm:p-4 rounded-lg sm:rounded-xl",
+        "bg-card border border-border/50 shadow-md",
+        "transition-all duration-200 hover:shadow-lg hover:border-border hover:-translate-y-0.5",
+        task.completed && "opacity-60",
+        task.isTimerRunning && "border-primary/50 shadow-glow-primary ring-2 ring-primary/20 bg-primary/5"
       )}
     >
       {/* Checkbox */}
@@ -101,30 +101,30 @@ export function TaskItem({ task, isEditable }: TaskItemProps) {
         onClick={() => isEditable && toggleTaskComplete(task.id)}
         disabled={!isEditable}
         className={cn(
-          "w-8 h-8 sm:w-7 sm:h-7 rounded-full border-2 flex items-center justify-center flex-shrink-0",
+          "w-9 h-9 sm:w-8 sm:h-8 rounded-full border-2 flex items-center justify-center flex-shrink-0",
           "transition-all duration-200 hover:scale-110 active:scale-95",
           task.completed
-            ? "bg-success border-success shadow-sm"
+            ? "bg-success border-success shadow-md"
             : "border-border hover:border-primary hover:bg-primary/5",
           !isEditable && "cursor-not-allowed opacity-50"
         )}
       >
-        {task.completed && <Check className="w-4 h-4 text-success-foreground" />}
+        {task.completed && <Check className="w-4.5 h-4.5 sm:w-4 sm:h-4 text-success-foreground" />}
       </button>
 
       {/* Task content */}
       <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-2.5 flex-wrap">
+        <div className="flex items-center gap-2 flex-wrap">
           <span
             className={cn(
-              "font-medium text-sm sm:text-base transition-all",
+              "font-medium text-sm sm:text-base transition-all leading-snug",
               task.completed && "line-through text-muted-foreground"
             )}
           >
             {task.title}
           </span>
           <span className={cn(
-            "px-2 py-0.5 rounded-full text-[10px] font-semibold border shadow-sm",
+            "px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-bold border shadow-sm",
             priorityColors[task.priority]
           )}>
             {priorityLabels[task.priority]}
@@ -133,11 +133,11 @@ export function TaskItem({ task, isEditable }: TaskItemProps) {
       </div>
 
       {/* Time display */}
-      <div className="flex items-center gap-2 text-muted-foreground bg-muted/50 px-3 py-1.5 rounded-lg">
-        <Clock className="w-4 h-4" />
+      <div className="flex items-center gap-1.5 sm:gap-2 text-muted-foreground bg-muted/50 px-2.5 sm:px-3 py-1.5 rounded-lg">
+        <Clock className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
         <span className={cn(
-          "font-mono text-sm tabular-nums min-w-[60px] font-medium",
-          task.isTimerRunning && "text-primary",
+          "font-mono text-xs sm:text-sm tabular-nums min-w-[55px] sm:min-w-[60px] font-medium",
+          task.isTimerRunning && "text-primary font-bold",
           localTime === 0 && task.isTimerRunning && "text-success animate-pulse"
         )}>
           {formatTime(localTime, false)}
@@ -146,7 +146,7 @@ export function TaskItem({ task, isEditable }: TaskItemProps) {
 
       {/* Actions */}
       {isEditable && !task.completed && (
-        <div className="flex items-center gap-1 sm:gap-1.5">
+        <div className="flex items-center gap-1">
           <Button
             variant={task.isTimerRunning ? "default" : "outline"}
             size="icon-sm"

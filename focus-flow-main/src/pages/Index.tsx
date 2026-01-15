@@ -17,15 +17,15 @@ const Index = () => {
   const todayFocusTime = todayTasks.reduce((sum, task) => sum + task.timeSpent, 0);
 
   return (
-    <div className="space-y-8 animate-fade-in">
+    <div className="space-y-4 sm:space-y-6 lg:space-y-8 animate-fade-in pb-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div className="space-y-2">
-          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold flex items-center gap-2 sm:gap-3 bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
-            <Calendar className="w-6 h-6 sm:w-8 sm:h-8 text-primary flex-shrink-0" />
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
+        <div className="space-y-1.5">
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold flex items-center gap-2.5 bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
+            <Calendar className="w-7 h-7 sm:w-8 sm:h-8 text-primary flex-shrink-0" />
             Today
           </h1>
-          <p className="text-muted-foreground text-sm sm:text-base">
+          <p className="text-muted-foreground text-xs sm:text-sm">
             {new Date().toLocaleDateString('en-US', { 
               weekday: 'long', 
               month: 'long', 
@@ -36,9 +36,9 @@ const Index = () => {
         
         {/* Streak badge */}
         {userProfile.streak > 0 && (
-          <div className="flex items-center gap-2 sm:gap-2.5 px-4 sm:px-5 py-2 sm:py-2.5 bg-gradient-to-r from-warning-light to-warning-light/70 rounded-full shadow-soft hover:shadow-md transition-all hover-lift">
-            <span className="text-xl sm:text-2xl">🔥</span>
-            <span className="font-bold text-warning-foreground text-sm sm:text-base whitespace-nowrap">
+          <div className="flex items-center gap-2 px-3.5 sm:px-4 py-2 bg-gradient-to-r from-warning-light to-warning-light/70 rounded-full shadow-md hover:shadow-lg transition-all hover-lift">
+            <span className="text-lg sm:text-xl">🔥</span>
+            <span className="font-bold text-warning-foreground text-xs sm:text-sm whitespace-nowrap">
               {userProfile.streak} day streak
             </span>
           </div>
@@ -46,7 +46,7 @@ const Index = () => {
       </div>
 
       {/* Stats Row */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         <ProgressCard
           title="Today's Progress"
           value={todayProgress}
@@ -81,14 +81,14 @@ const Index = () => {
       </div>
 
       {/* Main content grid */}
-      <div className="grid lg:grid-cols-3 gap-6">
+      <div className="grid lg:grid-cols-3 gap-4 sm:gap-5 lg:gap-6">
         {/* Task list - takes 2 columns */}
-        <div className="lg:col-span-2 space-y-5">
-          <div className="bg-card rounded-2xl p-5 sm:p-6 border border-border/50 shadow-soft hover:shadow-md-enhanced transition-shadow">
+        <div className="lg:col-span-2 space-y-4 sm:space-y-5">
+          <div className="bg-card rounded-xl sm:rounded-2xl p-4 sm:p-5 lg:p-6 border border-border/50 shadow-md hover:shadow-lg transition-shadow">
             <AddTaskForm />
           </div>
           
-          <div className="bg-card rounded-2xl p-5 sm:p-6 border border-border/50 shadow-soft hover:shadow-md-enhanced transition-shadow">
+          <div className="bg-card rounded-xl sm:rounded-2xl p-4 sm:p-5 lg:p-6 border border-border/50 shadow-md hover:shadow-lg transition-shadow">
             <TaskList 
               tasks={todayTasks} 
               isEditable={true}

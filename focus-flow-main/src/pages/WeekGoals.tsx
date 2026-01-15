@@ -39,22 +39,22 @@ const WeekGoals = () => {
   };
 
   return (
-    <div className="space-y-8 animate-fade-in">
+    <div className="space-y-4 sm:space-y-6 lg:space-y-8 animate-fade-in pb-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div className="space-y-2">
-          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold flex items-center gap-2 sm:gap-3 bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
-            <Target className="w-6 h-6 sm:w-8 sm:h-8 text-primary flex-shrink-0" />
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
+        <div className="space-y-1.5">
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold flex items-center gap-2.5 bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
+            <Target className="w-7 h-7 sm:w-8 sm:h-8 text-primary flex-shrink-0" />
             Daily Habits
           </h1>
-          <p className="text-muted-foreground text-sm sm:text-base">
+          <p className="text-muted-foreground text-xs sm:text-sm">
             Track your daily habits across weeks
           </p>
         </div>
         
         {!isAddingHabit && (
-          <Button onClick={() => setIsAddingHabit(true)} className="shadow-sm hover:shadow-md transition-all">
-            <Plus className="w-4 h-4 mr-2" />
+          <Button onClick={() => setIsAddingHabit(true)} className="shadow-md hover:shadow-lg transition-all h-10 sm:h-11">
+            <Plus className="w-4 h-4 mr-1.5 sm:mr-2" />
             Add Habit
           </Button>
         )}
@@ -62,19 +62,19 @@ const WeekGoals = () => {
 
       {/* Add Habit Form */}
       {isAddingHabit && (
-        <form onSubmit={handleAddHabit} className="bg-card rounded-2xl p-5 border border-border/50 shadow-soft animate-slide-down">
-          <div className="flex gap-3">
+        <form onSubmit={handleAddHabit} className="bg-card rounded-xl sm:rounded-2xl p-4 sm:p-5 border border-border/50 shadow-md animate-slide-down">
+          <div className="flex gap-2 sm:gap-3">
             <Input
               value={newHabitTitle}
               onChange={(e) => setNewHabitTitle(e.target.value)}
               placeholder="Enter habit name (e.g., Wake up at 6AM)"
-              className="flex-1 h-12"
+              className="flex-1 h-11 sm:h-12 text-sm sm:text-base"
               autoFocus
             />
-            <Button type="submit" disabled={!newHabitTitle.trim()} className="shadow-sm">
+            <Button type="submit" disabled={!newHabitTitle.trim()} className="shadow-md h-11 sm:h-12 px-4 sm:px-5">
               Add
             </Button>
-            <Button type="button" variant="outline" onClick={() => setIsAddingHabit(false)}>
+            <Button type="button" variant="outline" onClick={() => setIsAddingHabit(false)} className="h-11 sm:h-12 px-3 sm:px-4">
               Cancel
             </Button>
           </div>
@@ -82,11 +82,11 @@ const WeekGoals = () => {
       )}
 
       {/* Habits Table */}
-      <div className="bg-card rounded-2xl border border-border/50 shadow-soft hover:shadow-md-enhanced transition-shadow overflow-hidden">
+      <div className="bg-card rounded-xl sm:rounded-2xl border border-border/50 shadow-md hover:shadow-lg transition-shadow overflow-hidden">
         {habits.length === 0 ? (
-          <div className="text-center py-12 text-muted-foreground">
-            <Target className="w-12 h-12 mx-auto mb-3 opacity-30" />
-            <p className="text-sm">No habits yet</p>
+          <div className="text-center py-10 sm:py-12 text-muted-foreground">
+            <Target className="w-10 h-10 sm:w-12 sm:h-12 mx-auto mb-2.5 sm:mb-3 opacity-30" />
+            <p className="text-sm font-semibold">No habits yet</p>
             <p className="text-xs mt-1">Add a habit to start tracking</p>
           </div>
         ) : (
@@ -94,8 +94,8 @@ const WeekGoals = () => {
             {/* Current Week */}
             <div className="border-b border-border/50">
               {/* Week Header */}
-              <div className="bg-accent/50 px-4 py-3 border-b border-border/50">
-                <h3 className="font-semibold text-sm">
+              <div className="bg-accent/50 px-3 sm:px-4 py-2.5 sm:py-3 border-b border-border/50">
+                <h3 className="font-bold text-xs sm:text-sm">
                   Current Week
                   <span className="text-muted-foreground font-normal ml-2">
                     ({currentWeek.startDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - {currentWeek.endDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })})
