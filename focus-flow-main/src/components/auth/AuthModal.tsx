@@ -94,9 +94,9 @@ export function AuthModal({ isOpen, onClose, canDismiss = true }: AuthModalProps
   };
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-background/80 backdrop-blur-sm animate-fade-in">
-      <div className="relative w-full max-w-md mx-4">
-        <div className="bg-card rounded-2xl border border-border shadow-2xl p-6 sm:p-8 animate-scale-in">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-background/80 backdrop-blur-sm animate-fade-in p-4">
+      <div className="relative w-full max-w-md">
+        <div className="bg-card rounded-2xl border border-border shadow-2xl p-5 sm:p-6 md:p-8 animate-scale-in max-h-[90vh] overflow-y-auto">
           {/* Close button */}
           {canDismiss && (
             <button

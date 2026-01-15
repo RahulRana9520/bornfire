@@ -89,7 +89,7 @@ export function TaskItem({ task, isEditable }: TaskItemProps) {
   return (
     <div
       className={cn(
-        "group flex items-center gap-3 sm:gap-4 p-4 sm:p-5 rounded-xl",
+        "group flex items-center gap-2 sm:gap-3 md:gap-4 p-3 sm:p-4 md:p-5 rounded-xl",
         "bg-card border border-border/50 shadow-soft",
         "transition-all duration-200 hover:shadow-md-enhanced hover:border-border hover:-translate-y-0.5",
         task.completed && "opacity-70",
@@ -101,8 +101,8 @@ export function TaskItem({ task, isEditable }: TaskItemProps) {
         onClick={() => isEditable && toggleTaskComplete(task.id)}
         disabled={!isEditable}
         className={cn(
-          "w-7 h-7 rounded-full border-2 flex items-center justify-center flex-shrink-0",
-          "transition-all duration-200 hover:scale-110",
+          "w-8 h-8 sm:w-7 sm:h-7 rounded-full border-2 flex items-center justify-center flex-shrink-0",
+          "transition-all duration-200 hover:scale-110 active:scale-95",
           task.completed
             ? "bg-success border-success shadow-sm"
             : "border-border hover:border-primary hover:bg-primary/5",
@@ -146,13 +146,13 @@ export function TaskItem({ task, isEditable }: TaskItemProps) {
 
       {/* Actions */}
       {isEditable && !task.completed && (
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-1 sm:gap-1.5">
           <Button
             variant={task.isTimerRunning ? "default" : "outline"}
             size="icon-sm"
             onClick={handleTimerToggle}
             className={cn(
-              "transition-all hover:scale-105",
+              "transition-all hover:scale-105 active:scale-95 w-9 h-9 sm:w-8 sm:h-8",
               task.isTimerRunning && "animate-pulse-soft shadow-lg"
             )}
           >

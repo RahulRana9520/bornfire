@@ -54,7 +54,7 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
       {/* Sidebar */}
       <aside
         className={cn(
-          "fixed left-0 top-0 z-50 h-screen w-72 bg-sidebar/95 backdrop-blur-md border-r border-sidebar-border shadow-xl",
+          "fixed left-0 top-0 z-50 h-screen w-[280px] sm:w-72 bg-sidebar/95 backdrop-blur-md border-r border-sidebar-border shadow-xl",
           "transform transition-all duration-300 ease-out",
           "flex flex-col overflow-hidden flex-shrink-0",
           isOpen ? "translate-x-0" : "-translate-x-full",
@@ -203,13 +203,13 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
         variant="default"
         size="icon"
         className={cn(
-          "fixed top-4 left-4 z-[60] lg:hidden shadow-lg hover:shadow-xl transition-all",
-          "bg-primary text-primary-foreground",
+          "fixed top-3 left-3 sm:top-4 sm:left-4 z-[60] lg:hidden shadow-lg hover:shadow-xl transition-all",
+          "bg-primary text-primary-foreground w-12 h-12 sm:w-10 sm:h-10",
           isOpen && "opacity-0 pointer-events-none scale-90"
         )}
         onClick={onToggle}
       >
-        <Menu className="w-5 h-5" />
+        <Menu className="w-6 h-6 sm:w-5 sm:h-5" />
       </Button>
 
       {/* Auth Modal */}

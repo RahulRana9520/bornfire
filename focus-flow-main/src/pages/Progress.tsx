@@ -19,11 +19,11 @@ const ProgressPage = () => {
     <div className="space-y-8 animate-fade-in">
       {/* Header */}
       <div className="space-y-2">
-        <h1 className="text-3xl sm:text-4xl font-bold flex items-center gap-3 bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
-          <TrendingUp className="w-8 h-8 text-primary" />
+        <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold flex items-center gap-2 sm:gap-3 bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
+          <TrendingUp className="w-6 h-6 sm:w-8 sm:h-8 text-primary flex-shrink-0" />
           Daily Progress
         </h1>
-        <p className="text-muted-foreground text-base">
+        <p className="text-muted-foreground text-sm sm:text-base">
           Track your productivity and growth
         </p>
       </div>

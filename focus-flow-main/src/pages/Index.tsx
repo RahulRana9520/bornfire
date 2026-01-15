@@ -21,11 +21,11 @@ const Index = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="space-y-2">
-          <h1 className="text-3xl sm:text-4xl font-bold flex items-center gap-3 bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
-            <Calendar className="w-8 h-8 text-primary" />
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold flex items-center gap-2 sm:gap-3 bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
+            <Calendar className="w-6 h-6 sm:w-8 sm:h-8 text-primary flex-shrink-0" />
             Today
           </h1>
-          <p className="text-muted-foreground text-base">
+          <p className="text-muted-foreground text-sm sm:text-base">
             {new Date().toLocaleDateString('en-US', { 
               weekday: 'long', 
               month: 'long', 
@@ -36,9 +36,9 @@ const Index = () => {
         
         {/* Streak badge */}
         {userProfile.streak > 0 && (
-          <div className="flex items-center gap-2.5 px-5 py-2.5 bg-gradient-to-r from-warning-light to-warning-light/70 rounded-full shadow-soft hover:shadow-md transition-all hover-lift">
-            <span className="text-2xl">🔥</span>
-            <span className="font-bold text-warning-foreground text-base">
+          <div className="flex items-center gap-2 sm:gap-2.5 px-4 sm:px-5 py-2 sm:py-2.5 bg-gradient-to-r from-warning-light to-warning-light/70 rounded-full shadow-soft hover:shadow-md transition-all hover-lift">
+            <span className="text-xl sm:text-2xl">🔥</span>
+            <span className="font-bold text-warning-foreground text-sm sm:text-base whitespace-nowrap">
               {userProfile.streak} day streak
             </span>
           </div>
