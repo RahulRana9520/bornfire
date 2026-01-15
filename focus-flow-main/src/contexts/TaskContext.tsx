@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useCallback, useEffect, useMemo } from 'react';
 import { Task, UserProfile, DayTasks, Friend, Badge, LeaderboardEntry } from '@/types/task';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
-import { generateId, isToday, isPast, calculateXP, getStreakBonus, calculateLevel } from '@/lib/taskUtils';
+import { generateId, isToday, isPast, getTaskCompletionXP, calculateLevel } from '@/lib/taskUtils';
 
 interface TaskContextType {
   tasks: Task[];
@@ -15,6 +15,7 @@ interface TaskContextType {
   startTimer: (taskId: string) => void;
   stopTimer: (taskId: string) => void;
   updateTaskTime: (taskId: string, time: number) => void;
+  updateStreak?: () => void;
   getDayTasks: () => DayTasks[];
   getTodayTasks: () => Task[];
   getTodayProgress: () => number;
@@ -71,8 +72,8 @@ const initialProfile: UserProfile = {
   league: 'silver',
   streak: 7,
   longestStreak: 14,
-  totalFocusTime: 36000,
-  completedTasks: 23,
+  totalFocusTime: 0,
+  completedTasks: 0,
   badges: [
     { id: 'b1', name: '3-Day Streak', description: 'Complete tasks 3 days in a row', icon: '🔥', earnedAt: new Date() },
     { id: 'b2', name: '7-Day Streak', description: 'Complete tasks 7 days in a row', icon: '⚡', earnedAt: new Date() },
@@ -142,16 +143,14 @@ export function TaskProvider({ children }: { children: React.ReactNode }) {
       return updatedTasks;
     });
 
-    // Update XP when task is completed
+    // Update XP when task is completed - only for TODAY's tasks
     const task = tasks.find(t => t.id === taskId);
-    if (task && !task.completed) {
-      const xpGained = calculateXP(task.timeSpent, getStreakBonus(userProfile.streak)) + task.xpReward;
+    if (task && !task.completed && isToday(new Date(task.createdAt))) {
+      const xpGained = getTaskCompletionXP(); // Fixed 20 XP per task
       setUserProfile(prev => ({
         ...prev,
         xp: prev.xp + xpGained,
         level: calculateLevel(prev.xp + xpGained),
-        completedTasks: prev.completedTasks + 1,
-        totalFocusTime: prev.totalFocusTime + task.timeSpent,
       }));
     }
   }, [setTasks, tasks, userProfile.streak, setUserProfile]);
@@ -236,10 +235,11 @@ export function TaskProvider({ children }: { children: React.ReactNode }) {
     return progress;
   }, [tasks]);
 
-  // Update user profile when tasks change
+  // Update user profile when tasks change - only count TODAY's tasks
   useEffect(() => {
-    const completedTasks = tasks.filter(t => t.completed).length;
-    const totalFocusTime = tasks.reduce((sum, t) => sum + t.timeSpent, 0);
+    const todayTasks = tasks.filter(task => isToday(new Date(task.createdAt)));
+    const completedTasks = todayTasks.filter(t => t.completed).length;
+    const totalFocusTime = todayTasks.filter(t => t.completed).reduce((sum, t) => sum + t.timeSpent, 0);
     
     setUserProfile(prev => ({
       ...prev,
@@ -247,6 +247,18 @@ export function TaskProvider({ children }: { children: React.ReactNode }) {
       totalFocusTime,
     }));
   }, [tasks, setUserProfile]);
+
+  // Update streak when user checks in
+  const updateStreak = useCallback(() => {
+    setUserProfile(prev => {
+      const newStreak = prev.streak + 1;
+      return {
+        ...prev,
+        streak: newStreak,
+        longestStreak: Math.max(newStreak, prev.longestStreak),
+      };
+    });
+  }, [setUserProfile]);
 
   // Persist data on window close/reload
   useEffect(() => {
@@ -272,6 +284,7 @@ export function TaskProvider({ children }: { children: React.ReactNode }) {
     startTimer,
     stopTimer,
     updateTaskTime,
+    updateStreak,
     getDayTasks,
     getTodayTasks,
     getTodayProgress,
@@ -288,6 +301,7 @@ export function TaskProvider({ children }: { children: React.ReactNode }) {
     startTimer,
     stopTimer,
     updateTaskTime,
+    updateStreak,
     getDayTasks,
     getTodayTasks,
     getTodayProgress,

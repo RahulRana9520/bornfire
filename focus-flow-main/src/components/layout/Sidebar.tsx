@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { 
   Calendar, 
@@ -9,11 +9,16 @@ import {
   Settings,
   Sparkles,
   Menu,
-  X
+  X,
+  LogIn,
+  LogOut,
+  User
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { useTaskContext } from '@/contexts/TaskContext';
+import { useAuth } from '@/contexts/AuthContext';
+import { AuthModal } from '@/components/auth/AuthModal';
 import { getLeagueName } from '@/lib/taskUtils';
 
 interface SidebarProps {
@@ -33,6 +38,8 @@ const navItems = [
 export function Sidebar({ isOpen, onToggle }: SidebarProps) {
   const location = useLocation();
   const { userProfile } = useTaskContext();
+  const { user, signOut } = useAuth();
+  const [showAuthModal, setShowAuthModal] = useState(false);
 
   return (
     <>
@@ -145,6 +152,40 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
               </div>
             </div>
 
+            {/* Auth Status */}
+            {user ? (
+              <div className="mt-3 pt-3 border-t border-sidebar-border">
+                <div className="flex items-center gap-2 text-xs text-muted-foreground mb-2">
+                  <User className="w-3 h-3" />
+                  <span className="truncate">{user.email}</span>
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="w-full text-xs"
+                  onClick={() => signOut()}
+                >
+                  <LogOut className="w-3 h-3 mr-1" />
+                  Sign Out
+                </Button>
+              </div>
+            ) : (
+              <div className="mt-3 pt-3 border-t border-sidebar-border">
+                <Button
+                  variant="default"
+                  size="sm"
+                  className="w-full text-xs"
+                  onClick={() => setShowAuthModal(true)}
+                >
+                  <LogIn className="w-3 h-3 mr-1" />
+                  Sign In
+                </Button>
+                <p className="text-[10px] text-muted-foreground text-center mt-2">
+                  Sign in to sync across devices
+                </p>
+              </div>
+            )}
+
             {/* Streak */}
             <div className="flex items-center justify-between text-xs pt-1">
               <span className="text-muted-foreground font-medium">Current Streak</span>
@@ -170,6 +211,13 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
       >
         <Menu className="w-5 h-5" />
       </Button>
+
+      {/* Auth Modal */}
+      <AuthModal
+        isOpen={showAuthModal}
+        onClose={() => setShowAuthModal(false)}
+        canDismiss={true}
+      />
     </>
   );
 }
