@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { Mail, Github, Chrome, X, LogIn, UserPlus, Loader2 } from 'lucide-react';
+import { Mail, Github, Chrome, X, LogIn, UserPlus, Loader2, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/contexts/AuthContext';
+import { isSupabaseConfigured } from '@/lib/supabase';
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -27,6 +28,12 @@ export function AuthModal({ isOpen, onClose, canDismiss = true }: AuthModalProps
   const handleEmailAuth = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+    
+    if (!isSupabaseConfigured()) {
+      setError('Authentication is not configured. Please set up Supabase credentials in .env file. See AUTHENTICATION_SETUP.md for instructions.');
+      return;
+    }
+    
     setLoading(true);
 
     try {
@@ -48,20 +55,40 @@ export function AuthModal({ isOpen, onClose, canDismiss = true }: AuthModalProps
 
   const handleGoogleSignIn = async () => {
     setError(null);
+    
+    if (!isSupabaseConfigured()) {
+      setError('Authentication is not configured. Please set up Supabase credentials in .env file. See AUTHENTICATION_SETUP.md for instructions.');
+      return;
+    }
+    
     setLoading(true);
     const { error } = await signInWithGoogle();
     if (error) {
-      setError(error.message);
+      if (error.message.includes('Provider') || error.message.includes('not enabled')) {
+        setError('Google sign-in is not enabled. Please enable Google OAuth in your Supabase dashboard (Authentication > Providers).');
+      } else {
+        setError(error.message);
+      }
       setLoading(false);
     }
   };
 
   const handleGithubSignIn = async () => {
     setError(null);
+    
+    if (!isSupabaseConfigured()) {
+      setError('Authentication is not configured. Please set up Supabase credentials in .env file. See AUTHENTICATION_SETUP.md for instructions.');
+      return;
+    }
+    
     setLoading(true);
     const { error } = await signInWithGithub();
     if (error) {
-      setError(error.message);
+      if (error.message.includes('Provider') || error.message.includes('not enabled')) {
+        setError('GitHub sign-in is not enabled. Please enable GitHub OAuth in your Supabase dashboard (Authentication > Providers).');
+      } else {
+        setError(error.message);
+      }
       setLoading(false);
     }
   };
@@ -78,6 +105,17 @@ export function AuthModal({ isOpen, onClose, canDismiss = true }: AuthModalProps
             >
               <X className="w-5 h-5" />
             </button>
+          )}
+
+          {/* Configuration Warning */}
+          {!isSupabaseConfigured() && (
+            <div className="mb-4 p-3 rounded-lg bg-warning/10 border border-warning/20 text-warning text-xs flex items-start gap-2">
+              <AlertCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />
+              <div>
+                <p className="font-semibold mb-1">Authentication Not Configured</p>
+                <p>Please set up Supabase credentials to enable sign-in. For now, you can continue as a guest with local storage.</p>
+              </div>
+            </div>
           )}
 
           {/* Header */}
@@ -108,7 +146,8 @@ export function AuthModal({ isOpen, onClose, canDismiss = true }: AuthModalProps
               variant="outline"
               className="w-full"
               onClick={handleGoogleSignIn}
-              disabled={loading}
+              disabled={loading || !isSupabaseConfigured()}
+              title={!isSupabaseConfigured() ? 'Configure Supabase to enable OAuth' : ''}
             >
               <Chrome className="w-5 h-5 mr-2" />
               Continue with Google
@@ -117,7 +156,8 @@ export function AuthModal({ isOpen, onClose, canDismiss = true }: AuthModalProps
               variant="outline"
               className="w-full"
               onClick={handleGithubSignIn}
-              disabled={loading}
+              disabled={loading || !isSupabaseConfigured()}
+              title={!isSupabaseConfigured() ? 'Configure Supabase to enable OAuth' : ''}
             >
               <Github className="w-5 h-5 mr-2" />
               Continue with GitHub
