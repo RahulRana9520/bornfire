@@ -140,7 +140,8 @@ export function AuthModal({ isOpen, onClose, canDismiss = true }: AuthModalProps
             </div>
           )}
 
-          {/* Social Sign In */}
+          {/* Social Sign In - Hidden until OAuth is configured */}
+          {/* Uncomment when Google/GitHub OAuth is set up in Supabase
           <div className="space-y-3 mb-6">
             <Button
               variant="outline"
@@ -164,7 +165,6 @@ export function AuthModal({ isOpen, onClose, canDismiss = true }: AuthModalProps
             </Button>
           </div>
 
-          {/* Divider */}
           <div className="relative mb-6">
             <div className="absolute inset-0 flex items-center">
               <div className="w-full border-t border-border" />
@@ -173,6 +173,7 @@ export function AuthModal({ isOpen, onClose, canDismiss = true }: AuthModalProps
               <span className="px-2 bg-card text-muted-foreground">Or continue with email</span>
             </div>
           </div>
+          */}
 
           {/* Email Form */}
           <form onSubmit={handleEmailAuth} className="space-y-4">
