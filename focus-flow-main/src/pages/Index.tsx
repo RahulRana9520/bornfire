@@ -19,34 +19,39 @@ const Index = () => {
   return (
     <div className="space-y-4 sm:space-y-6 lg:space-y-8 animate-fade-in pb-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
-        <div className="space-y-1.5">
-          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold flex items-center gap-2.5 bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
-            <Calendar className="w-7 h-7 sm:w-8 sm:h-8 text-primary flex-shrink-0" />
-            Today
-          </h1>
-          <p className="text-muted-foreground text-xs sm:text-sm">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 p-6 border-[3px] border-black bg-white shadow-[4px_4px_0px_0px_#000]">
+        <div className="space-y-1">
+          <div className="flex items-center gap-3">
+            <div className="bg-[#FFDE00] border-[3px] border-black p-2 shadow-[2px_2px_0px_0px_#000]">
+              <Calendar className="w-8 h-8 text-black stroke-[3px]" />
+            </div>
+            <h1 className="text-4xl font-black uppercase tracking-tighter text-black">
+              Schedule
+            </h1>
+          </div>
+          <p className="text-black font-black uppercase text-xs tracking-widest mt-2">
             {new Date().toLocaleDateString('en-US', { 
               weekday: 'long', 
-              month: 'long', 
-              day: 'numeric' 
+              month: 'short', 
+              day: 'numeric',
+              year: 'numeric'
             })}
           </p>
         </div>
         
-        {/* Streak badge */}
+        {/* Streak sticker */}
         {userProfile.streak > 0 && (
-          <div className="flex items-center gap-2 px-3.5 sm:px-4 py-2 bg-gradient-to-r from-warning-light to-warning-light/70 rounded-full shadow-md hover:shadow-lg transition-all hover-lift">
-            <span className="text-lg sm:text-xl">🔥</span>
-            <span className="font-bold text-warning-foreground text-xs sm:text-sm whitespace-nowrap">
-              {userProfile.streak} day streak
+          <div className="flex items-center gap-2 px-6 py-3 border-[3px] border-black bg-[#00E5BC] shadow-[4px_4px_0px_0px_#000]">
+            <span className="text-2xl">🔥</span>
+            <span className="font-black text-black uppercase tracking-tighter text-sm">
+              {userProfile.streak} DAY STREAK
             </span>
           </div>
         )}
       </div>
 
       {/* Stats Row */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
         <ProgressCard
           title="Today's Progress"
           value={todayProgress}
@@ -66,7 +71,7 @@ const Index = () => {
           value={todayTasks.filter(t => t.completed).length}
           max={todayTasks.length || 1}
           unit=""
-          variant={todayTasks.filter(t => t.completed).length === todayTasks.length && todayTasks.length > 0 ? 'success' : 'primary'}
+          variant="primary"
           icon="✅"
           showPercentage={false}
         />
@@ -81,36 +86,38 @@ const Index = () => {
       </div>
 
       {/* Main content grid */}
-      <div className="grid lg:grid-cols-3 gap-4 sm:gap-5 lg:gap-6">
+      <div className="grid lg:grid-cols-3 gap-6">
         {/* Task list - takes 2 columns */}
-        <div className="lg:col-span-2 space-y-4 sm:space-y-5">
-          <div className="bg-card rounded-xl sm:rounded-2xl p-4 sm:p-5 lg:p-6 border border-border/50 shadow-md hover:shadow-lg transition-shadow">
+        <div className="lg:col-span-2 space-y-6">
+          <div className="bg-white border-[3px] border-black p-6 shadow-[6px_6px_0px_0px_#000]">
             <AddTaskForm />
           </div>
           
-          <div className="bg-card rounded-xl sm:rounded-2xl p-4 sm:p-5 lg:p-6 border border-border/50 shadow-md hover:shadow-lg transition-shadow">
+          <div className="bg-white border-[3px] border-black p-6 shadow-[6px_6px_0px_0px_#000]">
             <TaskList 
               tasks={todayTasks} 
               isEditable={true}
-              dateLabel="Today's Tasks"
+              dateLabel="ACTIVE SESSIONS"
             />
           </div>
         </div>
 
         {/* Sidebar - weekly progress */}
-        <div className="space-y-5">
-          <WeeklyChart data={weeklyProgress} />
+        <div className="space-y-6">
+          <div className="bg-white border-[3px] border-black p-6 shadow-[6px_6px_0px_0px_#000]">
+             <WeeklyChart data={weeklyProgress} />
+          </div>
           
-          {/* Quick tips */}
-          <div className="bg-gradient-to-br from-accent to-accent/70 rounded-2xl p-5 border border-border/50 shadow-soft hover:shadow-md-enhanced transition-all hover-lift">
-            <div className="flex items-start gap-3">
-              <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                <Sparkles className="w-5 h-5 text-primary" />
+          {/* Quick tips sticker */}
+          <div className="bg-[#FF89BB] border-[3px] border-black p-6 shadow-[8px_8px_0px_0px_#000] relative overflow-hidden group">
+            <div className="flex items-start gap-4">
+              <div className="w-12 h-12 border-[3px] border-black bg-white flex items-center justify-center flex-shrink-0 shadow-[2px_2px_0px_0px_#000]">
+                <Sparkles className="w-6 h-6 text-black stroke-[3px]" />
               </div>
               <div>
-                <h4 className="font-semibold text-sm mb-1.5">Pro tip</h4>
-                <p className="text-xs text-muted-foreground leading-relaxed">
-                  Focus for 25 minutes, then take a 5-minute break. This Pomodoro technique can boost your productivity!
+                <h4 className="font-black text-sm uppercase mb-2 tracking-tighter">System Intelligence</h4>
+                <p className="text-xs font-medium leading-relaxed uppercase">
+                  FOCUS FOR 25 MINUTES, THEN TAKE A 5-MINUTE BREAK. THIS POMODORO TECHNIQUE CAN BOOST YOUR PRODUCTIVITY!
                 </p>
               </div>
             </div>

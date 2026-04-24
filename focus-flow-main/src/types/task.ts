@@ -23,6 +23,7 @@ export type League = 'bronze' | 'silver' | 'gold' | 'platinum' | 'diamond';
 export interface UserProfile {
   id: string;
   username: string;
+  uniqueId?: string;
   avatar?: string;
   xp: number;
   level: number;

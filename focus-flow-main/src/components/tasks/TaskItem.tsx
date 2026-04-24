@@ -89,11 +89,9 @@ export function TaskItem({ task, isEditable }: TaskItemProps) {
   return (
     <div
       className={cn(
-        "group flex items-center gap-2.5 sm:gap-3 md:gap-4 p-3 sm:p-4 rounded-lg sm:rounded-xl",
-        "bg-card border border-border/50 shadow-md",
-        "transition-all duration-200 hover:shadow-lg hover:border-border hover:-translate-y-0.5",
-        task.completed && "opacity-60",
-        task.isTimerRunning && "border-primary/50 shadow-glow-primary ring-2 ring-primary/20 bg-primary/5"
+        "group flex items-center gap-4 p-5 border-[3px] border-black transition-none",
+        task.isTimerRunning ? "bg-[#FFDE00] shadow-[8px_8px_0px_0px_#000] translate-x-[-2px] translate-y-[-2px]" : "bg-white shadow-[4px_4px_0px_0px_#000]",
+        task.completed && "opacity-60 grayscale bg-gray-50 shadow-none border-gray-300"
       )}
     >
       {/* Checkbox */}
@@ -101,44 +99,45 @@ export function TaskItem({ task, isEditable }: TaskItemProps) {
         onClick={() => isEditable && toggleTaskComplete(task.id)}
         disabled={!isEditable}
         className={cn(
-          "w-9 h-9 sm:w-8 sm:h-8 rounded-full border-2 flex items-center justify-center flex-shrink-0",
-          "transition-all duration-200 hover:scale-110 active:scale-95",
+          "w-8 h-8 border-[3px] border-black flex items-center justify-center flex-shrink-0 transition-none",
           task.completed
-            ? "bg-success border-success shadow-md"
-            : "border-border hover:border-primary hover:bg-primary/5",
+            ? "bg-[#00E5BC] shadow-none"
+            : "bg-white shadow-[2px_2px_0px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none",
           !isEditable && "cursor-not-allowed opacity-50"
         )}
       >
-        {task.completed && <Check className="w-4.5 h-4.5 sm:w-4 sm:h-4 text-success-foreground" />}
+        {task.completed && <Check className="w-5 h-5 text-black stroke-[3px]" />}
       </button>
 
       {/* Task content */}
       <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-2 flex-wrap">
-          <span
+        <div className="space-y-1">
+          <p
             className={cn(
-              "font-medium text-sm sm:text-base transition-all leading-snug",
-              task.completed && "line-through text-muted-foreground"
+              "font-black text-lg uppercase tracking-tighter transition-none leading-none",
+              task.completed && "line-through"
             )}
           >
             {task.title}
-          </span>
-          <span className={cn(
-            "px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-bold border shadow-sm",
-            priorityColors[task.priority]
-          )}>
-            {priorityLabels[task.priority]}
-          </span>
+          </p>
+          <div className="flex gap-2">
+            <span className={cn(
+              "px-2 py-0.5 border-2 border-black text-[9px] font-black uppercase tracking-widest bg-white shadow-[1px_1px_0px_0px_#000]",
+              task.priority === 'high' ? 'bg-[#FF89BB]' : task.priority === 'medium' ? 'bg-[#FFDE00]' : 'bg-[#00E5BC]'
+            )}>
+              {task.priority}
+            </span>
+          </div>
         </div>
       </div>
 
       {/* Time display */}
-      <div className="flex items-center gap-1.5 sm:gap-2 text-muted-foreground bg-muted/50 px-2.5 sm:px-3 py-1.5 rounded-lg">
-        <Clock className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+      <div className="flex items-center gap-2 border-[3px] border-black bg-white px-3 py-2 shadow-[2px_2px_0px_0px_#000]">
+        <Clock className="w-4 h-4 text-black" />
         <span className={cn(
-          "font-mono text-xs sm:text-sm tabular-nums min-w-[55px] sm:min-w-[60px] font-medium",
-          task.isTimerRunning && "text-primary font-bold",
-          localTime === 0 && task.isTimerRunning && "text-success animate-pulse"
+          "font-mono text-sm tabular-nums font-black",
+          task.isTimerRunning && "text-black",
+          localTime === 0 && task.isTimerRunning && "animate-pulse"
         )}>
           {formatTime(localTime, false)}
         </span>
@@ -146,34 +145,36 @@ export function TaskItem({ task, isEditable }: TaskItemProps) {
 
       {/* Actions */}
       {isEditable && !task.completed && (
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-2">
           <Button
-            variant={task.isTimerRunning ? "default" : "outline"}
-            size="icon-sm"
+            variant="default"
+            size="icon"
             onClick={handleTimerToggle}
             className={cn(
-              "transition-all hover:scale-105 active:scale-95 w-9 h-9 sm:w-8 sm:h-8",
-              task.isTimerRunning && "animate-pulse-soft shadow-lg"
+              "w-10 h-10 border-[3px] border-black transition-none",
+              task.isTimerRunning 
+                ? "bg-black text-white shadow-none translate-x-[2px] translate-y-[2px]" 
+                : "bg-[#00E5BC] text-black shadow-[3px_3px_0px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none"
             )}
           >
             {task.isTimerRunning ? (
-              <Pause className="w-4 h-4" />
+              <Pause className="w-5 h-5 stroke-[3px]" />
             ) : (
-              <Play className="w-4 h-4" />
+              <Play className="w-5 h-5 stroke-[3px]" />
             )}
           </Button>
         </div>
       )}
 
-      {/* Delete button (visible on hover) */}
+      {/* Delete button */}
       {isEditable && (
         <Button
           variant="ghost"
-          size="icon-sm"
+          size="icon"
           onClick={() => deleteTask(task.id)}
-          className="opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-destructive"
+          className="border-[3px] border-transparent hover:border-black hover:bg-white hover:shadow-[2px_2px_0px_0px_#000] transition-none"
         >
-          <Trash2 className="w-4 h-4" />
+          <Trash2 className="w-4 h-4 text-black" />
         </Button>
       )}
     </div>

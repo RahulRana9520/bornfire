@@ -2,6 +2,8 @@ import React, { createContext, useContext, useCallback, useEffect, useMemo } fro
 import { Task, UserProfile, DayTasks, Friend, Badge, LeaderboardEntry } from '@/types/task';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { generateId, isToday, isPast, getTaskCompletionXP, calculateLevel } from '@/lib/taskUtils';
+import { supabase } from '@/lib/supabase';
+import { useAuth } from './AuthContext';
 
 interface TaskContextType {
   tasks: Task[];
@@ -67,6 +69,7 @@ const initialTasks: Task[] = [
 const initialProfile: UserProfile = {
   id: 'user1',
   username: 'StudyMaster',
+  uniqueId: '#FF-GUEST1',
   xp: 1250,
   level: 4,
   league: 'silver',
@@ -101,6 +104,74 @@ export function TaskProvider({ children }: { children: React.ReactNode }) {
   const [userProfile, setUserProfile] = useLocalStorage<UserProfile>('tasksage_profile', initialProfile);
   const [friends] = useLocalStorage<Friend[]>('tasksage_friends', initialFriends);
   const [leaderboard] = useLocalStorage<LeaderboardEntry[]>('tasksage_leaderboard', initialLeaderboard);
+  const { user } = useAuth();
+
+  // Sync profile with Supabase if logged in
+  useEffect(() => {
+    if (!user) return;
+
+    const fetchProfile = async () => {
+      const { data, error } = await supabase
+        .from('users')
+        .select('*')
+        .eq('id', user.id);
+
+      console.log('Checking profile for:', user.id);
+      
+      let profileData = data && data.length > 0 ? data[0] : null;
+
+      // If profile is totally missing from DB, create it now!
+      if (!profileData) {
+        console.log('Profile missing from DB. Creating auto-profile...');
+        const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+        let newId = '#FF-';
+        for (let i = 0; i < 6; i++) {
+          newId += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+
+        const newProfile = {
+          id: user.id,
+          email: user.email,
+          username: user.email?.split('@')[0] || 'User',
+          unique_id: newId,
+          xp: 0,
+          level: 1,
+          league: 'bronze',
+          streak: 0,
+          longest_streak: 0,
+        };
+
+        console.log('Attempting to insert:', newProfile);
+        const { error: createError } = await supabase.from('users').insert([newProfile]);
+        if (createError) {
+          console.error('FAILED TO AUTO-CREATE PROFILE:', createError.message);
+          console.error('TIP: Run the ALTER TABLE SQL I just gave you to fix this!');
+        } else {
+          console.log('Auto-profile created successfully!');
+          profileData = newProfile;
+        }
+      }
+
+      if (profileData) {
+        console.log('Profile loaded:', profileData);
+        setUserProfile(prev => ({
+          ...prev,
+          username: profileData.username || user.email?.split('@')[0] || 'User',
+          uniqueId: profileData.unique_id,
+          avatar: profileData.avatar_url,
+          xp: profileData.xp || 0,
+          level: profileData.level || 1,
+          league: profileData.league || 'bronze',
+          streak: profileData.streak || 0,
+          longestStreak: profileData.longest_streak || 0,
+        }));
+      } else if (error) {
+        console.error('PROFILE LOAD ERROR:', error.message);
+      }
+    };
+
+    fetchProfile();
+  }, [user, setUserProfile]);
 
   const addTask = useCallback((title: string, priority: Task['priority'] = 'medium', estimatedTime: number = 1800) => {
     const newTask: Task = {

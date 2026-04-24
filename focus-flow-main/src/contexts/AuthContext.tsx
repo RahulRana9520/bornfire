@@ -26,11 +26,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [signInDismissed, setSignInDismissed] = useLocalStorage<boolean>('focusflow_signin_dismissed', false);
 
   useEffect(() => {
-    // Track first visit
-    if (!firstVisit) {
+    // Track first visit (independent event, no need to depend on it)
+    const storedFirstVisit = window.localStorage.getItem('focusflow_first_visit');
+    if (!storedFirstVisit) {
       setFirstVisit(new Date().toISOString());
     }
-
+    
     // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
@@ -48,12 +49,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     });
 
     return () => subscription.unsubscribe();
-  }, [firstVisit, setFirstVisit]);
+  }, []); // Only run once on mount
 
   const signInWithEmail = useCallback(async (email: string, password: string) => {
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     return { error };
   }, []);
+
+  const generateFocusFlowId = () => {
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // No O, 0, I, 1 to avoid confusion
+    let result = '#FF-';
+    for (let i = 0; i < 6; i++) {
+      result += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return result;
+  };
 
   const signUpWithEmail = useCallback(async (email: string, password: string, username: string) => {
     const { data, error } = await supabase.auth.signUp({
@@ -67,17 +77,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     });
 
     if (!error && data.user) {
+      console.log('Auth signup successful, now creating public.users entry...');
       // Create user profile in database
-      await supabase.from('users').insert({
+      const { error: insertError } = await supabase.from('users').insert({
         id: data.user.id,
         email: data.user.email,
         username,
+        unique_id: generateFocusFlowId(),
         xp: 0,
         level: 1,
         league: 'bronze',
         streak: 0,
         longest_streak: 0,
       });
+
+      if (insertError) {
+        console.error('DATABASE ERROR:', insertError.message);
+        console.error('Make sure "unique_id" column exists in DBeaver!');
+      } else {
+        console.log('Database profile created with Unique ID!');
+      }
     }
 
     return { error };

@@ -20,6 +20,7 @@ import { useTaskContext } from '@/contexts/TaskContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { AuthModal } from '@/components/auth/AuthModal';
 import { getLeagueName } from '@/lib/taskUtils';
+import { UserMenu } from './UserMenu';
 
 interface SidebarProps {
   isOpen: boolean;
@@ -54,23 +55,25 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
       {/* Sidebar */}
       <aside
         className={cn(
-          "fixed left-0 top-0 z-50 h-screen w-[280px] sm:w-72 bg-sidebar/95 backdrop-blur-md border-r border-sidebar-border shadow-xl",
-          "transform transition-all duration-300 ease-out",
-          "flex flex-col overflow-hidden flex-shrink-0",
+          "fixed left-0 top-0 z-50 h-screen w-[280px] sm:w-72 bg-white border-r-[4px] border-black",
+          "transform transition-transform duration-300 ease-out",
+          "flex flex-col overflow-hidden",
           isOpen ? "translate-x-0" : "-translate-x-full",
-          "lg:translate-x-0 lg:fixed lg:bg-sidebar"
+          "lg:translate-x-0 lg:fixed"
         )}
       >
         {/* Header */}
-        <div className="flex items-center justify-between p-5 border-b border-sidebar-border bg-sidebar/50">
+        <div className="flex items-center justify-between p-6 border-b-[4px] border-black bg-[#FFDE00]">
           <div className="flex items-center gap-3">
-            <img src="/app.png" alt="FocusFlow Logo" className="w-10 h-10 rounded-xl shadow-lg" />
-            <span className="font-bold text-xl text-foreground tracking-tight">FocusFlow</span>
+            <div className="w-10 h-10 border-[3px] border-black bg-white flex items-center justify-center p-1 shadow-[2px_2px_0px_0px_#000]">
+               <img src="/app.png" alt="Logo" className="w-full h-full" />
+            </div>
+            <span className="font-black text-2xl text-black tracking-tighter uppercase">FocusFlow</span>
           </div>
           <Button 
             variant="ghost" 
-            size="icon-sm" 
-            className="lg:hidden hover:bg-sidebar-accent transition-colors"
+            size="icon" 
+            className="lg:hidden border-2 border-black bg-white hover:bg-black hover:text-white transition-none"
             onClick={onToggle}
           >
             <X className="w-5 h-5" />
@@ -78,7 +81,7 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 p-3 sm:p-4 space-y-1 overflow-y-auto scrollbar-thin">
+        <nav className="flex-1 p-4 space-y-3 overflow-y-auto bg-white">
           {navItems.map((item) => {
             const isActive = location.pathname === item.to;
             return (
@@ -87,46 +90,53 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
                 to={item.to}
                 onClick={() => window.innerWidth < 1024 && onToggle()}
                 className={cn(
-                  "flex items-center gap-2.5 sm:gap-3 px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-lg sm:rounded-xl text-sm font-semibold",
-                  "transition-all duration-200 relative overflow-hidden group",
+                  "flex items-center gap-3 px-4 py-3 border-[3px] border-black font-black uppercase text-sm transition-none",
                   isActive
-                    ? "bg-sidebar-accent text-sidebar-accent-foreground shadow-md"
-                    : "text-sidebar-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-accent-foreground hover:translate-x-0.5"
+                    ? "bg-[#00E5BC] translate-x-[2px] translate-y-[2px] shadow-none"
+                    : "bg-white shadow-[4px_4px_0px_0px_#000] hover:bg-[#FF89BB] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none"
                 )}
               >
-                {isActive && (
-                  <div className="absolute left-0 top-0 bottom-0 w-1 bg-primary rounded-r-full" />
-                )}
                 <item.icon className={cn(
-                  "w-5 h-5 transition-all duration-200 flex-shrink-0",
-                  isActive && "text-primary scale-110"
+                  "w-6 h-6 transition-none flex-shrink-0",
+                  isActive && "scale-110"
                 )} />
                 <span className="flex-1">{item.label}</span>
-                {isActive && (
-                  <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse-soft" />
-                )}
               </NavLink>
             );
           })}
         </nav>
 
         {/* Profile Card */}
-        <div className="p-3 sm:p-4 border-t border-sidebar-border bg-sidebar/50 flex-shrink-0">
-          <div className="bg-gradient-to-br from-accent/80 to-accent/50 rounded-xl p-3.5 sm:p-4 space-y-2.5 sm:space-y-3 shadow-md hover:shadow-lg transition-shadow">
-            {/* User info */}
-            <div className="flex items-center gap-2.5 sm:gap-3">
-              <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center border-2 border-primary/20">
-                <span className="text-lg sm:text-xl font-bold text-primary">
-                  {userProfile.username.charAt(0).toUpperCase()}
-                </span>
-              </div>
+        <div className="p-4 border-t-[4px] border-black bg-[#FF89BB]/10">
+          <div className="neo-brutal-white p-4 space-y-4">
+            {/* User info & Sign Out */}
+            <div className="flex items-center gap-3">
+              {user ? (
+                <div className="border-[3px] border-black shadow-[2px_2px_0px_0px_#000]">
+                  <UserMenu />
+                </div>
+              ) : (
+                <div className="w-12 h-12 border-[3px] border-black bg-white flex items-center justify-center shadow-[3px_3px_0px_0px_#000]">
+                  <User className="w-6 h-6 text-black" />
+                </div>
+              )}
               <div className="flex-1 min-w-0">
-                <p className="font-bold text-sm truncate text-foreground">
-                  {userProfile.username}
+                <p className="font-black text-sm uppercase truncate tracking-tight">
+                  {user ? (userProfile.username !== 'StudyMaster' ? userProfile.username : (user.email?.split('@')[0])) : 'Guest User'}
                 </p>
-                <div className="flex items-center gap-1.5 mt-1">
+                <p className="text-[9px] font-black font-mono text-[#777] leading-none mb-1">
+                  ID: {userProfile.uniqueId || '#FF-PENDING'}
+                </p>
+                <div className="mt-1 flex items-center gap-2">
+                  <div className="w-10 h-10 border-2 border-black bg-white flex items-center justify-center shadow-[1px_1px_0px_0px_#000] p-0.5">
+                    <img 
+                      src={`/badges/${userProfile.league}.png`} 
+                      alt={userProfile.league} 
+                      className="w-full h-full object-contain" 
+                    />
+                  </div>
                   <span className={cn(
-                    "px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-bold text-primary-foreground",
+                    "px-2 py-0.5 border-2 border-black text-[10px] font-black uppercase",
                     `league-${userProfile.league}`
                   )}>
                     {getLeagueName(userProfile.league)}
@@ -136,62 +146,37 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
             </div>
 
             {/* XP Progress */}
-            <div className="space-y-1.5 sm:space-y-2">
-              <div className="flex justify-between text-xs">
-                <span className="text-muted-foreground font-semibold">Level {userProfile.level}</span>
-                <span className="font-bold text-gold">{userProfile.xp} XP</span>
+            <div className="space-y-2">
+              <div className="flex justify-between text-[10px] font-black uppercase tracking-widest">
+                <span>LVL {userProfile.level}</span>
+                <span className="text-black">{userProfile.xp} XP</span>
               </div>
-              <div className="h-2 bg-muted rounded-full overflow-hidden shadow-inner">
+              <div className="h-4 border-[3px] border-black bg-white overflow-hidden shadow-[2px_2px_0px_0px_#000]">
                 <div 
-                  className="h-full bg-gradient-to-r from-gold via-warning to-gold rounded-full transition-all duration-500 animate-shimmer"
-                  style={{ 
-                    width: `${(userProfile.xp % 400) / 4}%`,
-                    backgroundSize: '200% 100%'
-                  }}
+                  className="h-full bg-[#FFDE00] border-r-[3px] border-black"
+                  style={{ width: `${(userProfile.xp % 400) / 4}%` }}
                 />
               </div>
             </div>
 
-            {/* Auth Status */}
-            {user ? (
-              <div className="mt-3 pt-3 border-t border-sidebar-border">
-                <div className="flex items-center gap-2 text-xs text-muted-foreground mb-2">
-                  <User className="w-3 h-3" />
-                  <span className="truncate">{user.email}</span>
-                </div>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="w-full text-xs"
-                  onClick={() => signOut()}
-                >
-                  <LogOut className="w-3 h-3 mr-1" />
-                  Sign Out
-                </Button>
-              </div>
-            ) : (
-              <div className="mt-3 pt-3 border-t border-sidebar-border">
-                <Button
-                  variant="default"
-                  size="sm"
-                  className="w-full text-xs"
-                  onClick={() => setShowAuthModal(true)}
-                >
-                  <LogIn className="w-3 h-3 mr-1" />
-                  Sign In
-                </Button>
-                <p className="text-[10px] text-muted-foreground text-center mt-2">
-                  Sign in to sync across devices
-                </p>
-              </div>
+            {/* Auth Button (only for Guest) */}
+            {!user && (
+              <Button
+                variant="default"
+                size="sm"
+                className="w-full neo-brutal-yellow font-black uppercase py-6"
+                onClick={() => setShowAuthModal(true)}
+              >
+                <LogIn className="w-5 h-5 mr-2" />
+                Sign In
+              </Button>
             )}
 
             {/* Streak */}
-            <div className="flex items-center justify-between text-xs pt-1">
-              <span className="text-muted-foreground font-medium">Current Streak</span>
-              <div className="flex items-center gap-1.5 bg-warning-light px-2 py-1 rounded-full">
-                <span className="text-base">🔥</span>
-                <span className="font-bold text-warning-foreground">{userProfile.streak} days</span>
+            <div className="flex items-center justify-between pt-2 border-t-2 border-black dashed">
+              <span className="text-[10px] font-black uppercase">STREAK</span>
+              <div className="flex items-center gap-1 bg-[#00E5BC] border-2 border-black px-2 py-0.5 shadow-[2px_2px_0px_0px_#000]">
+                <span className="font-black text-xs">{userProfile.streak}D</span>
               </div>
             </div>
           </div>

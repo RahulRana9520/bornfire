@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Sidebar } from './Sidebar';
+import { Header } from './Header';
 import { AuthModal } from '@/components/auth/AuthModal';
 import { CheckInModal } from '@/components/auth/CheckInModal';
 import { useAuth } from '@/contexts/AuthContext';
@@ -70,7 +71,7 @@ export function AppLayout({ children }: AppLayoutProps) {
         "transition-all duration-300 ease-out",
         "lg:ml-72"
       )}>
-        <div className="max-w-6xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-6 lg:py-8 pt-16 sm:pt-20 lg:pt-8">
+        <div className="max-w-6xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-6 lg:py-8 pt-10 lg:pt-8">
           <div className="animate-fade-in">
             {children}
           </div>
