@@ -1,91 +1,29 @@
-# FocusFlow
+# 🛡️ FocusFlow 2.0
 
-## Productivity & Task Management Application
+FocusFlow is a high-performance, Neo-Brutalist productivity dashboard designed for students and developers. It features gamified tasks, league rankings, and unique player IDs for collaboration.
 
-FocusFlow is a comprehensive productivity app that helps you track tasks, build habits, and boost your daily focus time.
+## 📂 Project Structure
 
-## Features
-
-- ✅ **Task Management** - Create, track, and complete daily tasks with priorities
-- ⏱️ **Time Tracking** - Built-in timer to track focus time on each task
-- 🎯 **Daily Habits** - Track weekly habits and build consistency
-- 📊 **Progress Analytics** - Visualize your productivity with charts and stats
-- 🏆 **Gamification** - Earn XP, level up, and compete on leaderboards
-- 🔥 **Streak Tracking** - Maintain daily streaks for motivation
-- 👥 **Social Features** - Watch friends' progress and compete
-
-## Getting Started
-
-### Prerequisites
-
-- Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-### Installation
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory
-cd focus-flow-main
-
-# Step 3: Install the necessary dependencies
-npm install
-
-# Step 4: Start the development server
-npm run dev
+```text
+focus-flow/
+├── 💻 frontend/      # Vite + React + Tailwind (The UI)
+├── ⚙️ backend/       # Docker + SQL + Supabase (The Data)
+└── README.md         # This file
 ```
 
-The app will be available at `http://localhost:8080` (or another port if 8080 is in use).
+## 🚀 Quick Start
 
-## Development
+To get the full system running:
 
-### Available Scripts
+1. **Setup Database**: Head to `/backend` to start Docker or configure Supabase.
+2. **Setup UI**: Head to `/frontend` to install dependencies and start the dev server.
 
-- `npm run dev` - Start development server
-- `npm run build` - Build for production
-- `npm run preview` - Preview production build
-- `npm run lint` - Run ESLint
+## 🤝 Collaborating with Friends
 
-### Project Structure
+1. Clone this repository.
+2. Follow the instructions in [frontend/README.md](./frontend/README.md) to set up your `.env`.
+3. Follow the instructions in [backend/README.md](./backend/README.md) to sync the database.
 
-```
-focus-flow-main/
-├── src/
-│   ├── components/     # React components
-│   ├── contexts/       # Context providers
-│   ├── hooks/          # Custom React hooks
-│   ├── lib/            # Utility functions
-│   ├── pages/          # Page components
-│   └── types/          # TypeScript types
-├── public/             # Static assets
-└── index.html          # Entry HTML
-```
+---
 
-## Technologies Used
-
-This project is built with:
-
-- **Vite** - Fast build tool and dev server
-- **React 18** - UI library
-- **TypeScript** - Type safety
-- **Tailwind CSS** - Utility-first CSS
-- **shadcn/ui** - High-quality UI components
-- **Radix UI** - Accessible component primitives
-- **Recharts** - Chart library
-
-## Data Persistence
-
-All your data (tasks, habits, progress) is stored locally in your browser's localStorage and persists across sessions.
-
-## License
-
-MIT
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+**Built with Neo-Brutalism & Grit.**
