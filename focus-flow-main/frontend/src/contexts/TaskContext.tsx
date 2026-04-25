@@ -22,156 +22,126 @@ interface TaskContextType {
   getTodayTasks: () => Task[];
   getTodayProgress: () => number;
   getWeeklyProgress: () => number[];
+  addFriendById: (uniqueId: string) => Promise<{ success: boolean; error?: string }>;
 }
 
 const TaskContext = createContext<TaskContextType | undefined>(undefined);
 
 // Initial mock data
-const initialTasks: Task[] = [
-  {
-    id: '1',
-    title: 'Complete Math Assignment',
-    completed: false,
-    timeSpent: 1800,
-    estimatedTime: 3600,
-    remainingTime: 3600,
-    isTimerRunning: false,
-    createdAt: new Date(),
-    priority: 'high',
-    xpReward: 50,
-  },
-  {
-    id: '2',
-    title: 'Read Chapter 5 - Biology',
-    completed: false,
-    timeSpent: 0,
-    estimatedTime: 1800,
-    remainingTime: 1800,
-    isTimerRunning: false,
-    createdAt: new Date(),
-    priority: 'medium',
-    xpReward: 30,
-  },
-  {
-    id: '3',
-    title: 'Practice Programming Problems',
-    completed: true,
-    timeSpent: 3600,
-    estimatedTime: 3600,
-    remainingTime: 0,
-    isTimerRunning: false,
-    createdAt: new Date(),
-    priority: 'high',
-    xpReward: 60,
-  },
-];
+// Initial data - NOW EMPTY FOR REALISM
+const initialTasks: Task[] = [];
 
 const initialProfile: UserProfile = {
-  id: 'user1',
-  username: 'StudyMaster',
-  uniqueId: '#FF-GUEST1',
-  xp: 1250,
-  level: 4,
-  league: 'silver',
-  streak: 7,
-  longestStreak: 14,
+  id: '',
+  username: 'New User',
+  uniqueId: '#FF-000000',
+  xp: 0,
+  level: 1,
+  league: 'bronze',
+  streak: 0,
+  longestStreak: 0,
   totalFocusTime: 0,
   completedTasks: 0,
-  badges: [
-    { id: 'b1', name: '3-Day Streak', description: 'Complete tasks 3 days in a row', icon: '🔥', earnedAt: new Date() },
-    { id: 'b2', name: '7-Day Streak', description: 'Complete tasks 7 days in a row', icon: '⚡', earnedAt: new Date() },
-    { id: 'b3', name: 'Early Bird', description: 'Complete a task before 8 AM', icon: '🌅', earnedAt: new Date() },
-  ],
+  badges: [],
 };
 
-const initialFriends: Friend[] = [
-  { id: 'f1', username: 'CodeNinja', league: 'gold', xp: 2500, isOnline: true, isWorking: true, dailyProgress: 75 },
-  { id: 'f2', username: 'MathWhiz', league: 'silver', xp: 1800, isOnline: true, isWorking: false, dailyProgress: 45 },
-  { id: 'f3', username: 'ScienceGeek', league: 'bronze', xp: 800, isOnline: false, isWorking: false, dailyProgress: 20 },
-  { id: 'f4', username: 'LitLover', league: 'silver', xp: 1600, isOnline: true, isWorking: true, dailyProgress: 60 },
-];
+const initialFriends: Friend[] = [];
 
-const initialLeaderboard: LeaderboardEntry[] = [
-  { rank: 1, userId: 'l1', username: 'TopStudent', xp: 5200, league: 'diamond' },
-  { rank: 2, userId: 'l2', username: 'CodeNinja', xp: 2500, league: 'gold' },
-  { rank: 3, userId: 'l3', username: 'MathWhiz', xp: 1800, league: 'silver' },
-  { rank: 4, userId: 'user1', username: 'StudyMaster', xp: 1250, league: 'silver', isCurrentUser: true },
-  { rank: 5, userId: 'l5', username: 'ScienceGeek', xp: 800, league: 'bronze' },
-];
+const initialLeaderboard: LeaderboardEntry[] = [];
 
 export function TaskProvider({ children }: { children: React.ReactNode }) {
-  const [tasks, setTasks] = useLocalStorage<Task[]>('tasksage_tasks', initialTasks);
+  const [tasks, setTasks] = useLocalStorage<Task[]>('tasksage_tasks', []);
   const [userProfile, setUserProfile] = useLocalStorage<UserProfile>('tasksage_profile', initialProfile);
-  const [friends] = useLocalStorage<Friend[]>('tasksage_friends', initialFriends);
-  const [leaderboard] = useLocalStorage<LeaderboardEntry[]>('tasksage_leaderboard', initialLeaderboard);
+  const [friends, setFriends] = useLocalStorage<Friend[]>('tasksage_friends', []);
+  const [leaderboard, setLeaderboard] = useLocalStorage<LeaderboardEntry[]>('tasksage_leaderboard', []);
+  const [refreshCount, setRefreshCount] = React.useState(0);
   const { user } = useAuth();
 
-  // Sync profile with Supabase if logged in
+  // Sync profile, friends, and leaderboard with Supabase if logged in
   useEffect(() => {
     if (!user) return;
 
-    const fetchProfile = async () => {
-      const { data, error } = await supabase
-        .from('users')
-        .select('*')
-        .eq('id', user.id);
+    const fetchData = async () => {
+      // 1. Fetch Profile
+      const { data: profileDataArr } = await supabase.from('users').select('*').eq('id', user.id);
+      let profileData = profileDataArr && profileDataArr.length > 0 ? profileDataArr[0] : null;
 
-      console.log('Checking profile for:', user.id);
-      
-      let profileData = data && data.length > 0 ? data[0] : null;
-
-      // If profile is totally missing from DB, create it now!
       if (!profileData) {
-        console.log('Profile missing from DB. Creating auto-profile...');
         const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
         let newId = '#FF-';
-        for (let i = 0; i < 6; i++) {
-          newId += chars.charAt(Math.floor(Math.random() * chars.length));
-        }
-
-        const newProfile = {
-          id: user.id,
-          email: user.email,
-          username: user.email?.split('@')[0] || 'User',
-          unique_id: newId,
-          xp: 0,
-          level: 1,
-          league: 'bronze',
-          streak: 0,
-          longest_streak: 0,
-        };
-
-        console.log('Attempting to insert:', newProfile);
-        const { error: createError } = await supabase.from('users').insert([newProfile]);
-        if (createError) {
-          console.error('FAILED TO AUTO-CREATE PROFILE:', createError.message);
-          console.error('TIP: Run the ALTER TABLE SQL I just gave you to fix this!');
-        } else {
-          console.log('Auto-profile created successfully!');
-          profileData = newProfile;
-        }
+        for (let i = 0; i < 6; i++) newId += chars.charAt(Math.floor(Math.random() * chars.length));
+        const newProfile = { id: user.id, email: user.email, username: user.email?.split('@')[0] || 'User', unique_id: newId, xp: 0, level: 1, league: 'bronze', streak: 0, longest_streak: 0 };
+        await supabase.from('users').insert([newProfile]);
+        profileData = newProfile;
       }
 
       if (profileData) {
-        console.log('Profile loaded:', profileData);
         setUserProfile(prev => ({
           ...prev,
           username: profileData.username || user.email?.split('@')[0] || 'User',
           uniqueId: profileData.unique_id,
-          avatar: profileData.avatar_url,
           xp: profileData.xp || 0,
           level: profileData.level || 1,
           league: profileData.league || 'bronze',
           streak: profileData.streak || 0,
           longestStreak: profileData.longest_streak || 0,
         }));
-      } else if (error) {
-        console.error('PROFILE LOAD ERROR:', error.message);
+      }
+
+      // 2. Fetch Real Friends (Bulletproof Way)
+      const { data: friendsList } = await supabase
+        .from('friends')
+        .select('friend_id')
+        .eq('user_id', user.id);
+
+      if (friendsList && friendsList.length > 0) {
+        const friendIds = friendsList.map(f => f.friend_id);
+        
+        const { data: friendProfiles, error: fError } = await supabase
+          .from('users')
+          .select('id, username, league, xp')
+          .in('id', friendIds);
+
+        if (friendProfiles) {
+          const mappedFriends: Friend[] = friendProfiles.map(u => ({
+            id: u.id,
+            username: u.username,
+            league: u.league,
+            xp: u.xp,
+            isOnline: true,
+            isWorking: false,
+            dailyProgress: 0
+          }));
+          setFriends(mappedFriends);
+        } else if (fError) {
+          console.error('Friends fetch error:', fError.message);
+        }
+      } else {
+        setFriends([]); // No friends found
+      }
+
+      // 3. Fetch Real Leaderboard
+      const { data: leaderboardData } = await supabase
+        .from('users')
+        .select('id, username, xp, league')
+        .order('xp', { ascending: false })
+        .limit(10);
+
+      if (leaderboardData) {
+        const mappedLeaderboard: LeaderboardEntry[] = leaderboardData.map((u, index) => ({
+          rank: index + 1,
+          userId: u.id,
+          username: u.username,
+          xp: u.xp,
+          league: u.league,
+          isCurrentUser: u.id === user.id
+        }));
+        setLeaderboard(mappedLeaderboard);
       }
     };
 
-    fetchProfile();
-  }, [user, setUserProfile]);
+    fetchData();
+  }, [user, setUserProfile, setFriends, setLeaderboard, refreshCount]);
 
   const addTask = useCallback((title: string, priority: Task['priority'] = 'medium', estimatedTime: number = 1800) => {
     const newTask: Task = {
@@ -320,6 +290,58 @@ export function TaskProvider({ children }: { children: React.ReactNode }) {
   }, [tasks, setUserProfile]);
 
   // Update streak when user checks in
+  // Invite friend by ID
+  const addFriendById = useCallback(async (uniqueId: string): Promise<{ success: boolean; error?: string }> => {
+    if (!user) return { success: false, error: 'Auth required' };
+    
+    try {
+      // 1. Find user with this ID
+      const { data: targetUser, error: findError } = await supabase
+        .from('users')
+        .select('id, username, league, xp')
+        .eq('unique_id', uniqueId)
+        .single();
+
+      if (findError || !targetUser) {
+        return { success: false, error: 'User not found' };
+      }
+
+      if (targetUser.id === user.id) {
+        return { success: false, error: 'You cannot add yourself' };
+      }
+
+      // 2. Add to friends table (Mutual Handshake)
+      // We insert TWO rows: Me -> Friend AND Friend -> Me
+      const { error: insertError } = await supabase
+        .from('friends')
+        .insert([
+          {
+            user_id: user.id,
+            friend_id: targetUser.id,
+            status: 'accepted'
+          },
+          {
+            user_id: targetUser.id,
+            friend_id: user.id,
+            status: 'accepted'
+          }
+        ]);
+
+      if (insertError) {
+        // If one direction exists, maybe the other doesn't, so we ignore conflict errors (23505)
+        if (insertError.code !== '23505') return { success: false, error: insertError.message };
+      }
+
+      // Success - Trigger re-fetch
+      setRefreshCount(prev => prev + 1);
+      
+      return { success: true };
+    } catch (err) {
+      return { success: false, error: 'Unexpected connection error' };
+    }
+  }, [user]);
+
+  // Update streak when user checks in
   const updateStreak = useCallback(() => {
     setUserProfile(prev => {
       const newStreak = prev.streak + 1;
@@ -356,6 +378,7 @@ export function TaskProvider({ children }: { children: React.ReactNode }) {
     stopTimer,
     updateTaskTime,
     updateStreak,
+    addFriendById,
     getDayTasks,
     getTodayTasks,
     getTodayProgress,
@@ -373,6 +396,7 @@ export function TaskProvider({ children }: { children: React.ReactNode }) {
     stopTimer,
     updateTaskTime,
     updateStreak,
+    addFriendById,
     getDayTasks,
     getTodayTasks,
     getTodayProgress,

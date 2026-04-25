@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { Sidebar } from './Sidebar';
 import { Header } from './Header';
 import { AuthModal } from '@/components/auth/AuthModal';
@@ -62,8 +63,11 @@ export function AppLayout({ children }: AppLayoutProps) {
     dismissSignInPrompt();
   };
 
+  const location = useLocation();
+  const isChatPage = location.pathname === '/chat';
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-accent/5 flex">
+    <div className="min-h-screen bg-white flex">
       <Sidebar isOpen={isSidebarOpen} onToggle={() => setIsSidebarOpen(!isSidebarOpen)} />
       
       <main className={cn(
@@ -71,10 +75,13 @@ export function AppLayout({ children }: AppLayoutProps) {
         "transition-all duration-300 ease-out",
         "lg:ml-72"
       )}>
-        <div className="max-w-6xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-6 lg:py-8 pt-10 lg:pt-8">
-          <div className="animate-fade-in">
-            {children}
-          </div>
+        <div className={cn(
+          "animate-fade-in transition-all duration-300",
+          isChatPage 
+            ? "w-full min-h-screen" 
+            : "max-w-6xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-6 lg:py-8 pt-10 lg:pt-8"
+        )}>
+          {children}
         </div>
       </main>
 

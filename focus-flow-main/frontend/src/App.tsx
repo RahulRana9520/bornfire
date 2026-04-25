@@ -10,6 +10,7 @@ import Index from "./pages/Index";
 import WeekGoals from "./pages/WeekGoals";
 import Progress from "./pages/Progress";
 import Friends from "./pages/Friends";
+import Chat from "./pages/Chat";
 import Leaderboard from "./pages/Leaderboard";
 import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
@@ -30,6 +31,7 @@ const App = () => (
                 <Route path="/week-goals" element={<WeekGoals />} />
                 <Route path="/progress" element={<Progress />} />
                 <Route path="/friends" element={<Friends />} />
+                <Route path="/chat" element={<Chat />} />
                 <Route path="/leaderboard" element={<Leaderboard />} />
                 <Route path="/settings" element={<Settings />} />
                 <Route path="*" element={<NotFound />} />

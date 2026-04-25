@@ -1,18 +1,20 @@
 import React, { useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { 
-  Calendar, 
+  LayoutGrid, 
   Target, 
-  TrendingUp, 
+  LineChart, 
   Users, 
+  MessageSquare, 
   Trophy, 
-  Settings,
-  Sparkles,
-  Menu,
+  Settings, 
+  ChevronRight,
+  LogOut,
+  Calendar,
   X,
   LogIn,
-  LogOut,
-  User
+  User,
+  Menu
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -28,10 +30,11 @@ interface SidebarProps {
 }
 
 const navItems = [
-  { to: '/', icon: Calendar, label: 'Today' },
+  { to: '/', icon: LayoutGrid, label: 'Today' },
   { to: '/week-goals', icon: Target, label: 'Week Goals' },
-  { to: '/progress', icon: TrendingUp, label: 'Daily Progress' },
+  { to: '/progress', icon: LineChart, label: 'Daily Progress' },
   { to: '/friends', icon: Users, label: 'Watch Friends' },
+  { to: '/chat', icon: MessageSquare, label: 'Squad Chat' },
   { to: '/leaderboard', icon: Trophy, label: 'Leaderboard' },
   { to: '/settings', icon: Settings, label: 'Settings' },
 ];
