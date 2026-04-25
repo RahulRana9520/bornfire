@@ -1,11 +1,8 @@
 {
-  "buildCommand": "cd focus-flow-main && npm run build",
-  "outputDirectory": "focus-flow-main/dist",
-  "installCommand": "cd focus-flow-main && npm install",
+  "buildCommand": "cd focus-flow-main/frontend && npm install && npm run build",
+  "outputDirectory": "focus-flow-main/frontend/dist",
+  "framework": "vite",
   "rewrites": [
-    {
-      "source": "/(.*)",
-      "destination": "/index.html"
-    }
+    { "source": "/(.*)", "destination": "focus-flow-main/frontend/index.html" }
   ]
 }
