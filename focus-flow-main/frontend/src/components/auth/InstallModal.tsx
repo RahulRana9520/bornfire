@@ -13,6 +13,7 @@ export const InstallModal = ({ isOpen, onClose }: InstallModalProps) => {
   const { isInstallable, installApp, dismissPrompt } = usePWA();
   const [isVisible, setIsVisible] = useState(false);
   const [isIOS, setIsIOS] = useState(false);
+  const [showIOSTips, setShowIOSTips] = useState(false);
 
   useEffect(() => {
     // Check if on iOS
@@ -27,13 +28,13 @@ export const InstallModal = ({ isOpen, onClose }: InstallModalProps) => {
   }, [isOpen, isInstallable]);
 
   const handleSkip = () => {
-    localStorage.setItem('focusflow_pwa_skipped', 'true');
+    dismissPrompt();
     onClose();
   };
 
   const handleInstall = async () => {
     if (isIOS) {
-       // iOS doesn't support automatic prompt, just show the message
+       setShowIOSTips(true);
        return;
     }
     await installApp();
@@ -73,10 +74,15 @@ export const InstallModal = ({ isOpen, onClose }: InstallModalProps) => {
             </p>
           </div>
 
-          <div className="p-4 bg-black/5 border-2 border-black border-dashed">
+          <div className={cn(
+            "p-4 bg-black/5 border-2 border-black border-dashed transition-all duration-500",
+            showIOSTips && "bg-[#00E5BC]/20 border-[#00E5BC] scale-[1.02] border-solid"
+          )}>
             {isIOS ? (
               <div className="space-y-3">
-                 <p className="text-sm font-black uppercase italic">To install on iPhone:</p>
+                 <p className={cn("text-sm font-black uppercase italic transition-colors", showIOSTips ? "text-success" : "text-black")}>
+                   {showIOSTips ? '🔥 FOLLOW THESE STEPS:' : 'To install on iPhone:'}
+                 </p>
                  <div className="flex flex-col gap-2 text-[10px] font-bold uppercase text-left">
                     <div className="flex items-center gap-2">
                        <span className="w-5 h-5 bg-black text-white flex items-center justify-center">1</span>
@@ -97,20 +103,23 @@ export const InstallModal = ({ isOpen, onClose }: InstallModalProps) => {
 
           <div className="flex flex-col gap-4 pt-4">
             {!isIOS ? (
-              <Button 
+              <button 
                 onClick={handleInstall}
                 className="w-full h-16 bg-[#FFDE00] text-black border-[4px] border-black font-black uppercase text-lg tracking-widest shadow-[6px_6px_0px_0px_#000] hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all active:scale-95"
               >
                 <Download className="w-6 h-6 mr-3" />
                 Install Portal
-              </Button>
+              </button>
             ) : (
-                <Button 
-                onClick={onClose}
-                className="w-full h-16 bg-[#00E5BC] text-black border-[4px] border-black font-black uppercase text-lg tracking-widest shadow-[6px_6px_0px_0px_#000] hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all active:scale-95"
+                <button 
+                onClick={showIOSTips ? onClose : handleInstall}
+                className={cn(
+                  "w-full h-16 text-black border-[4px] border-black font-black uppercase text-lg tracking-widest shadow-[6px_6px_0px_0px_#000] hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all active:scale-95",
+                  showIOSTips ? "bg-white" : "bg-[#FFDE00]"
+                )}
               >
-                Got It!
-              </Button>
+                {showIOSTips ? 'Got It!' : 'See Instructions'}
+              </button>
             )}
             
             <button 

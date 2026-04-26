@@ -6,19 +6,26 @@ export function usePWA() {
   const [isStandalone, setIsStandalone] = useState(false);
 
   useEffect(() => {
-    // 1. Check if already running as an app
-    const checkStandalone = window.matchMedia('(display-mode: standalone)').matches || 
-                           (window.navigator as any).standalone || 
-                           document.referrer.includes('android-app://');
+    // 1. Aggressive Standalone Detection
+    const checkStandalone = () => {
+      return window.matchMedia('(display-mode: standalone)').matches || 
+             (window.navigator as any).standalone === true || 
+             document.referrer.includes('android-app://') ||
+             // Helper: If the window is launched without typical browser UI
+             (window.outerHeight - window.innerHeight < 40); 
+    };
     
-    setIsStandalone(checkStandalone);
+    const isApp = checkStandalone();
+    setIsStandalone(isApp);
 
     const handleBeforeInstallPrompt = (e: any) => {
       e.preventDefault();
       
-      // Only show if NOT standalone AND NOT already skipped
+      // If already an app, don't even listen
+      if (isApp) return;
+
       const hasSkipped = localStorage.getItem('focusflow_pwa_skipped') === 'true';
-      if (!checkStandalone && !hasSkipped) {
+      if (!hasSkipped) {
         setDeferredPrompt(e);
         setIsInstallable(true);
       }
