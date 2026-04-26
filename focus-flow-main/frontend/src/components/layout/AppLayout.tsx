@@ -4,9 +4,11 @@ import { Sidebar } from './Sidebar';
 import { Header } from './Header';
 import { AuthModal } from '@/components/auth/AuthModal';
 import { CheckInModal } from '@/components/auth/CheckInModal';
+import { InstallModal } from '@/components/auth/InstallModal';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTaskContext } from '@/contexts/TaskContext';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
+import { usePWA } from '@/hooks/usePWA';
 import { cn } from '@/lib/utils';
 
 interface AppLayoutProps {
@@ -17,10 +19,13 @@ export function AppLayout({ children }: AppLayoutProps) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showCheckInModal, setShowCheckInModal] = useState(false);
+  const [showInstallModal, setShowInstallModal] = useState(false);
   const [lastCheckIn, setLastCheckIn] = useLocalStorage<string | null>('focusflow_last_checkin', null);
+  const [hasSkippedPWA, setHasSkippedPWA] = useLocalStorage<boolean>('focusflow_pwa_skipped', false);
   
   const { user, shouldShowSignInPrompt, dismissSignInPrompt } = useAuth();
   const { userProfile, updateStreak } = useTaskContext();
+  const { isInstallable } = usePWA();
 
   // Check if auth modal should be shown
   useEffect(() => {
@@ -41,20 +46,28 @@ export function AppLayout({ children }: AppLayoutProps) {
     const shouldShowCheckIn = lastCheckIn !== today;
 
     if (shouldShowCheckIn) {
-      // Show check-in modal after a short delay
       const timer = setTimeout(() => {
         setShowCheckInModal(true);
       }, 3000);
-
+      return () => clearTimeout(timer);
+    } else if (isInstallable && !hasSkippedPWA) {
+      // If no check-in needed, show PWA prompt
+      const timer = setTimeout(() => {
+        setShowInstallModal(true);
+      }, 4000);
       return () => clearTimeout(timer);
     }
-  }, [user, lastCheckIn]);
+  }, [user, lastCheckIn, isInstallable, hasSkippedPWA]);
 
   const handleCheckIn = () => {
     const today = new Date().toDateString();
     setLastCheckIn(today);
     if (updateStreak) {
       updateStreak();
+    }
+    // After check-in, if installable, show PWA prompt after a delay
+    if (isInstallable && !hasSkippedPWA) {
+      setTimeout(() => setShowInstallModal(true), 2000);
     }
   };
 
@@ -98,6 +111,12 @@ export function AppLayout({ children }: AppLayoutProps) {
         streak={userProfile.streak}
         onCheckIn={handleCheckIn}
         onClose={() => setShowCheckInModal(false)}
+      />
+
+      {/* PWA Install Modal */}
+      <InstallModal 
+        isOpen={showInstallModal}
+        onClose={() => setShowInstallModal(false)}
       />
     </div>
   );

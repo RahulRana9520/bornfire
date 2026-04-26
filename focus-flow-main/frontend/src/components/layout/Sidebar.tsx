@@ -14,12 +14,14 @@ import {
   X,
   LogIn,
   User,
-  Menu
+  Menu,
+  Smartphone
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { useTaskContext } from '@/contexts/TaskContext';
 import { useAuth } from '@/contexts/AuthContext';
+import { usePWA } from '@/hooks/usePWA';
 import { AuthModal } from '@/components/auth/AuthModal';
 import { getLeagueName } from '@/lib/taskUtils';
 import { UserMenu } from './UserMenu';
@@ -42,7 +44,8 @@ const navItems = [
 export function Sidebar({ isOpen, onToggle }: SidebarProps) {
   const location = useLocation();
   const { userProfile } = useTaskContext();
-  const { user, signOut } = useAuth();
+  const { user } = useAuth();
+  const { isInstallable, installApp } = usePWA();
   const [showAuthModal, setShowAuthModal] = useState(false);
 
   return (
@@ -107,6 +110,18 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
               </NavLink>
             );
           })}
+
+          {/* PWA Badge in Nav */}
+          {isInstallable && (
+            <button
+               onClick={() => installApp()}
+               className="w-full flex items-center gap-3 px-4 py-3 border-[3px] border-dashed border-black bg-[#00E5BC]/20 font-black uppercase text-[10px] tracking-widest hover:bg-[#00E5BC] transition-all"
+            >
+               <Smartphone className="w-5 h-5" />
+               <span>Portal App Ready</span>
+               <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse ml-auto" />
+            </button>
+          )}
         </nav>
 
         {/* Profile Card */}

@@ -113,8 +113,6 @@ export function TaskProvider({ children }: { children: React.ReactNode }) {
             dailyProgress: 0
           }));
           setFriends(mappedFriends);
-        } else if (fError) {
-          console.error('Friends fetch error:', fError.message);
         }
       } else {
         setFriends([]); // No friends found

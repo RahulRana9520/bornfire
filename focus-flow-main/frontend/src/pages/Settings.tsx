@@ -1,10 +1,15 @@
-import React from 'react';
-import { Settings as SettingsIcon, User, Bell, Shield, Palette, LogOut } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Settings as SettingsIcon, User, Bell, Shield, Palette, LogOut, Smartphone, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { cn } from '@/lib/utils';
+import { useAuth } from '@/contexts/AuthContext';
+import { usePWA } from '@/hooks/usePWA';
 
 const Settings = () => {
+  const { signOut } = useAuth();
+  const { isInstallable, installApp } = usePWA();
+
   const settingsGroups = [
     {
       title: 'Account',
@@ -45,44 +50,66 @@ const Settings = () => {
   ];
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="space-y-8 animate-fade-in pb-20">
       {/* Header */}
-      <div>
-        <h1 className="text-2xl sm:text-3xl font-bold flex items-center gap-2">
-          <SettingsIcon className="w-7 h-7 text-primary" />
+      <div className="bg-[#FFDE00] border-[4px] border-black p-8 shadow-[8px_8px_0px_0px_#000]">
+        <h1 className="text-3xl sm:text-4xl font-black flex items-center gap-4 uppercase italic tracking-tighter">
+          <SettingsIcon className="w-10 h-10" />
           Settings
         </h1>
-        <p className="text-muted-foreground mt-1">
-          Customize your TaskSage experience
+        <p className="font-bold uppercase text-xs mt-2 tracking-widest opacity-70">
+          Configure Your Focus Portal
         </p>
       </div>
 
+      {/* PWA Install Promo (Only if installable) */}
+      {isInstallable && (
+        <div className="bg-[#00E5BC] border-[4px] border-black p-6 shadow-[6px_6px_0px_0px_#000] flex flex-col sm:flex-row items-center justify-between gap-6">
+          <div className="flex items-center gap-4">
+            <div className="w-14 h-14 bg-white border-[3px] border-black flex items-center justify-center shadow-[3px_3px_0px_0px_#000]">
+              <Smartphone className="w-8 h-8 text-black" />
+            </div>
+            <div>
+              <h3 className="font-black uppercase italic text-lg leading-none">Install Mobile App</h3>
+              <p className="text-xs font-bold uppercase mt-1 opacity-70">Access FocusFlow from your home screen</p>
+            </div>
+          </div>
+          <Button 
+            onClick={installApp}
+            className="w-full sm:w-auto bg-black text-white border-[3px] border-black px-8 py-6 font-black uppercase tracking-widest shadow-[4px_4px_0px_0px_#FFDE00] hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all"
+          >
+            <Download className="w-5 h-5 mr-3" />
+            Install Now
+          </Button>
+        </div>
+      )}
+
       {/* Settings groups */}
-      <div className="space-y-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         {settingsGroups.map((group) => (
           <div 
             key={group.title}
-            className="bg-card rounded-xl border border-border/50 shadow-soft overflow-hidden"
+            className="bg-white border-[4px] border-black shadow-[6px_6px_0px_0px_#000] overflow-hidden"
           >
-            <div className="px-4 py-3 bg-accent/50 border-b border-border/50 flex items-center gap-2">
-              <group.icon className="w-4 h-4 text-muted-foreground" />
-              <h3 className="font-medium text-sm">{group.title}</h3>
+            <div className="px-6 py-4 border-b-[4px] border-black bg-black text-white flex items-center gap-3">
+              <group.icon className="w-5 h-5" />
+              <h3 className="font-black uppercase italic tracking-widest text-sm">{group.title}</h3>
             </div>
-            <div className="divide-y divide-border/50">
-              {group.items.map((item, index) => (
+            <div className="divide-y-[2px] divide-black">
+              {group.items.map((item) => (
                 <div 
                   key={item.label}
                   className={cn(
-                    "flex items-center justify-between px-4 py-3",
-                    item.type === 'link' && "hover:bg-accent/50 cursor-pointer transition-colors"
+                    "flex items-center justify-between px-6 py-4",
+                    item.type === 'link' && "hover:bg-[#FF89BB]/10 cursor-pointer transition-colors"
                   )}
                 >
-                  <span className="text-sm">{item.label}</span>
+                  <span className="font-black uppercase text-xs tracking-wider">{item.label}</span>
                   {item.type === 'toggle' && (
-                    <Switch defaultChecked={item.defaultValue} />
+                    <Switch defaultChecked={item.defaultValue} className="data-[state=checked]:bg-[#00E5BC] border-2 border-black" />
                   )}
                   {item.type === 'link' && (
-                    <span className="text-muted-foreground">→</span>
+                    <Download className="w-4 h-4 -rotate-90" />
                   )}
                 </div>
               ))}
@@ -92,15 +119,22 @@ const Settings = () => {
       </div>
 
       {/* Danger zone */}
-      <div className="bg-destructive/5 rounded-xl border border-destructive/20 p-4">
-        <h3 className="font-medium text-destructive mb-3">Danger Zone</h3>
-        <div className="flex flex-col sm:flex-row gap-3">
-          <Button variant="outline" className="text-destructive border-destructive/30 hover:bg-destructive/10">
-            <LogOut className="w-4 h-4 mr-2" />
-            Sign Out
+      <div className="bg-[#FF89BB]/10 border-[4px] border-black p-8 shadow-[8px_8px_0px_0px_#000]">
+        <h3 className="font-black uppercase italic text-destructive text-xl mb-6">Danger Zone</h3>
+        <div className="flex flex-col sm:flex-row gap-4">
+          <Button 
+            variant="outline" 
+            onClick={() => signOut()}
+            className="flex-1 bg-white border-[3px] border-black px-6 py-6 font-black uppercase text-destructive shadow-[4px_4px_0px_0px_#000] hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all"
+          >
+            <LogOut className="w-4 h-4 mr-3" />
+            Emergency Sign Out
           </Button>
-          <Button variant="outline" className="text-destructive border-destructive/30 hover:bg-destructive/10">
-            Delete Account
+          <Button 
+            variant="outline" 
+            className="flex-1 bg-white border-[3px] border-black px-6 py-6 font-black uppercase text-destructive shadow-[4px_4px_0px_0px_#000] hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all"
+          >
+            Decommission Account
           </Button>
         </div>
       </div>
@@ -109,3 +143,4 @@ const Settings = () => {
 };
 
 export default Settings;
+
