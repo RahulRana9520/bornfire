@@ -3,23 +3,28 @@ import { useState, useEffect } from 'react';
 export function usePWA() {
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   const [isInstallable, setIsInstallable] = useState(false);
+  const [isStandalone, setIsStandalone] = useState(false);
 
   useEffect(() => {
+    // 1. Check if already running as an app
+    const checkStandalone = window.matchMedia('(display-mode: standalone)').matches || 
+                           (window.navigator as any).standalone || 
+                           document.referrer.includes('android-app://');
+    
+    setIsStandalone(checkStandalone);
+
     const handleBeforeInstallPrompt = (e: any) => {
-      // Prevent the mini-infobar from appearing on mobile
       e.preventDefault();
-      // Stash the event so it can be triggered later.
-      setDeferredPrompt(e);
-      // Update UI notify the user they can install the PWA
-      setIsInstallable(true);
+      
+      // Only show if NOT standalone AND NOT already skipped
+      const hasSkipped = localStorage.getItem('focusflow_pwa_skipped') === 'true';
+      if (!checkStandalone && !hasSkipped) {
+        setDeferredPrompt(e);
+        setIsInstallable(true);
+      }
     };
 
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
-
-    // Filter the app as already installed
-    if (window.matchMedia('(display-mode: standalone)').matches) {
-       setIsInstallable(false);
-    }
 
     return () => {
       window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
@@ -28,15 +33,19 @@ export function usePWA() {
 
   const installApp = async () => {
     if (!deferredPrompt) return;
-    // Show the install prompt
     deferredPrompt.prompt();
-    // Wait for the user to respond to the prompt
     const { outcome } = await deferredPrompt.userChoice;
     if (outcome === 'accepted') {
+      localStorage.setItem('focusflow_pwa_skipped', 'true');
       setDeferredPrompt(null);
       setIsInstallable(false);
     }
   };
 
-  return { isInstallable, installApp };
+  const dismissPrompt = () => {
+    localStorage.setItem('focusflow_pwa_skipped', 'true');
+    setIsInstallable(false);
+  };
+
+  return { isInstallable, isStandalone, installApp, dismissPrompt };
 }

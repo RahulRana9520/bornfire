@@ -39,135 +39,140 @@ const WeekGoals = () => {
   };
 
   return (
-    <div className="space-y-4 sm:space-y-6 lg:space-y-8 animate-fade-in pb-6">
+    <div className="space-y-4 sm:space-y-6 lg:space-y-8 animate-fade-in pb-10 pt-16 sm:pt-0">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
-        <div className="space-y-1.5">
-          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold flex items-center gap-2.5 bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
-            <Target className="w-7 h-7 sm:w-8 sm:h-8 text-primary flex-shrink-0" />
-            Daily Habits
-          </h1>
-          <p className="text-muted-foreground text-xs sm:text-sm">
-            Track your daily habits across weeks
-          </p>
-        </div>
+      <div className="bg-[#FFDE00] border-[4px] border-black p-6 sm:p-8 shadow-[8px_8px_0px_0px_#000] relative overflow-hidden">
+        {/* Decorative background element */}
+        <div className="absolute -right-4 -top-4 w-24 h-24 bg-white/20 rounded-full blur-2xl" />
         
-        {!isAddingHabit && (
-          <Button onClick={() => setIsAddingHabit(true)} className="shadow-md hover:shadow-lg transition-all h-10 sm:h-11">
-            <Plus className="w-4 h-4 mr-1.5 sm:mr-2" />
-            Add Habit
-          </Button>
-        )}
+        <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="space-y-1">
+            <h1 className="text-3xl sm:text-4xl font-black uppercase italic tracking-tighter flex items-center gap-3">
+              <Target className="w-8 h-8 sm:w-10 sm:h-10" />
+              Daily Habits
+            </h1>
+            <p className="text-xs sm:text-sm font-bold uppercase tracking-widest opacity-70">
+              Track your daily habits across weeks
+            </p>
+          </div>
+          
+          {!isAddingHabit && (
+            <Button 
+              onClick={() => setIsAddingHabit(true)} 
+              className="bg-black text-white border-[3px] border-black px-6 py-6 font-black uppercase tracking-widest shadow-[4px_4px_0px_0px_#fff] hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all active:scale-95"
+            >
+              <Plus className="w-5 h-5 mr-2" />
+              Add Habit
+            </Button>
+          )}
+        </div>
       </div>
 
       {/* Add Habit Form */}
       {isAddingHabit && (
-        <form onSubmit={handleAddHabit} className="bg-card rounded-xl sm:rounded-2xl p-4 sm:p-5 border border-border/50 shadow-md animate-slide-down">
-          <div className="flex gap-2 sm:gap-3">
+        <form onSubmit={handleAddHabit} className="bg-white border-[4px] border-black p-4 lg:p-6 shadow-[6px_6px_0px_0px_#00E5BC] animate-slide-down">
+          <div className="flex flex-col sm:flex-row gap-4">
             <Input
               value={newHabitTitle}
               onChange={(e) => setNewHabitTitle(e.target.value)}
-              placeholder="Enter habit name (e.g., Wake up at 6AM)"
-              className="flex-1 h-11 sm:h-12 text-sm sm:text-base"
+              placeholder="ENTER HABIT NAME... (E.G. DON'T SLACK)"
+              className="flex-1 h-14 bg-white border-[4px] border-black px-6 font-bold text-lg focus:outline-none"
               autoFocus
             />
-            <Button type="submit" disabled={!newHabitTitle.trim()} className="shadow-md h-11 sm:h-12 px-4 sm:px-5">
-              Add
-            </Button>
-            <Button type="button" variant="outline" onClick={() => setIsAddingHabit(false)} className="h-11 sm:h-12 px-3 sm:px-4">
-              Cancel
-            </Button>
+            <div className="flex gap-2">
+              <Button type="submit" disabled={!newHabitTitle.trim()} className="flex-1 sm:flex-none h-14 bg-black text-white border-[4px] border-black px-8 font-black uppercase tracking-widest hover:bg-black/90">
+                ADD
+              </Button>
+              <Button type="button" variant="outline" onClick={() => setIsAddingHabit(false)} className="h-14 bg-white border-[4px] border-black px-6 font-black uppercase tracking-widest hover:bg-black/5">
+                X
+              </Button>
+            </div>
           </div>
         </form>
       )}
 
-      {/* Habits Table */}
-      <div className="bg-card rounded-xl sm:rounded-2xl border border-border/50 shadow-md hover:shadow-lg transition-shadow overflow-hidden">
+      {/* Habits Scroll Container */}
+      <div className="bg-white border-[4px] border-black shadow-[8px_8px_0px_0px_#000] overflow-hidden">
         {habits.length === 0 ? (
-          <div className="text-center py-10 sm:py-12 text-muted-foreground">
-            <Target className="w-10 h-10 sm:w-12 sm:h-12 mx-auto mb-2.5 sm:mb-3 opacity-30" />
-            <p className="text-sm font-semibold">No habits yet</p>
-            <p className="text-xs mt-1">Add a habit to start tracking</p>
+          <div className="text-center py-16 text-muted-foreground bg-white">
+            <Target className="w-12 h-12 mx-auto mb-4 opacity-20" />
+            <p className="font-black uppercase tracking-widest">No Active Habits</p>
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            {/* Current Week */}
-            <div className="border-b border-border/50">
+          <div className="overflow-x-auto custom-scrollbar">
+            {/* Current Week Container */}
+            <div className="min-w-[700px] sm:min-w-full">
               {/* Week Header */}
-              <div className="bg-accent/50 px-3 sm:px-4 py-2.5 sm:py-3 border-b border-border/50">
-                <h3 className="font-bold text-xs sm:text-sm">
+              <div className="bg-[#00E5BC] px-6 py-4 border-b-[4px] border-black flex items-center justify-between">
+                <h3 className="font-black text-sm uppercase italic tracking-widest">
                   Current Week
-                  <span className="text-muted-foreground font-normal ml-2">
-                    ({currentWeek.startDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - {currentWeek.endDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })})
+                  <span className="ml-3 font-bold not-italic opacity-60">
+                    [{currentWeek.startDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - {currentWeek.endDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}]
                   </span>
                 </h3>
               </div>
 
-              {/* Day Headers */}
-              <div className="grid grid-cols-[1fr_repeat(7,48px)_40px] sm:grid-cols-[1fr_repeat(7,56px)_48px] gap-1 px-4 py-2 bg-muted/30 border-b border-border/30">
-                <div className="text-xs font-medium text-muted-foreground">Habit</div>
+              {/* Day Headers (Sticky Header) */}
+              <div className="grid grid-cols-[160px_repeat(7,1fr)_60px] gap-0 border-b-[4px] border-black bg-white">
+                <div className="sticky left-0 bg-[#00E5BC] border-r-[4px] border-black z-20 text-[10px] font-black uppercase tracking-widest px-4 py-4">Habit</div>
+
                 {currentWeek.days.map((day, dayIndex) => (
                   <div 
                     key={dayIndex} 
                     className={cn(
-                      "text-xs font-medium text-center",
-                      isToday(day) ? "text-primary" : "text-muted-foreground"
+                      "text-[10px] font-black text-center uppercase tracking-tighter py-4 border-r-[2px] border-black/10 last:border-r-0 flex flex-col items-center justify-center gap-0.5",
+                      isToday(day) ? "bg-[#FFDE00]/30 text-black" : "text-black/60"
                     )}
                   >
                     <div>{dayLabels[dayIndex]}</div>
-                    <div className={cn(
-                      "text-[10px]",
-                      isToday(day) && "font-bold"
-                    )}>
-                      {day.getDate()}
-                    </div>
+                    <div className="text-[12px] font-black">{day.getDate()}</div>
                   </div>
                 ))}
-                <div></div>
+                <div className="bg-white" />
               </div>
 
               {/* Habit Rows */}
               {habits.map((habit) => (
                 <div 
                   key={habit.id}
-                  className="grid grid-cols-[1fr_repeat(7,48px)_40px] sm:grid-cols-[1fr_repeat(7,56px)_48px] gap-1 px-4 py-3 border-b border-border/30 last:border-b-0 hover:bg-accent/30 transition-colors group"
+                  className="grid grid-cols-[160px_repeat(7,1fr)_60px] gap-0 border-b-[2px] border-black hover:bg-black/[0.02] transition-colors group"
                 >
-                  <div className="text-sm font-medium truncate pr-2">{habit.title}</div>
+                  <div className="sticky left-0 bg-white group-hover:bg-[#fcfcfc] z-10 text-xs font-black uppercase italic tracking-tighter truncate px-4 py-6 border-r-[4px] border-black flex items-center">
+                    {habit.title}
+                  </div>
                   {currentWeek.days.map((day, dayIndex) => {
                     const completed = isHabitCompleted(habit.id, day);
                     const isTodayDate = isToday(day);
                     const isPastDate = isPast(day);
                     const isFutureDate = isFuture(day);
-                    const canToggle = isTodayDate || isPastDate; // Can only toggle today or past
+                    const canToggle = isTodayDate || isPastDate;
 
                     return (
-                      <div key={dayIndex} className="flex items-center justify-center">
+                      <div key={dayIndex} className="flex items-center justify-center border-r-[2px] border-black/5 last:border-r-0">
                         <button
                           onClick={() => canToggle && toggleHabitCompletion(habit.id, day)}
                           disabled={!canToggle}
                           className={cn(
-                            "w-8 h-8 sm:w-9 sm:h-9 rounded-lg border-2 flex items-center justify-center transition-all",
+                            "w-10 h-10 rounded-none border-[3px] flex items-center justify-center transition-all",
                             completed 
-                              ? "bg-success border-success text-success-foreground shadow-sm hover:scale-110" 
-                              : "border-border",
-                            isTodayDate && !completed && "border-primary/50 bg-primary/5 ring-2 ring-primary/20 hover:border-primary hover:bg-primary/10 hover:scale-110",
-                            isPastDate && !completed && "hover:border-primary/50 hover:bg-primary/5 hover:scale-110",
-                            isFutureDate && "opacity-40 cursor-not-allowed hover:scale-100 bg-muted/30",
-                            canToggle && !completed && "cursor-pointer"
+                              ? "bg-black border-black text-white shadow-[3px_3px_0px_0px_#00E5BC]" 
+                              : "border-black bg-white",
+                            isTodayDate && !completed && "border-[#FFDE00] bg-[#FFDE00]/10 shadow-[3px_3px_0px_0px_#000]",
+                            isFutureDate && "opacity-20 cursor-not-allowed",
+                            canToggle && !completed && "cursor-pointer hover:bg-black/10"
                           )}
-                          title={isFutureDate ? "Future days cannot be checked" : canToggle ? "Toggle completion" : ""}
                         >
-                          {completed && <Check className="w-4 h-4" />}
+                          {completed && <Check className="w-5 h-5 stroke-[4px]" />}
                         </button>
                       </div>
                     );
                   })}
-                  <div className="flex items-center justify-center">
+                  <div className="flex items-center justify-center px-2">
                     <Button
                       variant="ghost"
                       size="icon-sm"
                       onClick={() => deleteHabit(habit.id)}
-                      className="opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-destructive"
+                      className="opacity-20 group-hover:opacity-100 transition-opacity text-black hover:text-destructive"
                     >
                       <Trash2 className="w-4 h-4" />
                     </Button>

@@ -10,7 +10,7 @@ interface InstallModalProps {
 }
 
 export const InstallModal = ({ isOpen, onClose }: InstallModalProps) => {
-  const { isInstallable, installApp } = usePWA();
+  const { isInstallable, installApp, dismissPrompt } = usePWA();
   const [isVisible, setIsVisible] = useState(false);
   const [isIOS, setIsIOS] = useState(false);
 

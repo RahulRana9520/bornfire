@@ -21,7 +21,6 @@ export function AppLayout({ children }: AppLayoutProps) {
   const [showCheckInModal, setShowCheckInModal] = useState(false);
   const [showInstallModal, setShowInstallModal] = useState(false);
   const [lastCheckIn, setLastCheckIn] = useLocalStorage<string | null>('focusflow_last_checkin', null);
-  const [hasSkippedPWA, setHasSkippedPWA] = useLocalStorage<boolean>('focusflow_pwa_skipped', false);
   
   const { user, shouldShowSignInPrompt, dismissSignInPrompt } = useAuth();
   const { userProfile, updateStreak } = useTaskContext();
@@ -50,14 +49,14 @@ export function AppLayout({ children }: AppLayoutProps) {
         setShowCheckInModal(true);
       }, 3000);
       return () => clearTimeout(timer);
-    } else if (isInstallable && !hasSkippedPWA) {
+    } else if (isInstallable) {
       // If no check-in needed, show PWA prompt
       const timer = setTimeout(() => {
         setShowInstallModal(true);
       }, 4000);
       return () => clearTimeout(timer);
     }
-  }, [user, lastCheckIn, isInstallable, hasSkippedPWA]);
+  }, [user, lastCheckIn, isInstallable]);
 
   const handleCheckIn = () => {
     const today = new Date().toDateString();
@@ -66,7 +65,7 @@ export function AppLayout({ children }: AppLayoutProps) {
       updateStreak();
     }
     // After check-in, if installable, show PWA prompt after a delay
-    if (isInstallable && !hasSkippedPWA) {
+    if (isInstallable) {
       setTimeout(() => setShowInstallModal(true), 2000);
     }
   };
