@@ -1,7 +1,19 @@
-import { useState, useCallback, useMemo } from 'react';
-import { useLocalStorage } from './useLocalStorage';
+import React, { createContext, useContext, useCallback, useMemo } from 'react';
+import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { Habit, HabitCompletion, WeekData } from '@/types/task';
 import { generateId } from '@/lib/taskUtils';
+
+interface HabitsContextType {
+  habits: Habit[];
+  completions: HabitCompletion[];
+  addHabit: (title: string) => void;
+  deleteHabit: (habitId: string) => void;
+  toggleHabitCompletion: (habitId: string, date: Date) => void;
+  isHabitCompleted: (habitId: string, date: Date) => boolean;
+  getWeeksData: (weeksCount?: number) => WeekData[];
+}
+
+const HabitsContext = createContext<HabitsContextType | undefined>(undefined);
 
 const initialHabits: Habit[] = [
   { id: 'h1', title: 'Wake up at 6AM', createdAt: new Date() },
@@ -9,11 +21,9 @@ const initialHabits: Habit[] = [
   { id: 'h3', title: 'Read for 30 mins', createdAt: new Date() },
 ];
 
-const initialCompletions: HabitCompletion[] = [];
-
-export function useHabits() {
+export const HabitsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [habits, setHabits] = useLocalStorage<Habit[]>('tasksage_habits', initialHabits);
-  const [completions, setCompletions] = useLocalStorage<HabitCompletion[]>('tasksage_habit_completions', initialCompletions);
+  const [completions, setCompletions] = useLocalStorage<HabitCompletion[]>('tasksage_habit_completions', []);
 
   const addHabit = useCallback((title: string) => {
     const newHabit: Habit = {
@@ -58,7 +68,7 @@ export function useHabits() {
     // Get Monday of current week
     const currentWeekStart = new Date(today);
     const dayOfWeek = today.getDay();
-    const daysFromMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1; // If Sunday, go back 6 days
+    const daysFromMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
     currentWeekStart.setDate(today.getDate() - daysFromMonday);
     currentWeekStart.setHours(0, 0, 0, 0);
     
@@ -72,23 +82,25 @@ export function useHabits() {
       days.push(day);
     }
     
-    weeks.push({
-      weekNumber: 1,
-      startDate: currentWeekStart,
-      endDate: weekEnd,
-      days,
-    });
-    
+    weeks.push({ weekNumber: 1, startDate: currentWeekStart, endDate: weekEnd, days });
     return weeks;
   }, []);
 
-  return {
+  const value = useMemo(() => ({
     habits,
     completions,
     addHabit,
     deleteHabit,
     toggleHabitCompletion,
     isHabitCompleted,
-    getWeeksData,
-  };
-}
+    getWeeksData
+  }), [habits, completions, addHabit, deleteHabit, toggleHabitCompletion, isHabitCompleted, getWeeksData]);
+
+  return <HabitsContext.Provider value={value}>{children}</HabitsContext.Provider>;
+};
+
+export const useHabitsContext = () => {
+  const context = useContext(HabitsContext);
+  if (!context) throw new Error('useHabitsContext must be used within a HabitsProvider');
+  return context;
+};

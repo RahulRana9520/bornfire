@@ -5,10 +5,12 @@ import { Switch } from '@/components/ui/switch';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/contexts/AuthContext';
 import { usePWA } from '@/hooks/usePWA';
+import { useNotifications } from '@/contexts/NotificationContext';
 
 const Settings = () => {
   const { signOut } = useAuth();
   const { isInstallable, installApp } = usePWA();
+  const { permission, requestPermission } = useNotifications();
 
   const settingsGroups = [
     {
@@ -62,27 +64,52 @@ const Settings = () => {
         </p>
       </div>
 
-      {/* PWA Install Promo (Only if installable) */}
-      {isInstallable && (
-        <div className="bg-[#00E5BC] border-[4px] border-black p-6 shadow-[6px_6px_0px_0px_#000] flex flex-col sm:flex-row items-center justify-between gap-6">
-          <div className="flex items-center gap-4">
-            <div className="w-14 h-14 bg-white border-[3px] border-black flex items-center justify-center shadow-[3px_3px_0px_0px_#000]">
-              <Smartphone className="w-8 h-8 text-black" />
+      {/* PWA & Notification Controls */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        {/* install prompt */}
+        {isInstallable && (
+          <div className="bg-[#00E5BC] border-[4px] border-black p-6 shadow-[6px_6px_0px_0px_#000] flex flex-col items-center justify-between gap-6">
+            <div className="flex items-center gap-4 w-full">
+              <div className="w-14 h-14 bg-white border-[3px] border-black flex items-center justify-center shadow-[3px_3px_0px_0px_#000]">
+                <Smartphone className="w-8 h-8 text-black" />
+              </div>
+              <div className="flex-1">
+                <h3 className="font-black uppercase italic text-lg leading-none">Install Portal</h3>
+                <p className="text-[10px] font-bold uppercase mt-1 opacity-70">Native mobile experience</p>
+              </div>
             </div>
-            <div>
-              <h3 className="font-black uppercase italic text-lg leading-none">Install Mobile App</h3>
-              <p className="text-xs font-bold uppercase mt-1 opacity-70">Access FocusFlow from your home screen</p>
-            </div>
+            <Button 
+              onClick={installApp}
+              className="w-full bg-black text-white border-[3px] border-black px-8 py-6 font-black uppercase tracking-widest shadow-[4px_4px_0px_0px_#FFDE00] hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all"
+            >
+              <Download className="w-5 h-5 mr-3" />
+              Download App
+            </Button>
           </div>
-          <Button 
-            onClick={installApp}
-            className="w-full sm:w-auto bg-black text-white border-[3px] border-black px-8 py-6 font-black uppercase tracking-widest shadow-[4px_4px_0px_0px_#FFDE00] hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all"
-          >
-            <Download className="w-5 h-5 mr-3" />
-            Install Now
-          </Button>
-        </div>
-      )}
+        )}
+
+        {/* notification prompt */}
+        {permission !== 'granted' && (
+          <div className="bg-[#FF89BB] border-[4px] border-black p-6 shadow-[6px_6px_0px_0px_#000] flex flex-col items-center justify-between gap-6">
+            <div className="flex items-center gap-4 w-full">
+              <div className="w-14 h-14 bg-white border-[3px] border-black flex items-center justify-center shadow-[3px_3px_0px_0px_#000]">
+                <Bell className="w-8 h-8 text-black" />
+              </div>
+              <div className="flex-1">
+                <h3 className="font-black uppercase italic text-lg leading-none">Enable Alerts</h3>
+                <p className="text-[10px] font-bold uppercase mt-1 opacity-70">3 Daily Missions + Audits</p>
+              </div>
+            </div>
+            <Button 
+              onClick={requestPermission}
+              className="w-full bg-black text-white border-[3px] border-black px-8 py-6 font-black uppercase tracking-widest shadow-[4px_4px_0px_0px_#00E5BC] hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all"
+            >
+              <Bell className="w-5 h-5 mr-3" />
+              Allow Notifications
+            </Button>
+          </div>
+        )}
+      </div>
 
       {/* Settings groups */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">

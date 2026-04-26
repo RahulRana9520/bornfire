@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Target, Plus, Trash2, Check } from 'lucide-react';
-import { useHabits } from '@/hooks/useHabits';
+import { useHabitsContext } from '@/contexts/HabitsContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
@@ -8,7 +8,7 @@ import { cn } from '@/lib/utils';
 const dayLabels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
 const WeekGoals = () => {
-  const { habits, addHabit, deleteHabit, toggleHabitCompletion, isHabitCompleted, getWeeksData } = useHabits();
+  const { habits, addHabit, deleteHabit, toggleHabitCompletion, isHabitCompleted, getWeeksData } = useHabitsContext();
   const [newHabitTitle, setNewHabitTitle] = useState('');
   const [isAddingHabit, setIsAddingHabit] = useState(false);
 
