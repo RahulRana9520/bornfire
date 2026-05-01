@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neo-Brutalist Tower</title>
+    <style>
+        :root {
+            --bg: #e0e0e0;
+            --primary: #ff3e00;
+            --secondary: #00f0ff;
+            --black: #1a1a1a;
+            --white: #ffffff;
+            --shadow: 8px 8px 0px var(--black);
+            --accent: #ffff00;
+        }
+
+        * {
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Courier New', Courier, monospace;
+            background-color: var(--bg);
+            color: var(--black);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        #game-container {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            height: 85vh;
+            background: var(--white);
+            border: 6px solid var(--black);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        .ui-overlay {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            right: 20px;
+            pointer-events: none;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            z-index: 5;
+        }
+
+        .stats-box {
+            background: var(--white);
+            border: 4px solid var(--black);
+            padding: 10px;
+            box-shadow: 4px 4px 0px var(--black);
+            pointer-events: auto;
+        }
+
+        .turn-indicator {
+            font-weight: 900;
+            text-transform: uppercase;
+            font-size: 1.2rem;
+            margin-bottom: 5px;
+        }
+
+        .height-display {
+            font-size: 2rem;
+            font-weight: 900;
+        }
+
+        .btn {
+            background: var(--primary);
+            color: var(--white);
+            border: 4px solid var(--black);
+            padding: 12px 24px;
+            font-weight: bold;
+            text-transform: uppercase;
+            cursor: pointer;
+            box-shadow: 4px 4px 0px var(--black);
+            pointer-events: auto;
+            transition: transform 0.1s;
+            margin: 5px;
+        }
+
+        .btn:active {
+            transform: translate(2px, 2px);
+            box-shadow: 2px 2px 0px var(--black);
+        }
+
+        .btn-secondary {
+            background: var(--secondary);
+            color: var(--black);
+        }
+
+        .btn-accent {
+            background: var(--accent);
+            color: var(--black);
+        }
+
+        #menu {
+            position: absolute;
+            inset: 0;
+            background: var(--white);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 20;
+            text-align: center;
+            padding: 20px;
+        }
+
+        h1 {
+            font-size: 3rem;
+            margin: 0 0 10px 0;
+            line-height: 0.9;
+            text-transform: uppercase;
+            font-weight: 900;
+        }
+
+        #message-box {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: var(--black);
+            color: white;
+            padding: 30px 40px;
+            font-weight: bold;
+            display: none;
+            z-index: 30;
+            text-align: center;
+            border: 6px solid var(--accent);
+            box-shadow: 10px 10px 0px rgba(0,0,0,0.5);
+        }
+
+        #message-box h2 {
+            margin: 0;
+            font-size: 2rem;
+            color: var(--accent);
+            text-transform: uppercase;
+        }
+
+        #message-box p {
+            margin: 10px 0 0 0;
+            font-size: 1.2rem;
+            color: var(--white);
+        }
+
+        #feedback-pop {
+            position: absolute;
+            top: 40%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-weight: 900;
+            font-size: 2rem;
+            color: var(--black);
+            pointer-events: none;
+            z-index: 25;
+            text-transform: uppercase;
+            opacity: 0;
+            transition: opacity 0.3s, transform 0.3s;
+        }
+        
+        #wind-indicator {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--white);
+            border: 3px solid var(--black);
+            padding: 5px 15px;
+            font-weight: bold;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            box-shadow: 3px 3px 0 var(--black);
+        }
+
+        .diff-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="game-container">
+        <canvas id="gameCanvas"></canvas>
+
+        <div class="ui-overlay">
+            <div class="stats-box">
+                <div id="turn-label" class="turn-indicator">Player 1</div>
+                <div id="height-label" class="height-display">0m</div>
+            </div>
+            <div style="display:flex; flex-direction:column; align-items:flex-end;">
+                <button id="reset-btn" class="btn" style="display:none">Menu</button>
+            </div>
+        </div>
+
+        <div id="feedback-pop">PERFECT!</div>
+        <div id="message-box">
+            <h2 id="winner-text">PLAYER 1 WINS!</h2>
+            <p id="cause-text">TOWER COLLAPSED!</p>
+        </div>
+        <div id="wind-indicator">Wind: Calm</div>
+
+        <div id="menu">
+            <h1>NEO<br>BRUTALIST<br>TOWER</h1>
+            <p>Select complexity:</p>
+            
+            <div class="diff-container">
+                <button class="btn start-trigger" data-diff="easy">Easy</button>
+                <button class="btn btn-secondary start-trigger" data-diff="medium">Medium</button>
+                <button class="btn btn-accent start-trigger" data-diff="hard">Hard</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const container = document.getElementById('game-container');
+        const heightLabel = document.getElementById('height-label');
+        const turnLabel = document.getElementById('turn-label');
+        const resetBtn = document.getElementById('reset-btn');
+        const menu = document.getElementById('menu');
+        const messageBox = document.getElementById('message-box');
+        const winnerText = document.getElementById('winner-text');
+        const feedbackPop = document.getElementById('feedback-pop');
+        const windIndicator = document.getElementById('wind-indicator');
+
+        const GRAVITY = 0.32;
+        const DIFFICULTY_SETTINGS = {
+            easy: { swingSpeed: 0.0015, swingRange: 100, blockWidthRange: [100, 140], windMax: 0.5, torque: 0.001, slide: 0.08 },
+            medium: { swingSpeed: 0.0025, swingRange: 140, blockWidthRange: [85, 115], windMax: 4.0, torque: 0.002, slide: 0.15 },
+            hard: { swingSpeed: 0.004, swingRange: 180, blockWidthRange: [65, 90], windMax: 8.0, torque: 0.004, slide: 0.3 }
+        };
+
+        let currentDiff = 'medium';
+        let width, height;
+        let blocks = [];
+        let particles = [];
+        let currentBlock = null;
+        let gameState = 'MENU';
+        let cameraY = 0;
+        let targetCameraY = 0;
+        let currentPlayer = 1;
+        let score = 0;
+        let isProcessingDrop = false;
+        let windForce = 0;
+        let windTarget = 0;
+
+        class Particle {
+            constructor(x, y, color) {
+                this.x = x;
+                this.y = y;
+                this.size = Math.random() * 8 + 4;
+                this.vx = (Math.random() - 0.5) * 15;
+                this.vy = (Math.random() - 0.5) * 15 - 5;
+                this.color = color;
+                this.angle = Math.random() * Math.PI * 2;
+                this.va = (Math.random() - 0.5) * 0.2;
+                this.life = 1.0;
+                this.type = Math.random() > 0.5 ? 'square' : 'triangle';
+            }
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                this.vy += 0.2; // particle gravity
+                this.angle += this.va;
+                this.life -= 0.01;
+            }
+            draw() {
+                ctx.save();
+                ctx.translate(this.x, this.y - cameraY);
+                ctx.rotate(this.angle);
+                ctx.fillStyle = this.color;
+                ctx.globalAlpha = this.life;
+                if (this.type === 'square') {
+                    ctx.fillRect(-this.size/2, -this.size/2, this.size, this.size);
+                } else {
+                    ctx.beginPath();
+                    ctx.moveTo(0, -this.size/2);
+                    ctx.lineTo(this.size/2, this.size/2);
+                    ctx.lineTo(-this.size/2, this.size/2);
+                    ctx.closePath();
+                    ctx.fill();
+                }
+                ctx.restore();
+            }
+        }
+
+        class Block {
+            constructor(x, y, w, h, player, isStatic = false) {
+                this.x = x; this.y = y; this.w = w; this.h = h;
+                this.vx = 0; this.vy = 0; this.player = player;
+                this.isStatic = isStatic; this.angle = 0; this.va = 0;
+                this.dropped = false; this.settled = false;
+                this.color = player === 1 ? 'var(--primary)' : (player === 2 ? 'var(--secondary)' : 'var(--black)');
+            }
+            draw() {
+                ctx.save();
+                ctx.translate(this.x, this.y - cameraY);
+                ctx.rotate(this.angle);
+                ctx.fillStyle = 'rgba(0,0,0,0.15)';
+                ctx.fillRect(-this.w/2 + 8, -this.h/2 + 8, this.w, this.h);
+                ctx.fillStyle = this.color;
+                ctx.strokeStyle = 'var(--black)';
+                ctx.lineWidth = 5;
+                ctx.fillRect(-this.w/2, -this.h/2, this.w, this.h);
+                ctx.strokeRect(-this.w/2, -this.h/2, this.w, this.h);
+                ctx.beginPath();
+                ctx.moveTo(-this.w/2 + 10, -this.h/2 + 10); ctx.lineTo(this.w/2 - 10, -this.h/2 + 10);
+                ctx.stroke();
+                ctx.restore();
+            }
+            update() {
+                if (this.isStatic) return;
+                if (this.dropped && !this.settled) {
+                    this.vy += GRAVITY;
+                    this.x += this.vx; this.y += this.vy; this.angle += this.va;
+                    for (let other of blocks) {
+                        if (other !== this && this.checkCollision(other)) this.resolveCollision(other);
+                    }
+                    if (this.y > (height + cameraY + 120)) gameOver();
+                }
+            }
+            checkCollision(other) {
+                const b = 4;
+                return (this.x - this.w/2 < other.x + other.w/2 - b &&
+                        this.x + this.w/2 > other.x - other.w/2 + b &&
+                        this.y - this.h/2 < other.y + other.h/2 &&
+                        this.y + this.h/2 > other.y - other.h/2);
+            }
+            resolveCollision(other) {
+                let dx = this.x - other.x;
+                let dy = this.y - other.y;
+                const s = DIFFICULTY_SETTINGS[currentDiff];
+                if (dy < 0 && Math.abs(dx) < (this.w/2 + other.w/2)) {
+                    this.y = other.y - (this.h/2 + other.h/2);
+                    let offset = dx / (other.w / 2);
+                    this.vx += offset * s.slide * Math.abs(this.vy);
+                    this.va += offset * s.torque * Math.abs(this.vy);
+                    this.vy *= -0.15;
+                    if (Math.abs(offset) < 0.1 && Math.abs(this.vy) < 2) showFeedback("PERFECT!");
+                    if (Math.abs(offset) < 0.85) {
+                        if (Math.abs(this.vy) < 1.0 && Math.abs(this.va) < 0.01) {
+                            this.settled = true; this.vx = 0; this.vy = 0; this.va = 0; this.angle = 0;
+                        }
+                    } else { this.vx += offset * 2; }
+                } else {
+                    this.vx += (dx > 0 ? 1 : -1) * 2;
+                    this.va += (dx > 0 ? 0.05 : -0.05);
+                }
+            }
+        }
+
+        function showFeedback(text) {
+            feedbackPop.innerText = text;
+            feedbackPop.style.opacity = "1";
+            feedbackPop.style.transform = "translate(-50%, -80%)";
+            setTimeout(() => { feedbackPop.style.opacity = "0"; feedbackPop.style.transform = "translate(-50%, -50%)"; }, 800);
+        }
+
+        function spawnBlock() {
+            if (gameState !== 'PLAYING') return;
+            let topY = height;
+            blocks.forEach(b => { if (b.settled || b.isStatic) topY = Math.min(topY, b.y - b.h/2); });
+            const spawnY = Math.max(cameraY + 80, topY - 200);
+            const range = DIFFICULTY_SETTINGS[currentDiff].blockWidthRange;
+            currentBlock = new Block(width/2, spawnY, range[0] + Math.random() * (range[1] - range[0]), 45, currentPlayer);
+            isProcessingDrop = false;
+        }
+
+        function dropBlock() {
+            if (!currentBlock || isProcessingDrop || gameState !== 'PLAYING') return;
+            isProcessingDrop = true;
+            currentBlock.dropped = true;
+            const settings = DIFFICULTY_SETTINGS[currentDiff];
+            const time = Date.now() * settings.swingSpeed;
+            currentBlock.vx = Math.cos(time) * 2 + windForce;
+            blocks.push(currentBlock);
+            let dropped = currentBlock;
+            currentBlock = null;
+            setTimeout(() => {
+                const check = setInterval(() => {
+                    if (gameState !== 'PLAYING') { clearInterval(check); return; }
+                    if (dropped.settled) {
+                        clearInterval(check);
+                        currentPlayer = currentPlayer === 1 ? 2 : 1;
+                        calculateScore(); updateUI(); spawnBlock();
+                    } else if (dropped.y > height + cameraY + 100) { clearInterval(check); gameOver(); }
+                }, 100);
+            }, 600);
+        }
+
+        function calculateScore() {
+            let topY = height;
+            blocks.forEach(b => { if (b.settled || b.isStatic) topY = Math.min(topY, b.y - b.h/2); });
+            score = Math.floor(Math.max(0, (height - 60) - topY));
+            heightLabel.innerText = score + 'm';
+            const screenMid = height * 0.55;
+            targetCameraY = topY < screenMid ? topY - screenMid : 0;
+        }
+
+        function updateUI() {
+            turnLabel.innerText = `Player ${currentPlayer}`;
+            turnLabel.style.color = currentPlayer === 1 ? 'var(--primary)' : 'var(--secondary)';
+        }
+
+        function gameOver() {
+            if (gameState === 'GAMEOVER') return;
+            gameState = 'GAMEOVER';
+            
+            // Current player dropped the block that fell, so other player wins
+            const winner = currentPlayer === 1 ? 2 : 1;
+            winnerText.innerText = `PLAYER ${winner} WINS! 🏆🎉`;
+            messageBox.style.display = 'block';
+            resetBtn.style.display = 'block';
+            
+            // Celebration particles
+            const winColor = winner === 1 ? '#ff3e00' : '#00f0ff';
+            for (let i = 0; i < 60; i++) {
+                particles.push(new Particle(width/2, cameraY + height/2, winColor));
+                particles.push(new Particle(width/2, cameraY + height/2, '#ffff00'));
+            }
+
+            blocks.forEach(b => { 
+                b.settled = b.isStatic = false; 
+                b.vx += (Math.random()-0.5)*15; b.va += (Math.random()-0.5)*0.5;
+            });
+        }
+
+        function render() {
+            ctx.clearRect(0, 0, width, height);
+            ctx.strokeStyle = '#f0f0f0';
+            const grid = 40;
+            for(let i = 0; i <= width; i += grid) { ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, height); ctx.stroke(); }
+            for(let j = -grid; j <= height + grid; j += grid) { ctx.beginPath(); ctx.moveTo(0, j - cameraY % grid); ctx.lineTo(width, j - cameraY % grid); ctx.stroke(); }
+
+            if (currentBlock && gameState === 'PLAYING') {
+                const s = DIFFICULTY_SETTINGS[currentDiff];
+                if (Math.random() < 0.01) windTarget = (Math.random() - 0.5) * s.windMax;
+                windForce += (windTarget - windForce) * 0.05;
+                let wl = "Calm";
+                if (Math.abs(windForce) > 0.5) wl = windForce > 0 ? "Breeze >>" : "<< Breeze";
+                if (Math.abs(windForce) > 2.5) wl = windForce > 0 ? "Gale >>>" : "<<< Gale";
+                windIndicator.innerText = `Wind: ${wl}`;
+
+                const time = Date.now() * s.swingSpeed;
+                currentBlock.x = width/2 + Math.sin(time) * s.swingRange + (windForce * 15);
+                ctx.setLineDash([10, 5]); ctx.strokeStyle = 'var(--black)'; ctx.beginPath(); 
+                ctx.moveTo(currentBlock.x, -200); ctx.lineTo(currentBlock.x, currentBlock.y - cameraY - 22); ctx.stroke();
+                ctx.setLineDash([]);
+                currentBlock.draw();
+            }
+
+            blocks.forEach(b => { b.update(); b.draw(); });
+            particles.forEach((p, i) => {
+                p.update(); p.draw();
+                if (p.life <= 0) particles.splice(i, 1);
+            });
+
+            cameraY += (targetCameraY - cameraY) * 0.08;
+            requestAnimationFrame(render);
+        }
+
+        function init(difficulty) {
+            currentDiff = difficulty || 'medium';
+            blocks = []; particles = []; score = 0; cameraY = 0; targetCameraY = 0;
+            currentPlayer = 1; isProcessingDrop = false; windForce = 0; windTarget = 0;
+            blocks.push(new Block(width/2, height - 60, 160, 40, 0, true));
+            updateUI();
+        }
+
+        container.addEventListener('mousedown', () => { if (gameState === 'PLAYING') dropBlock(); });
+        container.addEventListener('touchstart', (e) => { e.preventDefault(); if (gameState === 'PLAYING') dropBlock(); }, {passive: false});
+        document.querySelectorAll('.start-trigger').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                init(btn.getAttribute('data-diff'));
+                menu.style.display = 'none'; gameState = 'PLAYING'; spawnBlock();
+            });
+        });
+        resetBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            messageBox.style.display = 'none'; resetBtn.style.display = 'none';
+            menu.style.display = 'flex'; gameState = 'MENU';
+        });
+        function resize() { width = container.clientWidth; height = container.clientHeight; canvas.width = width; canvas.height = height; }
+        window.addEventListener('resize', resize);
+        resize(); render();
+    </script>
+</body>
+</html>

@@ -301,6 +301,7 @@ export function TaskProvider({ children }: { children: React.ReactNode }) {
         .single();
 
       if (findError || !targetUser) {
+        console.error('Add Friend Error (Search):', findError);
         return { success: false, error: 'User not found' };
       }
 
