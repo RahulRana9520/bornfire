@@ -114,7 +114,7 @@
             color: var(--black);
         }
 
-        #menu {
+        #host-menu, #guest-menu {
             position: absolute;
             inset: 0;
             background: var(--white);
@@ -199,12 +199,70 @@
             gap: 10px;
             margin-top: 20px;
         }
+        #turn-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(2px);
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            color: white;
+            text-align: center;
+        }
+        #turn-overlay.active { display: flex; }
+        .overlay-content h2 { font-size: 2.5rem; font-weight: 900; font-style: italic; letter-spacing: -2px; margin: 0; }
+        .overlay-content p { font-weight: bold; opacity: 0.7; }
+        
+        #timer-display {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 101;
+            display: none;
+        }
+        #timer-display.active { display: block; }
+        .timer-circle {
+            width: 60px;
+            height: 60px;
+            background: #FFDE00;
+            border: 4px solid black;
+            box-shadow: 4px 4px 0px 0px #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 900;
+            color: black;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body>
 
     <div id="game-container">
         <canvas id="gameCanvas"></canvas>
+
+        <!-- TURN OVERLAY -->
+        <div id="turn-overlay">
+            <div class="overlay-content">
+                <h2>OPPONENT'S TURN</h2>
+                <p>WAITING FOR MOVE...</p>
+            </div>
+        </div>
+
+        <!-- TIMER DISPLAY -->
+        <div id="timer-display">
+            <div class="timer-circle">
+                <span id="timer-text">10</span>
+            </div>
+        </div>
 
         <div class="ui-overlay">
             <div class="stats-box">
@@ -223,19 +281,120 @@
         </div>
         <div id="wind-indicator">Wind: Calm</div>
 
-        <div id="menu">
+        <!-- HOST MENU (Player 1 only) -->
+        <div id="host-menu" style="display:none;">
             <h1>NEO<br>BRUTALIST<br>TOWER</h1>
-            <p>Select complexity:</p>
-            
+            <p style="font-weight:bold;margin-bottom:8px;">You are the HOST — pick difficulty:</p>
             <div class="diff-container">
                 <button class="btn start-trigger" data-diff="easy">Easy</button>
                 <button class="btn btn-secondary start-trigger" data-diff="medium">Medium</button>
                 <button class="btn btn-accent start-trigger" data-diff="hard">Hard</button>
             </div>
         </div>
+
+        <!-- GUEST WAITING SCREEN (Player 2) -->
+        <div id="guest-menu" style="display:none;">
+            <h1>NEO<br>BRUTALIST<br>TOWER</h1>
+            <p style="font-weight:bold;">Waiting for host to start the game...</p>
+            <div style="margin-top:20px;font-size:2rem;animation:spin 1.5s linear infinite;">⏳</div>
+        </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
+        // --- MULTIPLAYER SYNC LAYER ---
+        const urlParams = new URLSearchParams(window.location.search);
+        const roomId = urlParams.get('room');
+        const myId = urlParams.get('uid');
+        const p1Id = urlParams.get('p1');
+        const p2Id = urlParams.get('p2');
+        const isHost = myId && p1Id && myId === p1Id;
+
+        // Credentials passed directly via URL params (anon key is public/safe)
+        const SB_URL = decodeURIComponent(urlParams.get('sburl') || '');
+        const SB_KEY = decodeURIComponent(urlParams.get('sbkey') || '');
+        
+        let supabaseClient = null;
+        if (SB_URL && SB_KEY) {
+            console.log('[GameSync] Supabase URL received, connecting...');
+            supabaseClient = window.supabase.createClient(SB_URL, SB_KEY);
+        } else {
+            console.error('[GameSync] No Supabase credentials! SB_URL:', SB_URL ? 'OK' : 'MISSING', 'SB_KEY:', SB_KEY ? 'OK' : 'MISSING');
+        }
+
+        // Show the correct initial screen
+        const hostMenu = document.getElementById('host-menu');
+        const guestMenu = document.getElementById('guest-menu');
+        if (isHost) {
+            hostMenu.style.display = 'flex';
+        } else {
+            guestMenu.style.display = 'flex';
+        }
+
+        // --- BROADCAST CHANNEL (no database table needed) ---
+        let gameChannel = null;
+
+        if (supabaseClient && roomId) {
+            gameChannel = supabaseClient.channel(`game-room-${roomId}`, {
+                config: { broadcast: { self: false } }
+            });
+
+            gameChannel.on('broadcast', { event: 'GAME_EVENT' }, ({ payload }) => {
+                const { type, data } = payload;
+                if (type === 'DROP') remoteDrop(data);
+                else if (type === 'SETTLE') remoteSettle(data);
+                else if (type === 'START') remoteStart(data.difficulty);
+                else if (type === 'GAMEOVER') remoteGameOver();
+            }).subscribe((status) => {
+                console.log('[GameSync] Channel status:', status);
+            });
+        }
+
+        async function emitGameEvent(type, data = {}) {
+            if (!gameChannel) {
+                console.warn('[GameSync] No channel available to emit:', type);
+                return;
+            }
+            const result = await gameChannel.send({
+                type: 'broadcast',
+                event: 'GAME_EVENT',
+                payload: { type, data }
+            });
+            console.log('[GameSync] Emitted', type, result);
+        }
+
+        function remoteDrop(data) {
+            if (!currentBlock || isProcessingDrop) return;
+            currentBlock.x = data.x;
+            currentBlock.vx = data.vx;
+            dropBlock(true); 
+        }
+
+        function remoteSettle(data) {
+            // Find the block that was just dropped
+            const lastBlock = blocks[blocks.length - 1];
+            if (lastBlock && !lastBlock.settled) {
+                lastBlock.x = data.x;
+                lastBlock.y = data.y;
+                lastBlock.angle = data.angle;
+                lastBlock.settled = true;
+                lastBlock.vx = 0; lastBlock.vy = 0; lastBlock.va = 0;
+            }
+            currentPlayer = data.nextPlayer;
+            calculateScore(); 
+            updateUI(); 
+            spawnBlock();
+        }
+
+        function remoteStart(diff) {
+            startGame(diff);
+        }
+
+        function remoteGameOver() {
+            gameOver(true);
+        }
+
+        // --- ORIGINAL GAME LOGIC ---
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
         const container = document.getElementById('game-container');
@@ -381,6 +540,51 @@
             setTimeout(() => { feedbackPop.style.opacity = "0"; feedbackPop.style.transform = "translate(-50%, -50%)"; }, 800);
         }
 
+        let turnTimer = 10;
+        let timerInterval = null;
+
+        function startTurnTimer() {
+            if (gameState !== 'PLAYING') return;
+            clearInterval(timerInterval);
+            turnTimer = 10;
+            const timerText = document.getElementById('timer-text');
+            const timerDisplay = document.getElementById('timer-display');
+            const turnOverlay = document.getElementById('turn-overlay');
+            
+            timerDisplay.classList.add('active');
+            timerText.innerText = turnTimer;
+
+            const isMyTurn = (currentPlayer === 1 && myId === p1Id) || (currentPlayer === 2 && myId === p2Id);
+            if (isMyTurn) {
+                turnOverlay.classList.remove('active');
+            } else {
+                turnOverlay.classList.add('active');
+            }
+
+            timerInterval = setInterval(() => {
+                if (gameState !== 'PLAYING') {
+                    clearInterval(timerInterval);
+                    return;
+                }
+                turnTimer--;
+                timerText.innerText = turnTimer;
+                if (turnTimer <= 0) {
+                    clearInterval(timerInterval);
+                    if (isMyTurn) {
+                        dropBlock(); // Auto-drop on timeout
+                    }
+                }
+            }, 1000);
+        }
+
+        function stopTurnTimer() {
+            clearInterval(timerInterval);
+            const td = document.getElementById('timer-display');
+            const to = document.getElementById('turn-overlay');
+            if (td) td.classList.remove('active');
+            if (to) to.classList.remove('active');
+        }
+
         function spawnBlock() {
             if (gameState !== 'PLAYING') return;
             let topY = height;
@@ -389,15 +593,27 @@
             const range = DIFFICULTY_SETTINGS[currentDiff].blockWidthRange;
             currentBlock = new Block(width/2, spawnY, range[0] + Math.random() * (range[1] - range[0]), 45, currentPlayer);
             isProcessingDrop = false;
+            
+            startTurnTimer(); 
         }
 
-        function dropBlock() {
+        function dropBlock(isRemote = false) {
             if (!currentBlock || isProcessingDrop || gameState !== 'PLAYING') return;
+            
+            const isMyTurn = (currentPlayer === 1 && myId === p1Id) || (currentPlayer === 2 && myId === p2Id);
+            if (!isMyTurn && !isRemote) return;
+
+            stopTurnTimer(); 
             isProcessingDrop = true;
             currentBlock.dropped = true;
             const settings = DIFFICULTY_SETTINGS[currentDiff];
             const time = Date.now() * settings.swingSpeed;
-            currentBlock.vx = Math.cos(time) * 2 + windForce;
+            
+            if (!isRemote) {
+                currentBlock.vx = Math.cos(time) * 2 + windForce;
+                emitGameEvent('DROP', { x: currentBlock.x, vx: currentBlock.vx });
+            }
+
             blocks.push(currentBlock);
             let dropped = currentBlock;
             currentBlock = null;
@@ -406,9 +622,28 @@
                     if (gameState !== 'PLAYING') { clearInterval(check); return; }
                     if (dropped.settled) {
                         clearInterval(check);
-                        currentPlayer = currentPlayer === 1 ? 2 : 1;
-                        calculateScore(); updateUI(); spawnBlock();
-                    } else if (dropped.y > height + cameraY + 100) { clearInterval(check); gameOver(); }
+                        
+                        // Authoritative player emits SETTLE
+                        if (!isRemote) {
+                            const nextPlayer = currentPlayer === 1 ? 2 : 1;
+                            emitGameEvent('SETTLE', { 
+                                x: dropped.x, 
+                                y: dropped.y, 
+                                angle: dropped.angle,
+                                nextPlayer: nextPlayer
+                            });
+                            
+                            // Also switch locally for immediate response
+                            currentPlayer = nextPlayer;
+                            calculateScore(); 
+                            updateUI(); 
+                            spawnBlock();
+                        }
+                    } else if (dropped.y > height + cameraY + 100) { 
+                        clearInterval(check); 
+                        if (!isRemote) emitGameEvent('GAMEOVER');
+                        gameOver(); 
+                    }
                 }, 100);
             }, 600);
         }
@@ -423,21 +658,21 @@
         }
 
         function updateUI() {
-            turnLabel.innerText = `Player ${currentPlayer}`;
+            const isMyTurn = (currentPlayer === 1 && myId === p1Id) || (currentPlayer === 2 && myId === p2Id);
+            turnLabel.innerText = isMyTurn ? "YOUR TURN" : `PLAYER ${currentPlayer} WAIT...`;
             turnLabel.style.color = currentPlayer === 1 ? 'var(--primary)' : 'var(--secondary)';
         }
 
-        function gameOver() {
+        function gameOver(isRemote = false) {
             if (gameState === 'GAMEOVER') return;
             gameState = 'GAMEOVER';
+            stopTurnTimer(); 
             
-            // Current player dropped the block that fell, so other player wins
             const winner = currentPlayer === 1 ? 2 : 1;
             winnerText.innerText = `PLAYER ${winner} WINS! 🏆🎉`;
             messageBox.style.display = 'block';
             resetBtn.style.display = 'block';
             
-            // Celebration particles
             const winColor = winner === 1 ? '#ff3e00' : '#00f0ff';
             for (let i = 0; i < 60; i++) {
                 particles.push(new Particle(width/2, cameraY + height/2, winColor));
@@ -494,18 +729,38 @@
 
         container.addEventListener('mousedown', () => { if (gameState === 'PLAYING') dropBlock(); });
         container.addEventListener('touchstart', (e) => { e.preventDefault(); if (gameState === 'PLAYING') dropBlock(); }, {passive: false});
+        
         document.querySelectorAll('.start-trigger').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 e.stopPropagation();
-                init(btn.getAttribute('data-diff'));
-                menu.style.display = 'none'; gameState = 'PLAYING'; spawnBlock();
+                if (!isHost) return; // Only host can start
+                const diff = btn.getAttribute('data-diff');
+                startGame(diff);
+                // Small delay so any just-joined guest has time to subscribe
+                setTimeout(() => emitGameEvent('START', { difficulty: diff }), 300);
             });
         });
+
+        function startGame(diff) {
+            init(diff);
+            hostMenu.style.display = 'none';
+            guestMenu.style.display = 'none';
+            gameState = 'PLAYING'; 
+            spawnBlock();
+        }
+
         resetBtn.addEventListener('click', (e) => {
             e.stopPropagation();
             messageBox.style.display = 'none'; resetBtn.style.display = 'none';
-            menu.style.display = 'flex'; gameState = 'MENU';
+            // Only host gets to go back to menu
+            if (isHost) {
+                hostMenu.style.display = 'flex';
+            } else {
+                guestMenu.style.display = 'flex';
+            }
+            gameState = 'MENU';
         });
+
         function resize() { width = container.clientWidth; height = container.clientHeight; canvas.width = width; canvas.height = height; }
         window.addEventListener('resize', resize);
         resize(); render();

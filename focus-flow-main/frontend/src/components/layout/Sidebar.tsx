@@ -15,7 +15,8 @@ import {
   LogIn,
   User,
   Menu,
-  Smartphone
+  Smartphone,
+  Gamepad2
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -37,6 +38,7 @@ const navItems = [
   { to: '/progress', icon: LineChart, label: 'Daily Progress' },
   { to: '/friends', icon: Users, label: 'Watch Friends' },
   { to: '/chat', icon: MessageSquare, label: 'Squad Chat' },
+  { to: '/group-games', icon: Gamepad2, label: 'Group Games' },
   { to: '/leaderboard', icon: Trophy, label: 'Leaderboard' },
   { to: '/settings', icon: Settings, label: 'Settings' },
 ];
