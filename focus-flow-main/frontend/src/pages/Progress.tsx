@@ -42,8 +42,8 @@ const ProgressPage = () => {
               <h2 className="text-xl sm:text-2xl font-bold">{userProfile.username}</h2>
               <div className="flex items-center gap-2 mt-1.5 sm:mt-2">
                 <span className={cn(
-                  "px-2.5 py-1 rounded-full text-xs sm:text-sm font-bold text-primary-foreground shadow-md",
-                  `league-${userProfile.league}`
+                  "px-3 py-1 border-2 border-black text-xs sm:text-sm font-black uppercase tracking-wider shadow-[2px_2px_0px_0px_#000] rounded-none text-black",
+                  `bg-league-${userProfile.league}`
                 )}>
                   {getLeagueName(userProfile.league)} League
                 </span>

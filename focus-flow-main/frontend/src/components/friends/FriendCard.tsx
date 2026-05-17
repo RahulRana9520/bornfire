@@ -34,8 +34,8 @@ export function FriendCard({ friend }: FriendCardProps) {
           <div className="flex items-center gap-2 mb-1">
             <span className="font-medium truncate">{friend.username}</span>
             <span className={cn(
-              "px-2 py-0.5 rounded-full text-xs font-medium text-primary-foreground",
-              `league-${friend.league}`
+              "px-2 py-0.5 border border-black text-[10px] font-black uppercase tracking-wide shadow-[1px_1px_0px_0px_#000] rounded-none text-black",
+              `bg-league-${friend.league}`
             )}>
               {getLeagueName(friend.league)}
             </span>

@@ -50,23 +50,36 @@ export function LeaderboardRow({ entry }: LeaderboardRowProps) {
 
       {/* Info */}
       <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center flex-wrap gap-2.5">
+          {/* League Icon Shield in front of name */}
+          <div className="w-7 h-7 flex-shrink-0 flex items-center justify-center p-0.5 bg-white border-[2px] border-black shadow-[1.5px_1.5px_0px_0px_#000]">
+            <img 
+              src={`/badges/${entry.league}.png`} 
+              alt={entry.league} 
+              className="w-full h-full object-contain" 
+            />
+          </div>
+
           <span className={cn(
-            "font-semibold truncate text-base",
+            "font-black uppercase text-base truncate",
             entry.isCurrentUser && "text-primary"
           )}>
             {entry.username}
           </span>
           {entry.isCurrentUser && (
-            <span className="text-xs font-bold text-primary bg-primary/10 px-2 py-0.5 rounded-full">(You)</span>
+            <span className="text-[9px] font-black uppercase bg-black text-white px-2 py-0.5 border border-black shadow-[1px_1px_0px_0px_#000] rounded-none">
+              (You)
+            </span>
           )}
+          
+          {/* League Name Badge */}
+          <span className={cn(
+            "px-2 py-0.5 border-2 border-black text-[9px] font-black uppercase tracking-wider shadow-[1.5px_1.5px_0px_0px_#000] rounded-none text-black ml-1",
+            `bg-league-${entry.league}`
+          )}>
+            {getLeagueName(entry.league)} League
+          </span>
         </div>
-        <span className={cn(
-          "px-2.5 py-0.5 rounded-full text-xs font-bold text-primary-foreground inline-block mt-1.5 shadow-sm",
-          `league-${entry.league}`
-        )}>
-          {getLeagueName(entry.league)}
-        </span>
       </div>
 
       {/* XP */}
