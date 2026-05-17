@@ -24,7 +24,7 @@ export function usePWA() {
       // If already an app, don't even listen
       if (isApp) return;
 
-      const hasSkipped = localStorage.getItem('focusflow_pwa_skipped') === 'true';
+      const hasSkipped = localStorage.getItem('bornfire_pwa_skipped') === 'true';
       if (!hasSkipped) {
         setDeferredPrompt(e);
         setIsInstallable(true);
@@ -43,14 +43,14 @@ export function usePWA() {
     deferredPrompt.prompt();
     const { outcome } = await deferredPrompt.userChoice;
     if (outcome === 'accepted') {
-      localStorage.setItem('focusflow_pwa_skipped', 'true');
+      localStorage.setItem('bornfire_pwa_skipped', 'true');
       setDeferredPrompt(null);
       setIsInstallable(false);
     }
   };
 
   const dismissPrompt = () => {
-    localStorage.setItem('focusflow_pwa_skipped', 'true');
+    localStorage.setItem('bornfire_pwa_skipped', 'true');
     setIsInstallable(false);
   };
 

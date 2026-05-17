@@ -1,4 +1,4 @@
--- FocusFlow Database Schema
+-- Bornfire Database Schema
 -- Initialize UUID extension
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 

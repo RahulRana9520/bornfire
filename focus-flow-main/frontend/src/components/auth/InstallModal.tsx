@@ -96,7 +96,7 @@ export const InstallModal = ({ isOpen, onClose }: InstallModalProps) => {
               </div>
             ) : (
               <p className="text-sm font-bold leading-relaxed italic">
-                "Install FocusFlow to your home screen for instant squad updates and offline productivity."
+                "Install Bornfire to your home screen for instant squad updates and offline productivity."
               </p>
             )}
           </div>

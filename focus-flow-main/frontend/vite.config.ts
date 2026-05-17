@@ -18,8 +18,8 @@ export default defineConfig(({ mode }) => ({
       },
       includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'pwa-512x512.png'],
       manifest: {
-        name: 'FocusFlow | Squad Portal',
-        short_name: 'FocusFlow',
+        name: 'Bornfire | Squad Portal',
+        short_name: 'Bornfire',
         description: 'Deep Work & Social Accountability Portal',
         theme_color: '#FFDE00',
         background_color: '#ffffff',

@@ -38,7 +38,7 @@ export const NotificationScheduler = () => {
         // Morning (9 AM)
         if (hour === 9) {
           sendNotification('MISSION START 🛡️', {
-            body: `FocusFlow: You have ${todayTasks.length} missions for today. Initialize focus.`,
+            body: `Bornfire: You have ${todayTasks.length} missions for today. Initialize focus.`,
             tag: 'daily-reminder'
           });
           lastCheck.current = timeKey;

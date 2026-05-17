@@ -1,11 +1,11 @@
-# 🛡️ FocusFlow 2.0
+# 🔥 Bornfire 2.0
 
-FocusFlow is a high-performance, Neo-Brutalist productivity dashboard designed for students and developers. It features gamified tasks, league rankings, and unique player IDs for collaboration.
+Bornfire is a high-performance, Neo-Brutalist productivity dashboard designed for students and developers. It features gamified tasks, league rankings, and unique player IDs for collaboration.
 
 ## 📂 Project Structure
 
 ```text
-focus-flow/
+bornfire/
 ├── 💻 frontend/      # Vite + React + Tailwind (The UI)
 ├── ⚙️ backend/       # Docker + SQL + Supabase (The Data)
 └── README.md         # This file

@@ -50,12 +50,12 @@ const Friends = () => {
       <div className="bg-white border-[4px] border-black shadow-[8px_8px_0px_0px_#000] p-6 rounded-2xl">
         <h3 className="text-sm font-black uppercase tracking-widest mb-4 flex items-center gap-2">
           <UserPlus className="w-5 h-5 text-primary fill-primary/20" />
-          Invite by FocusFlow ID
+          Invite by Bornfire ID
         </h3>
         <form onSubmit={handleAddFriend} className="flex flex-col sm:flex-row gap-4">
           <div className="relative flex-1">
             <Input 
-              placeholder="#FF-XXXXXX" 
+              placeholder="#BF-XXXXXX" 
               value={friendIdSearch}
               onChange={(e) => setFriendIdSearch(e.target.value)}
               className="neo-input h-14 text-lg font-black tracking-widest bg-[#f8f8f8]"

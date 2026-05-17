@@ -73,7 +73,7 @@ export function AuthModal({ isOpen, onClose, canDismiss = true }: AuthModalProps
               {mode === 'signin' ? 'Welcome Back' : 'Get Started'}
             </div>
             <h2 className="text-[36px] font-black uppercase italic tracking-tighter leading-none mb-2">
-              {mode === 'signin' ? 'FocusFlow' : 'Join Us'}
+              {mode === 'signin' ? 'Bornfire' : 'Join Us'}
             </h2>
             <p className="text-[11px] font-bold text-[#555] uppercase tracking-wider">
               {mode === 'signin'

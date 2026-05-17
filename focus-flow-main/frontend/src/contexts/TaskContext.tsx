@@ -36,7 +36,7 @@ const initialTasks: Task[] = [];
 const initialProfile: UserProfile = {
   id: '',
   username: 'New User',
-  uniqueId: '#FF-000000',
+  uniqueId: '#BF-000000',
   xp: 0,
   level: 1,
   league: 'bronze',
@@ -56,7 +56,7 @@ export function TaskProvider({ children }: { children: React.ReactNode }) {
   const [userProfile, setUserProfile] = useLocalStorage<UserProfile>('tasksage_profile', initialProfile);
   const [friends, setFriends] = useLocalStorage<Friend[]>('tasksage_friends', []);
   const [leaderboard, setLeaderboard] = useLocalStorage<LeaderboardEntry[]>('tasksage_leaderboard', []);
-  const [lastCheckIn, setLastCheckIn] = useLocalStorage<string | null>('focusflow_last_checkin', null);
+  const [lastCheckIn, setLastCheckIn] = useLocalStorage<string | null>('bornfire_last_checkin', null);
   const [refreshCount, setRefreshCount] = React.useState(0);
   const { user } = useAuth();
 
@@ -71,7 +71,7 @@ export function TaskProvider({ children }: { children: React.ReactNode }) {
 
       if (!profileData) {
         const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-        let newId = '#FF-';
+        let newId = '#BF-';
         for (let i = 0; i < 6; i++) newId += chars.charAt(Math.floor(Math.random() * chars.length));
         const newProfile = { id: user.id, email: user.email, username: user.email?.split('@')[0] || 'User', unique_id: newId, xp: 0, level: 1, league: 'bronze', streak: 0, longest_streak: 0 };
         await supabase.from('users').insert([newProfile]);

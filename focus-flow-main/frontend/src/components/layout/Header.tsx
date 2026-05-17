@@ -12,7 +12,7 @@ export function Header() {
       <div className="h-full w-full px-4 sm:px-6 lg:px-10 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <h1 className="text-xl font-bold bg-gradient-to-r from-primary via-primary/80 to-primary/60 bg-clip-text text-transparent hidden sm:block">
-            FocusFlow
+            Bornfire
           </h1>
         </div>
         

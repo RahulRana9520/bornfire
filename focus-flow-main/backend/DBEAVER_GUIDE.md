@@ -16,7 +16,7 @@ Make sure you have [Docker Desktop](https://www.docker.com/products/docker-deskt
     ```bash
     docker ps
     ```
-    You should see a container named `focus-flow-db`.
+    You should see a container named `bornfire-db`.
 
 ## 2. Connect via DBeaver
 
@@ -24,16 +24,16 @@ Make sure you have [Docker Desktop](https://www.docker.com/products/docker-deskt
 2.  Click on **Database** -> **New Database Connection**.
 3.  Select **PostgreSQL** from the list.
 4.  Enter the following settings:
-    *   **Host**: `localhost`
-    *   **Port**: `5435`
-    *   **Database**: `focusflow`
-    *   **Username**: `postgres`
-    *   **Password**: `Panda@1501.1`
-5.  Click **Test Connection** (you might need to download drivers if prompted).
-6.  Click **Finish**.
+5.  *   **Host**: `localhost`
+6.  *   **Port**: `5435`
+7.  *   **Database**: `bornfire`
+8.  *   **Username**: `postgres`
+9.  *   **Password**: `Panda@1501.1`
+10. 5.  Click **Test Connection** (you might need to download drivers if prompted).
+11. 6.  Click **Finish**.
 
 > [!TIP]
-> Once connected, you can see your tables under **Databases > focusflow > Schemas > public > Tables**.
+> Once connected, you can see your tables under **Databases > bornfire > Schemas > public > Tables**.
 
 ## 3. Useful Docker Commands
 

@@ -1,5 +1,5 @@
 {
-  "name": "focus-flow-root",
+  "name": "bornfire-root",
   "version": "1.0.0",
   "scripts": {
     "dev": "npm --prefix frontend run dev",

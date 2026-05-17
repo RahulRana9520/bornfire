@@ -1,6 +1,6 @@
-# 💻 FocusFlow Frontend
+# 💻 Bornfire Frontend
 
-This is the user interface for FocusFlow, built with **Vite**, **React**, and **Tailwind CSS**. It follows a **Neo-Brutalist** design system with bold borders and vibrant colors.
+This is the user interface for Bornfire, built with **Vite**, **React**, and **Tailwind CSS**. It follows a **Neo-Brutalist** design system with bold borders and vibrant colors.
 
 ## 🛠️ Configuration
 

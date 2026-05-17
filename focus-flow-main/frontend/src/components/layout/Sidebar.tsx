@@ -77,7 +77,7 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
             <div className="w-10 h-10 border-[3px] border-black bg-white flex items-center justify-center p-1 shadow-[2px_2px_0px_0px_#000]">
                <img src="/app.png" alt="Logo" className="w-full h-full" />
             </div>
-            <span className="font-black text-2xl text-black tracking-tighter uppercase">FocusFlow</span>
+            <span className="font-black text-2xl text-black tracking-tighter uppercase">Bornfire</span>
           </div>
           <Button 
             variant="ghost" 
@@ -146,7 +146,7 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
                   {user ? (userProfile.username !== 'StudyMaster' ? userProfile.username : (user.email?.split('@')[0])) : 'Guest User'}
                 </p>
                 <p className="text-[9px] font-black font-mono text-[#777] leading-none mb-1">
-                  ID: {userProfile.uniqueId || '#FF-PENDING'}
+                  ID: {userProfile.uniqueId || '#BF-PENDING'}
                 </p>
                 <div 
                   className="mt-1 flex items-center gap-2 cursor-pointer hover:opacity-80 active:translate-y-[1px] transition-all"
@@ -249,7 +249,7 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
                 🏆 League Levels 🏆
               </h2>
               <p className="text-xs font-black uppercase text-[#555] tracking-widest mt-6">
-                Your Focus Flow Level determines your League!
+                Your Bornfire Level determines your League!
               </p>
             </div>
 

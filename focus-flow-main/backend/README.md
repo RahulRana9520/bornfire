@@ -1,6 +1,6 @@
-# ⚙️ FocusFlow Backend
+# ⚙️ Bornfire Backend
 
-This folder contains the database configuration and infrastructure for FocusFlow.
+This folder contains the database configuration and infrastructure for Bornfire.
 
 ## 🛢️ Choosing your Database
 

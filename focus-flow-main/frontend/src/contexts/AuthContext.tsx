@@ -22,12 +22,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
-  const [firstVisit, setFirstVisit] = useLocalStorage<string | null>('focusflow_first_visit', null);
-  const [signInDismissed, setSignInDismissed] = useLocalStorage<boolean>('focusflow_signin_dismissed', false);
+  const [firstVisit, setFirstVisit] = useLocalStorage<string | null>('bornfire_first_visit', null);
+  const [signInDismissed, setSignInDismissed] = useLocalStorage<boolean>('bornfire_signin_dismissed', false);
 
   useEffect(() => {
     // Track first visit (independent event, no need to depend on it)
-    const storedFirstVisit = window.localStorage.getItem('focusflow_first_visit');
+    const storedFirstVisit = window.localStorage.getItem('bornfire_first_visit');
     if (!storedFirstVisit) {
       setFirstVisit(new Date().toISOString());
     }
@@ -56,9 +56,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return { error };
   }, []);
 
-  const generateFocusFlowId = () => {
+  const generateBornfireId = () => {
     const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // No O, 0, I, 1 to avoid confusion
-    let result = '#FF-';
+    let result = '#BF-';
     for (let i = 0; i < 6; i++) {
       result += chars.charAt(Math.floor(Math.random() * chars.length));
     }
@@ -83,7 +83,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         id: data.user.id,
         email: data.user.email,
         username,
-        unique_id: generateFocusFlowId(),
+        unique_id: generateBornfireId(),
         xp: 0,
         level: 1,
         league: 'bronze',

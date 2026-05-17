@@ -1,9 +1,9 @@
 {
-  "name": "focusflow",
+  "name": "bornfire",
   "private": true,
   "version": "1.0.0",
   "type": "module",
-  "description": "FocusFlow - Productivity and task management application",
+  "description": "Bornfire - Productivity and task management application",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
