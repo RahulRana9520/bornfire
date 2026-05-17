@@ -105,3 +105,130 @@
     @apply border-[3px] border-black rounded-none px-4 py-2 focus:ring-0 focus:border-black outline-none shadow-[2px_2px_0px_0px_#000];
   }
 }
+
+/* Neo-Brutalist Dark Mode Custom Overrides */
+.dark {
+  background-color: #000000;
+  color: #ffffff;
+}
+
+.dark body {
+  background-image: radial-gradient(rgba(255, 255, 255, 0.15) 1px, transparent 1px);
+  background-color: #000000;
+  color: #ffffff;
+}
+
+/* White borders for dark mode to replace black borders */
+.dark .border-black,
+.dark .border-l-black,
+.dark .border-r-black,
+.dark .border-t-black,
+.dark .border-b-black,
+.dark [class*="border-black"],
+.dark [class*="border-r-black"],
+.dark [class*="border-l-black"],
+.dark [class*="border-t-black"],
+.dark [class*="border-b-black"] {
+  border-color: #ffffff !important;
+}
+
+/* White flat shadows for dark mode to replace black shadows */
+.dark .shadow-\[2px_2px_0px_0px_\#000\] {
+  box-shadow: 2px 2px 0px 0px #ffffff !important;
+}
+.dark .shadow-\[3px_3px_0px_0px_\#000\] {
+  box-shadow: 3px 3px 0px 0px #ffffff !important;
+}
+.dark .shadow-\[4px_4px_0px_0px_\#000\] {
+  box-shadow: 4px 4px 0px 0px #ffffff !important;
+}
+.dark .shadow-\[6px_6px_0px_0px_\#000\] {
+  box-shadow: 6px 6px 0px 0px #ffffff !important;
+}
+.dark .shadow-\[8px_8px_0px_0px_\#000\] {
+  box-shadow: 8px 8px 0px 0px #ffffff !important;
+}
+.dark .shadow-\[10px_10px_0px_0px_\#000\] {
+  box-shadow: 10px 10px 0px 0px #ffffff !important;
+}
+
+/* General containers & inputs styling in Dark Mode */
+.dark .bg-white {
+  background-color: #121212 !important;
+  color: #ffffff !important;
+}
+
+.dark .bg-\[\#f8f8f8\] {
+  background-color: #1a1a1a !important;
+  color: #ffffff !important;
+}
+
+.dark .text-black {
+  color: #ffffff !important;
+}
+
+.dark .neo-input {
+  border-color: #ffffff !important;
+  background-color: #121212 !important;
+  color: #ffffff !important;
+  box-shadow: 2px 2px 0px 0px #ffffff !important;
+}
+
+.dark .neo-brutal {
+  border-color: #ffffff !important;
+  background-color: #121212 !important;
+  color: #ffffff !important;
+  box-shadow: 4px 4px 0px 0px #ffffff !important;
+}
+
+.dark .neo-brutal-white {
+  border-color: #ffffff !important;
+  background-color: #121212 !important;
+  color: #ffffff !important;
+  box-shadow: 4px 4px 0px 0px #ffffff !important;
+}
+
+.dark .neo-brutal-yellow {
+  border-color: #ffffff !important;
+  box-shadow: 4px 4px 0px 0px #ffffff !important;
+  color: #000000 !important; /* Keep black text inside vibrant buttons */
+}
+
+.dark .neo-brutal-pink {
+  border-color: #ffffff !important;
+  box-shadow: 4px 4px 0px 0px #ffffff !important;
+  color: #000000 !important;
+}
+
+.dark .neo-brutal-teal {
+  border-color: #ffffff !important;
+  box-shadow: 4px 4px 0px 0px #ffffff !important;
+  color: #000000 !important;
+}
+
+.dark input::placeholder {
+  color: #888888 !important;
+}
+
+.dark .text-muted-foreground {
+  color: #a3a3a3 !important;
+}
+
+/* Sidebar Specific Dark Mode Adjustments */
+.dark .bg-\[\#fbfbfb\] {
+  background-color: #0c0c0c !important;
+}
+
+.dark .border-r-\[3px\] {
+  border-right-color: #ffffff !important;
+}
+
+.dark .bg-black\/5 {
+  background-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+/* App Header & Layout */
+.dark header.border-b-\[3px\] {
+  border-bottom-color: #ffffff !important;
+  background-color: #000000 !important;
+}

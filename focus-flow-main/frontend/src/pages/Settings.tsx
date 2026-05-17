@@ -6,11 +6,13 @@ import { cn } from '@/lib/utils';
 import { useAuth } from '@/contexts/AuthContext';
 import { usePWA } from '@/hooks/usePWA';
 import { useNotifications } from '@/contexts/NotificationContext';
+import { useTheme } from '@/contexts/ThemeContext';
 
 const Settings = () => {
   const { signOut } = useAuth();
   const { isInstallable, installApp } = usePWA();
   const { permission, requestPermission } = useNotifications();
+  const { theme, toggleTheme } = useTheme();
 
   const settingsGroups = [
     {
@@ -133,7 +135,12 @@ const Settings = () => {
                 >
                   <span className="font-black uppercase text-xs tracking-wider">{item.label}</span>
                   {item.type === 'toggle' && (
-                    <Switch defaultChecked={item.defaultValue} className="data-[state=checked]:bg-[#00E5BC] border-2 border-black" />
+                    <Switch 
+                      checked={item.label === 'Dark Mode' ? theme === 'dark' : undefined}
+                      defaultChecked={item.label !== 'Dark Mode' ? item.defaultValue : undefined}
+                      onCheckedChange={item.label === 'Dark Mode' ? toggleTheme : undefined}
+                      className="data-[state=checked]:bg-[#00E5BC] border-2 border-black" 
+                    />
                   )}
                   {item.type === 'link' && (
                     <Download className="w-4 h-4 -rotate-90" />

@@ -7,6 +7,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { TaskProvider } from "@/contexts/TaskContext";
 import { HabitsProvider } from "@/contexts/HabitsContext";
 import { NotificationProvider } from "@/contexts/NotificationContext";
+import { ThemeProvider } from "@/contexts/ThemeContext";
 import { NotificationScheduler } from "@/components/notifications/NotificationScheduler";
 import { AppLayout } from "@/components/layout/AppLayout";
 import Index from "./pages/Index";
@@ -23,10 +24,11 @@ const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <NotificationProvider>
-      <AuthProvider>
-        <HabitsProvider>
-          <TaskProvider>
+    <ThemeProvider>
+      <NotificationProvider>
+        <AuthProvider>
+          <HabitsProvider>
+            <TaskProvider>
             <NotificationScheduler />
             <TooltipProvider>
             <Toaster />
@@ -51,6 +53,7 @@ const App = () => (
       </HabitsProvider>
     </AuthProvider>
   </NotificationProvider>
+  </ThemeProvider>
 </QueryClientProvider>
 );
 
