@@ -35,10 +35,10 @@ export function getTaskCompletionXP(): number {
   return 20;
 }
 
-// Calculate XP required for a specific level (exponential: Level 1 = 500, doubles each level)
+// Calculate XP required for a specific level (flat 1500 XP per level)
 export function xpForLevel(level: number): number {
   if (level <= 1) return 0;
-  return 500 * Math.pow(2, level - 2);
+  return (level - 1) * 1500;
 }
 
 // Calculate total XP required for next level
@@ -48,15 +48,7 @@ export function xpForNextLevel(currentLevel: number): number {
 
 // Calculate current level based on total XP
 export function calculateLevel(totalXP: number): number {
-  let level = 1;
-  let xpNeeded = 0;
-  
-  while (totalXP >= xpNeeded + xpForLevel(level + 1)) {
-    xpNeeded += xpForLevel(level + 1);
-    level++;
-  }
-  
-  return level;
+  return Math.floor(totalXP / 1500) + 1;
 }
 
 // Get streak bonus percentage
@@ -196,6 +188,14 @@ export function selectOptimalTasks(tasks: Task[], maxSeconds: number): Task[] {
   }
 
   return selected;
+}
+
+// Calculate league based on player level
+export function getLeagueByLevel(level: number): League {
+  if (level < 20) return 'bronze';
+  if (level < 40) return 'silver';
+  if (level < 60) return 'gold';
+  return 'diamond';
 }
 
 // Get league name with proper formatting

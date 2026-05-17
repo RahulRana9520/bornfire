@@ -49,6 +49,7 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
   const { user } = useAuth();
   const { isInstallable, installApp } = usePWA();
   const [showAuthModal, setShowAuthModal] = useState(false);
+  const [showLeagueModal, setShowLeagueModal] = useState(false);
 
   return (
     <>
@@ -147,7 +148,11 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
                 <p className="text-[9px] font-black font-mono text-[#777] leading-none mb-1">
                   ID: {userProfile.uniqueId || '#FF-PENDING'}
                 </p>
-                <div className="mt-1 flex items-center gap-2">
+                <div 
+                  className="mt-1 flex items-center gap-2 cursor-pointer hover:opacity-80 active:translate-y-[1px] transition-all"
+                  onClick={() => setShowLeagueModal(true)}
+                  title="View League Levels"
+                >
                   <div className="w-10 h-10 border-2 border-black bg-white flex items-center justify-center shadow-[1px_1px_0px_0px_#000] p-0.5">
                     <img 
                       src={`/badges/${userProfile.league}.png`} 
@@ -156,7 +161,7 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
                     />
                   </div>
                   <span className={cn(
-                    "px-2 py-0.5 border-2 border-black text-[10px] font-black uppercase",
+                    "px-2 py-0.5 border-2 border-black text-[10px] font-black uppercase transition-colors hover:bg-black hover:text-white",
                     `league-${userProfile.league}`
                   )}>
                     {getLeagueName(userProfile.league)}
@@ -169,12 +174,12 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
             <div className="space-y-2">
               <div className="flex justify-between text-[10px] font-black uppercase tracking-widest">
                 <span>LVL {userProfile.level}</span>
-                <span className="text-black">{userProfile.xp} XP</span>
+                <span className="text-black">{userProfile.xp % 1500} / 1500 XP</span>
               </div>
               <div className="h-4 border-[3px] border-black bg-white overflow-hidden shadow-[2px_2px_0px_0px_#000]">
                 <div 
                   className="h-full bg-[#FFDE00] border-r-[3px] border-black"
-                  style={{ width: `${(userProfile.xp % 400) / 4}%` }}
+                  style={{ width: `${(userProfile.xp % 1500) / 15}%` }}
                 />
               </div>
             </div>
@@ -223,6 +228,82 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
         onClose={() => setShowAuthModal(false)}
         canDismiss={true}
       />
+
+      {/* League Levels Modal */}
+      {showLeagueModal && (
+        <div className="fixed inset-0 bg-foreground/50 backdrop-blur-sm z-[100] flex items-center justify-center p-4 animate-fade-in">
+          <div className="w-full max-w-2xl bg-white border-[4px] border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] p-6 md:p-8 relative flex flex-col max-h-[90vh] overflow-y-auto animate-scale-in">
+            {/* Close button */}
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="absolute top-4 right-4 border-[3px] border-black bg-white hover:bg-black hover:text-white transition-none shadow-[2px_2px_0px_0px_#000] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none"
+              onClick={() => setShowLeagueModal(false)}
+            >
+              <X className="w-5 h-5" />
+            </Button>
+
+            {/* Header */}
+            <div className="text-center mb-6">
+              <h2 className="text-3xl font-black uppercase italic tracking-tighter bg-[#FFDE00] border-[4px] border-black py-3 px-6 inline-block shadow-[4px_4px_0px_0px_#000] transform -rotate-1">
+                🏆 League Levels 🏆
+              </h2>
+              <p className="text-xs font-black uppercase text-[#555] tracking-widest mt-6">
+                Your Focus Flow Level determines your League!
+              </p>
+            </div>
+
+            {/* Leagues Comparison Grid (Clash of Clans Inspired!) */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 my-4">
+              {[
+                { name: 'Bronze', levels: 'LVL 1 - 19', bg: 'bg-[#ff7a00]/10' },
+                { name: 'Silver', levels: 'LVL 20 - 39', bg: 'bg-[#a0a0a0]/10' },
+                { name: 'Gold', levels: 'LVL 40 - 59', bg: 'bg-[#ffd700]/10' },
+                { name: 'Diamond', levels: 'LVL 60+', bg: 'bg-[#00ccff]/10' },
+              ].map((lg) => {
+                const isCurrent = lg.name.toLowerCase() === userProfile.league;
+                return (
+                  <div 
+                    key={lg.name}
+                    className={cn(
+                      "border-[4px] border-black p-4 flex flex-col items-center text-center relative",
+                      lg.bg,
+                      isCurrent ? "shadow-[4px_4px_0px_0px_#000] bg-yellow-50" : ""
+                    )}
+                  >
+                    {isCurrent && (
+                      <span className="absolute -top-3 bg-black text-white text-[8px] font-black uppercase px-2 py-0.5 border-2 border-black tracking-widest">
+                        Current
+                      </span>
+                    )}
+                    <div className="w-16 h-16 border-[3px] border-black bg-white flex items-center justify-center p-1.5 shadow-[2px_2px_0px_0px_#000] mb-4">
+                      <img 
+                        src={`/badges/${lg.name.toLowerCase()}.png`} 
+                        alt={lg.name} 
+                        className="w-full h-full object-contain" 
+                      />
+                    </div>
+                    <h3 className="font-black text-lg uppercase tracking-tight mb-1">{lg.name}</h3>
+                    <span className="text-[10px] font-black uppercase text-[#555] tracking-wider mb-3">League</span>
+                    <div className="w-full border-t-2 border-black border-dashed my-2" />
+                    <div className="bg-white border-2 border-black py-1 px-3 text-[10px] font-black uppercase tracking-wider shadow-[2px_2px_0px_0px_#000]">
+                      {lg.levels}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Bottom info section */}
+            <div className="mt-4 border-[3px] border-black bg-[#00E5BC]/10 p-4 text-center">
+              <p className="text-xs font-black uppercase leading-relaxed">
+                Complete tasks, run focus sessions, and maintain your streak to gain XP. 
+                Keep leveling up to reach the legendary <span className="text-[#00c8ff]">Diamond League</span>! 💎
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }

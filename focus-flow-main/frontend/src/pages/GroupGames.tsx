@@ -30,6 +30,17 @@ const GroupGames = () => {
 
   useEffect(() => {
     fetchRooms();
+
+    // Cleanup stale waiting rooms (older than 5 mins) to keep the lobby clean
+    const cleanupRooms = async () => {
+      const expirationTime = new Date(Date.now() - 5 * 60 * 1000).toISOString();
+      await supabase
+        .from('game_rooms')
+        .delete()
+        .eq('status', 'waiting')
+        .lt('created_at', expirationTime);
+    };
+    cleanupRooms();
     
     // Subscribe to general lobby changes
     const channel = supabase
@@ -82,14 +93,15 @@ const GroupGames = () => {
         .from('game_rooms')
         .select('*')
         .eq('room_type', filter)
+        .eq('status', 'waiting')
         .order('created_at', { ascending: false });
 
       const { data, error } = await query;
       if (error) throw error;
       setRooms(data || []);
 
-      // Synchronize active room state if we are currently in a room
-      if (activeRoom) {
+      // Synchronize active room state if we are currently in a room and waiting for a partner
+      if (activeRoom && activeRoom.status === 'waiting') {
         const updatedActiveRoom = (data || []).find(r => r.id === activeRoom.id);
         if (updatedActiveRoom) {
           setActiveRoom(updatedActiveRoom);
@@ -160,8 +172,42 @@ const GroupGames = () => {
     }
   };
 
-  const leaveRoom = () => {
-    setActiveRoom(null);
+  const deleteRoom = async (roomId: string) => {
+    try {
+      await supabase.from('game_rooms').delete().eq('id', roomId);
+      fetchRooms();
+    } catch (err) {
+      console.error('Error deleting room:', err);
+    }
+  };
+
+  const leaveRoom = async () => {
+    if (!activeRoom) {
+      setActiveRoom(null);
+      return;
+    }
+    
+    try {
+      if (user?.id === activeRoom.player1_id) {
+        // Host is leaving - Delete the whole room to prevent abandoned rooms
+        await supabase.from('game_rooms').delete().eq('id', activeRoom.id);
+      } else if (user?.id === activeRoom.player2_id) {
+        if (activeRoom.status === 'locked' || activeRoom.status === 'finished') {
+          // Game was active/locked or finished - if one leaves, room is effectively dead
+          await supabase.from('game_rooms').delete().eq('id', activeRoom.id);
+        } else {
+          // Guest left a waiting room - just make it available again
+          await supabase.from('game_rooms')
+            .update({ player2_id: null, status: 'waiting' })
+            .eq('id', activeRoom.id);
+        }
+      }
+    } catch (err) {
+      console.error('Error cleaning up room:', err);
+    } finally {
+      setActiveRoom(null);
+      fetchRooms();
+    }
   };
 
   if (activeRoom) {
@@ -335,14 +381,27 @@ const GroupGames = () => {
                         Locked
                       </div>
                     ) : (
-                      <Button
-                        size="sm"
-                        onClick={() => joinRoom(room)}
-                        className="neo-brutal-yellow h-10 px-6 border-[3px] border-black shadow-[4px_4px_0px_0px_#000] font-black uppercase text-xs tracking-widest"
-                      >
-                        <Play className="w-4 h-4 mr-2" />
-                        Join
-                      </Button>
+                      <div className="flex items-center gap-2">
+                        {user?.id === room.player1_id ? (
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => deleteRoom(room.id)}
+                            className="text-red-500 hover:text-red-600 hover:bg-red-50 font-black uppercase text-[10px] h-10 border-[3px] border-red-500/20 px-4"
+                          >
+                            Delete
+                          </Button>
+                        ) : (
+                          <Button
+                            size="sm"
+                            onClick={() => joinRoom(room)}
+                            className="neo-brutal-yellow h-10 px-6 border-[3px] border-black shadow-[4px_4px_0px_0px_#000] font-black uppercase text-xs tracking-widest"
+                          >
+                            <Play className="w-4 h-4 mr-2" />
+                            Join
+                          </Button>
+                        )}
+                      </div>
                     )}
                   </div>
                 ))}

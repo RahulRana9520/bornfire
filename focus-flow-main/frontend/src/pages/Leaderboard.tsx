@@ -5,6 +5,7 @@ import { LeaderboardRow } from '@/components/leaderboard/LeaderboardRow';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { mergeSort } from '@/lib/taskUtils';
+import { LeaderboardEntry } from '@/types/task';
 
 const Leaderboard = () => {
   const { leaderboard, friends, userProfile } = useTaskContext();

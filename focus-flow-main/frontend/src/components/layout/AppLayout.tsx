@@ -20,10 +20,9 @@ export function AppLayout({ children }: AppLayoutProps) {
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showCheckInModal, setShowCheckInModal] = useState(false);
   const [showInstallModal, setShowInstallModal] = useState(false);
-  const [lastCheckIn, setLastCheckIn] = useLocalStorage<string | null>('focusflow_last_checkin', null);
   
   const { user, shouldShowSignInPrompt, dismissSignInPrompt } = useAuth();
-  const { userProfile, updateStreak } = useTaskContext();
+  const { userProfile, updateStreak, lastCheckIn, setLastCheckIn } = useTaskContext();
   const { isInstallable } = usePWA();
 
   // Check if auth modal should be shown

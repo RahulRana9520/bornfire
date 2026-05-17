@@ -683,6 +683,18 @@
                 b.settled = b.isStatic = false; 
                 b.vx += (Math.random()-0.5)*15; b.va += (Math.random()-0.5)*0.5;
             });
+
+            // Mark room as finished in Supabase so it disappears from the lobby
+            if (supabaseClient && roomId) {
+                supabaseClient
+                    .from('game_rooms')
+                    .update({ status: 'finished' })
+                    .eq('id', roomId)
+                    .then(({ error }) => {
+                        if (error) console.error('[GameSync] Error marking room as finished:', error);
+                        else console.log('[GameSync] Room marked as finished');
+                    });
+            }
         }
 
         function render() {

@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useCallback, useEffect, useMemo } from 'react';
 import { Task, UserProfile, DayTasks, Friend, Badge, LeaderboardEntry } from '@/types/task';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
-import { generateId, isToday, isPast, getTaskCompletionXP, calculateLevel } from '@/lib/taskUtils';
+import { generateId, isToday, isPast, getTaskCompletionXP, calculateLevel, getLeagueByLevel } from '@/lib/taskUtils';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from './AuthContext';
 
@@ -23,6 +23,8 @@ interface TaskContextType {
   getTodayProgress: () => number;
   getWeeklyProgress: () => number[];
   addFriendById: (uniqueId: string) => Promise<{ success: boolean; error?: string }>;
+  lastCheckIn: string | null;
+  setLastCheckIn: (value: string | null | ((prev: string | null) => string | null)) => void;
 }
 
 const TaskContext = createContext<TaskContextType | undefined>(undefined);
@@ -54,6 +56,7 @@ export function TaskProvider({ children }: { children: React.ReactNode }) {
   const [userProfile, setUserProfile] = useLocalStorage<UserProfile>('tasksage_profile', initialProfile);
   const [friends, setFriends] = useLocalStorage<Friend[]>('tasksage_friends', []);
   const [leaderboard, setLeaderboard] = useLocalStorage<LeaderboardEntry[]>('tasksage_leaderboard', []);
+  const [lastCheckIn, setLastCheckIn] = useLocalStorage<string | null>('focusflow_last_checkin', null);
   const [refreshCount, setRefreshCount] = React.useState(0);
   const { user } = useAuth();
 
@@ -76,15 +79,71 @@ export function TaskProvider({ children }: { children: React.ReactNode }) {
       }
 
       if (profileData) {
+        let syncedStreak = profileData.streak || 0;
+        const syncedLongestStreak = profileData.longest_streak || 0;
+        const lastCheckinDate = profileData.last_checkin_date; // 'YYYY-MM-DD'
+
+        const d = new Date();
+        const year = d.getFullYear();
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        const localTodayStr = `${year}-${month}-${day}`;
+
+        const y = new Date();
+        y.setDate(y.getDate() - 1);
+        const yYear = y.getFullYear();
+        const yMonth = String(y.getMonth() + 1).padStart(2, '0');
+        const yDay = String(y.getDate()).padStart(2, '0');
+        const localYesterdayStr = `${yYear}-${yMonth}-${yDay}`;
+
+        // Check if they broke their streak (last checkin was before yesterday)
+        if (lastCheckinDate && lastCheckinDate !== localTodayStr && lastCheckinDate !== localYesterdayStr) {
+          syncedStreak = 0; // Reset streak
+          await supabase
+            .from('users')
+            .update({ streak: 0 })
+            .eq('id', user.id);
+        }
+
+        // Sync local storage checkin status
+        if (lastCheckinDate === localTodayStr) {
+          setLastCheckIn(new Date().toDateString());
+        }
+
+        const localProfileStr = localStorage.getItem('tasksage_profile');
+        const localProfile = localProfileStr ? JSON.parse(localProfileStr) : null;
+        let finalXP = profileData.xp || 0;
+        let finalLevel = profileData.level || 1;
+        let finalStreak = syncedStreak;
+        let finalLongestStreak = syncedLongestStreak;
+
+        // If local guest progress is higher (e.g. they just logged in/signed up), sync it up to DB!
+        if (localProfile && (localProfile.xp > finalXP || localProfile.streak > finalStreak)) {
+          finalXP = Math.max(finalXP, localProfile.xp);
+          finalLevel = Math.max(finalLevel, localProfile.level);
+          finalStreak = Math.max(finalStreak, localProfile.streak);
+          finalLongestStreak = Math.max(finalLongestStreak, localProfile.longestStreak);
+
+          await supabase
+            .from('users')
+            .update({
+              xp: finalXP,
+              level: finalLevel,
+              streak: finalStreak,
+              longest_streak: finalLongestStreak,
+            })
+            .eq('id', user.id);
+        }
+
         setUserProfile(prev => ({
           ...prev,
           username: profileData.username || user.email?.split('@')[0] || 'User',
           uniqueId: profileData.unique_id,
-          xp: profileData.xp || 0,
-          level: profileData.level || 1,
-          league: profileData.league || 'bronze',
-          streak: profileData.streak || 0,
-          longestStreak: profileData.longest_streak || 0,
+          xp: finalXP,
+          level: finalLevel,
+          league: getLeagueByLevel(finalLevel),
+          streak: finalStreak,
+          longestStreak: finalLongestStreak,
         }));
       }
 
@@ -106,7 +165,7 @@ export function TaskProvider({ children }: { children: React.ReactNode }) {
           const mappedFriends: Friend[] = friendProfiles.map(u => ({
             id: u.id,
             username: u.username,
-            league: u.league,
+            league: getLeagueByLevel(calculateLevel(u.xp)),
             xp: u.xp,
             isOnline: true,
             isWorking: false,
@@ -131,7 +190,7 @@ export function TaskProvider({ children }: { children: React.ReactNode }) {
           userId: u.id,
           username: u.username,
           xp: u.xp,
-          league: u.league,
+          league: getLeagueByLevel(calculateLevel(u.xp)),
           isCurrentUser: u.id === user.id
         }));
         setLeaderboard(mappedLeaderboard);
@@ -186,13 +245,35 @@ export function TaskProvider({ children }: { children: React.ReactNode }) {
     const task = tasks.find(t => t.id === taskId);
     if (task && !task.completed && isToday(new Date(task.createdAt))) {
       const xpGained = getTaskCompletionXP(); // Fixed 20 XP per task
-      setUserProfile(prev => ({
-        ...prev,
-        xp: prev.xp + xpGained,
-        level: calculateLevel(prev.xp + xpGained),
-      }));
+      setUserProfile(prev => {
+        const nextXP = prev.xp + xpGained;
+        const nextLevel = calculateLevel(nextXP);
+        const nextLeague = getLeagueByLevel(nextLevel);
+        
+        if (user) {
+          supabase
+            .from('users')
+            .update({
+              xp: nextXP,
+              level: nextLevel,
+              league: nextLeague,
+            })
+            .eq('id', user.id)
+            .then(({ error }) => {
+              if (error) console.error('Error updating XP in Supabase:', error);
+              else setRefreshCount(prevRefresh => prevRefresh + 1);
+            });
+        }
+
+        return {
+          ...prev,
+          xp: nextXP,
+          level: nextLevel,
+          league: nextLeague,
+        };
+      });
     }
-  }, [setTasks, tasks, userProfile.streak, setUserProfile]);
+  }, [setTasks, tasks, user, setUserProfile]);
 
   const startTimer = useCallback((taskId: string) => {
     // Stop any other running timers first
@@ -344,13 +425,44 @@ export function TaskProvider({ children }: { children: React.ReactNode }) {
   const updateStreak = useCallback(() => {
     setUserProfile(prev => {
       const newStreak = prev.streak + 1;
+      const newLongestStreak = Math.max(newStreak, prev.longestStreak);
+
+      if (user) {
+        const d = new Date();
+        const year = d.getFullYear();
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        const localTodayStr = `${year}-${month}-${day}`;
+
+        supabase
+          .from('users')
+          .update({
+            streak: newStreak,
+            longest_streak: newLongestStreak,
+            last_checkin_date: localTodayStr,
+          })
+          .eq('id', user.id)
+          .then(({ error }) => {
+            if (error) {
+              console.error('Error updating streak in Supabase:', error);
+            } else {
+              console.log('Successfully updated streak in Supabase:', {
+                streak: newStreak,
+                longest_streak: newLongestStreak,
+                last_checkin_date: localTodayStr,
+              });
+              setRefreshCount(prev => prev + 1);
+            }
+          });
+      }
+
       return {
         ...prev,
         streak: newStreak,
-        longestStreak: Math.max(newStreak, prev.longestStreak),
+        longestStreak: newLongestStreak,
       };
     });
-  }, [setUserProfile]);
+  }, [user, setUserProfile]);
 
   // Persist data on window close/reload
   useEffect(() => {
@@ -382,6 +494,8 @@ export function TaskProvider({ children }: { children: React.ReactNode }) {
     getTodayTasks,
     getTodayProgress,
     getWeeklyProgress,
+    lastCheckIn,
+    setLastCheckIn,
   }), [
     tasks,
     userProfile,
@@ -400,6 +514,8 @@ export function TaskProvider({ children }: { children: React.ReactNode }) {
     getTodayTasks,
     getTodayProgress,
     getWeeklyProgress,
+    lastCheckIn,
+    setLastCheckIn,
   ]);
 
   return (
