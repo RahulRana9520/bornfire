@@ -49,6 +49,18 @@
     --league-gold: 48 100% 50%;
     --league-platinum: 190 100% 70%;
     --league-diamond: 200 100% 50%;
+
+    /* Status Colors */
+    --success: 142 76% 45%; /* Vibrant Green */
+    --success-foreground: 0 0% 0%;
+    --success-light: 142 76% 90%;
+    
+    --warning: 32 95% 55%; /* Vibrant Orange/Amber */
+    --warning-foreground: 0 0% 0%;
+    --warning-light: 32 95% 90%;
+    
+    --gold: 48 100% 50%; /* Vibrant Gold/Yellow */
+    --gold-light: 48 100% 90%;
   }
 
   .dark {
@@ -59,6 +71,17 @@
     --border: 0 0% 100%;
     --neo-shadow: 4px 4px 0px 0px #fff;
     --neo-shadow-lg: 8px 8px 0px 0px #fff;
+
+    --success: 142 76% 45%;
+    --success-foreground: 0 0% 0%;
+    --success-light: 142 76% 20%;
+    
+    --warning: 32 95% 55%;
+    --warning-foreground: 0 0% 0%;
+    --warning-light: 32 95% 20%;
+    
+    --gold: 48 100% 50%;
+    --gold-light: 48 100% 20%;
   }
 }
 
