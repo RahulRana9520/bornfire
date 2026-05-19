@@ -104,7 +104,7 @@ const Index = () => {
 
         {/* Sidebar - weekly progress */}
         <div className="space-y-6">
-          <div className="bg-white border-[3px] border-black p-6 shadow-[6px_6px_0px_0px_#000]">
+          <div className="bg-white border-[3px] border-black p-4 sm:p-6 shadow-[6px_6px_0px_0px_#000]">
              <WeeklyChart data={weeklyProgress} />
           </div>
           

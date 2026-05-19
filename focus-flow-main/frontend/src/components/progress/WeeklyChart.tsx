@@ -14,16 +14,16 @@ export function WeeklyChart({ data, className }: WeeklyChartProps) {
   const mondayOffset = today === 0 ? 6 : today - 1;
   
   return (
-    <div className={cn("bg-card rounded-2xl p-5 border border-border/50 shadow-soft hover:shadow-md-enhanced transition-shadow hover-lift", className)}>
+    <div className={cn("bg-card rounded-2xl p-4 sm:p-5 border border-border/50 shadow-soft hover:shadow-md-enhanced transition-shadow hover-lift", className)}>
       <h3 className="font-bold text-base mb-5">Weekly Consistency</h3>
       
-      <div className="flex items-end justify-between gap-2.5 h-36">
+      <div className="flex items-end justify-between gap-1.5 sm:gap-2.5 h-36">
         {data.map((value, index) => {
           const isToday = index === data.length - 1;
           const height = Math.max(10, (value / 100) * 100);
           
           return (
-            <div key={index} className="flex flex-col items-center flex-1 gap-2.5 group/bar">
+            <div key={index} className="flex flex-col items-center flex-1 min-w-0 gap-1.5 sm:gap-2.5 group/bar">
               <div className="relative w-full flex items-end justify-center h-28">
                 <div
                   className={cn(
@@ -31,7 +31,7 @@ export function WeeklyChart({ data, className }: WeeklyChartProps) {
                     value === 100 ? "bg-gradient-to-t from-success to-success/80 shadow-lg shadow-success/20" : 
                     value > 0 ? "bg-gradient-to-t from-primary to-primary/80 shadow-md shadow-primary/10" : 
                     "bg-muted",
-                    isToday && "ring-2 ring-primary ring-offset-2 ring-offset-card"
+                    isToday && "ring-2 ring-primary ring-offset-1 sm:ring-offset-2 ring-offset-card"
                   )}
                   style={{ height: `${height}%` }}
                 />
@@ -42,7 +42,7 @@ export function WeeklyChart({ data, className }: WeeklyChartProps) {
                 )}
               </div>
               <span className={cn(
-                "text-xs font-medium",
+                "text-[10px] sm:text-xs font-semibold tracking-tighter sm:tracking-normal",
                 isToday ? "font-bold text-primary" : "text-muted-foreground"
               )}>
                 {dayLabels[(mondayOffset + index - 6 + 7) % 7]}

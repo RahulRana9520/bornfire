@@ -195,6 +195,7 @@ export function getLeagueByLevel(level: number): League {
   if (level < 20) return 'bronze';
   if (level < 40) return 'silver';
   if (level < 60) return 'gold';
+  if (level < 80) return 'platinum';
   return 'diamond';
 }
 

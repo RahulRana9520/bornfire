@@ -232,12 +232,12 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
       {/* League Levels Modal */}
       {showLeagueModal && (
         <div className="fixed inset-0 bg-foreground/50 backdrop-blur-sm z-[100] flex items-center justify-center p-4 animate-fade-in">
-          <div className="w-full max-w-2xl bg-white border-[4px] border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] p-6 md:p-8 relative flex flex-col max-h-[90vh] overflow-y-auto animate-scale-in">
+          <div className="w-full max-w-4xl bg-white border-[4px] border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] p-4 sm:p-6 md:p-8 pt-12 sm:pt-8 relative flex flex-col max-h-[90vh] overflow-y-auto animate-scale-in">
             {/* Close button */}
             <Button 
               variant="ghost" 
               size="icon" 
-              className="absolute top-4 right-4 border-[3px] border-black bg-white hover:bg-black hover:text-white transition-none shadow-[2px_2px_0px_0px_#000] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none"
+              className="absolute top-4 right-4 border-[3px] border-black bg-white hover:bg-black hover:text-white transition-none shadow-[2px_2px_0px_0px_#000] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none z-10"
               onClick={() => setShowLeagueModal(false)}
             >
               <X className="w-5 h-5" />
@@ -245,7 +245,7 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
 
             {/* Header */}
             <div className="text-center mb-6">
-              <h2 className="text-3xl font-black uppercase italic tracking-tighter bg-[#FFDE00] border-[4px] border-black py-3 px-6 inline-block shadow-[4px_4px_0px_0px_#000] transform -rotate-1">
+              <h2 className="text-xl sm:text-2xl md:text-3xl font-black uppercase italic tracking-tighter bg-[#FFDE00] border-[4px] border-black py-2 sm:py-3 px-4 sm:px-6 inline-block shadow-[4px_4px_0px_0px_#000] transform -rotate-1 max-w-full break-words">
                 🏆 League Levels 🏆
               </h2>
               <p className="text-xs font-black uppercase text-[#555] tracking-widest mt-6">
@@ -254,12 +254,13 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
             </div>
 
             {/* Leagues Comparison Grid (Clash of Clans Inspired!) */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 my-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 my-4">
               {[
                 { name: 'Bronze', levels: 'LVL 1 - 19', bg: 'bg-[#ff7a00]/10' },
                 { name: 'Silver', levels: 'LVL 20 - 39', bg: 'bg-[#a0a0a0]/10' },
                 { name: 'Gold', levels: 'LVL 40 - 59', bg: 'bg-[#ffd700]/10' },
-                { name: 'Diamond', levels: 'LVL 60+', bg: 'bg-[#00ccff]/10' },
+                { name: 'Platinum', levels: 'LVL 60 - 79', bg: 'bg-[#00e5bc]/10' },
+                { name: 'Diamond', levels: 'LVL 80+', bg: 'bg-[#00ccff]/10' },
               ].map((lg) => {
                 const isCurrent = lg.name.toLowerCase() === userProfile.league;
                 return (
