@@ -237,7 +237,7 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
             <Button 
               variant="ghost" 
               size="icon" 
-              className="absolute top-4 right-4 border-[3px] border-black bg-white hover:bg-black hover:text-white transition-none shadow-[2px_2px_0px_0px_#000] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none z-10"
+              className="absolute top-4 right-4 border-[3px] border-black bg-white hover:bg-black hover:text-white transition-none shadow-[2px_2px_0px_0px_#000] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none z-50"
               onClick={() => setShowLeagueModal(false)}
             >
               <X className="w-5 h-5" />
