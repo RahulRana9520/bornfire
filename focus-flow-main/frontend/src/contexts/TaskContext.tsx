@@ -147,6 +147,32 @@ export function TaskProvider({ children }: { children: React.ReactNode }) {
         }));
       }
 
+      // 1.5 Fetch Tasks from Supabase if local tasks is empty
+      try {
+        const { data: dbTasksArr } = await supabase
+          .from('tasks')
+          .select('*')
+          .eq('user_id', user.id);
+        
+        if (dbTasksArr && dbTasksArr.length > 0) {
+          const mappedTasks: Task[] = dbTasksArr.map(t => ({
+            id: t.id,
+            title: t.title,
+            completed: t.completed,
+            timeSpent: t.time_spent,
+            estimatedTime: t.estimated_time || undefined,
+            remainingTime: t.remaining_time || undefined,
+            isTimerRunning: t.is_timer_running,
+            createdAt: new Date(t.created_at),
+            priority: t.priority as Task['priority'],
+            xpReward: t.xp_reward
+          }));
+          setTasks(prev => prev.length === 0 ? mappedTasks : prev);
+        }
+      } catch (err) {
+        console.error('Error fetching tasks from Supabase:', err);
+      }
+
       // 2. Fetch Real Friends (Bulletproof Way)
       const { data: friendsList } = await supabase
         .from('friends')
@@ -158,19 +184,49 @@ export function TaskProvider({ children }: { children: React.ReactNode }) {
         
         const { data: friendProfiles, error: fError } = await supabase
           .from('users')
-          .select('id, username, league, xp')
+          .select('id, username, league, xp, updated_at')
           .in('id', friendIds);
 
         if (friendProfiles) {
-          const mappedFriends: Friend[] = friendProfiles.map(u => ({
-            id: u.id,
-            username: u.username,
-            league: getLeagueByLevel(calculateLevel(u.xp)),
-            xp: u.xp,
-            isOnline: true,
-            isWorking: false,
-            dailyProgress: 0
-          }));
+          // Fetch friends' tasks to check isWorking and dailyProgress
+          const { data: friendTasksArr } = await supabase
+            .from('tasks')
+            .select('user_id, completed, is_timer_running, created_at')
+            .in('user_id', friendIds);
+
+          const now = new Date().getTime();
+
+          const mappedFriends: Friend[] = friendProfiles.map(u => {
+            // Check if online (updated_at within 90 seconds)
+            const lastActive = u.updated_at ? new Date(u.updated_at).getTime() : 0;
+            const isOnline = (now - lastActive) < 90 * 1000;
+
+            // Filter tasks for this friend
+            const myTasks = friendTasksArr ? friendTasksArr.filter(t => t.user_id === u.id) : [];
+
+            // Check if currently working (any task has is_timer_running = true)
+            // Note: only count them as working if they are also online!
+            const isWorking = isOnline && myTasks.some(t => t.is_timer_running);
+
+            // Calculate daily progress (for tasks created today)
+            const todayStr = new Date().toDateString();
+            const todayTasks = myTasks.filter(t => new Date(t.created_at).toDateString() === todayStr);
+            let dailyProgress = 0;
+            if (todayTasks.length > 0) {
+              const completedTasksCount = todayTasks.filter(t => t.completed).length;
+              dailyProgress = Math.round((completedTasksCount / todayTasks.length) * 100);
+            }
+
+            return {
+              id: u.id,
+              username: u.username,
+              league: getLeagueByLevel(calculateLevel(u.xp)),
+              xp: u.xp,
+              isOnline,
+              isWorking,
+              dailyProgress
+            };
+          });
           setFriends(mappedFriends);
         }
       } else {
@@ -475,6 +531,97 @@ export function TaskProvider({ children }: { children: React.ReactNode }) {
     window.addEventListener('beforeunload', handleBeforeUnload);
     return () => window.removeEventListener('beforeunload', handleBeforeUnload);
   }, [tasks, userProfile]);
+
+  // Heartbeat to update current user's updated_at in Supabase every 30 seconds
+  useEffect(() => {
+    if (!user) return;
+
+    // Update immediately on mount
+    const sendHeartbeat = async () => {
+      try {
+        await supabase
+          .from('users')
+          .update({ updated_at: new Date().toISOString() })
+          .eq('id', user.id);
+      } catch (err) {
+        console.error('Error sending heartbeat:', err);
+      }
+    };
+
+    sendHeartbeat();
+
+    const interval = setInterval(sendHeartbeat, 30000); // every 30 seconds
+
+    return () => clearInterval(interval);
+  }, [user]);
+
+  // Periodically refresh friends and leaderboard data every 15 seconds
+  useEffect(() => {
+    if (!user) return;
+    const interval = setInterval(() => {
+      setRefreshCount(prev => prev + 1);
+    }, 15000);
+    return () => clearInterval(interval);
+  }, [user]);
+
+  // Sync tasks to Supabase when they change
+  useEffect(() => {
+    if (!user) return;
+
+    const syncTasks = async () => {
+      try {
+        const localIds = tasks.map(t => t.id);
+        
+        // 1. Delete tasks in Supabase that are no longer present locally
+        const { data: dbTasksArr } = await supabase
+          .from('tasks')
+          .select('id')
+          .eq('user_id', user.id);
+
+        if (dbTasksArr) {
+          const dbIds = dbTasksArr.map(t => t.id);
+          const toDelete = dbIds.filter(id => !localIds.includes(id));
+          if (toDelete.length > 0) {
+            await supabase
+              .from('tasks')
+              .delete()
+              .in('id', toDelete);
+          }
+        }
+
+        // 2. Upsert local tasks to Supabase
+        if (localIds.length > 0) {
+          const dbTasks = tasks.map(t => ({
+            id: t.id,
+            user_id: user.id,
+            title: t.title,
+            completed: t.completed,
+            time_spent: t.timeSpent,
+            estimated_time: t.estimatedTime || null,
+            remaining_time: t.remainingTime || null,
+            is_timer_running: t.isTimerRunning,
+            priority: t.priority,
+            xp_reward: t.xpReward,
+            created_at: new Date(t.createdAt).toISOString()
+          }));
+
+          const { error } = await supabase
+            .from('tasks')
+            .upsert(dbTasks, { onConflict: 'id' });
+
+          if (error) {
+            console.error('Error upserting tasks to Supabase:', error);
+          }
+        }
+      } catch (err) {
+        console.error('Unexpected error syncing tasks:', err);
+      }
+    };
+
+    // Debounce task sync slightly to avoid rapid database hits on timer ticks
+    const handler = setTimeout(syncTasks, 3000);
+    return () => clearTimeout(handler);
+  }, [tasks, user]);
 
   const value = useMemo(() => ({
     tasks,
