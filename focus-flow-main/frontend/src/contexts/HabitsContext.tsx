@@ -10,6 +10,8 @@ interface HabitsContextType {
   deleteHabit: (habitId: string) => void;
   toggleHabitCompletion: (habitId: string, date: Date) => void;
   isHabitCompleted: (habitId: string, date: Date) => boolean;
+  markXpGranted: (habitId: string, date: Date) => void;
+  hasXpBeenGranted: (habitId: string, date: Date) => boolean;
   getWeeksData: (weeksCount?: number) => WeekData[];
 }
 
@@ -60,6 +62,27 @@ export const HabitsProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     return completion?.completed ?? false;
   }, [completions]);
 
+  const markXpGranted = useCallback((habitId: string, date: Date) => {
+    const dateStr = new Date(date.getTime() - date.getTimezoneOffset() * 60000).toISOString().split('T')[0];
+    setCompletions(prev => {
+      const existing = prev.find(c => c.habitId === habitId && c.date === dateStr);
+      if (existing) {
+        return prev.map(c => 
+          c.habitId === habitId && c.date === dateStr 
+            ? { ...c, xpGranted: true }
+            : c
+        );
+      }
+      return [...prev, { habitId, date: dateStr, completed: false, xpGranted: true }];
+    });
+  }, [setCompletions]);
+
+  const hasXpBeenGranted = useCallback((habitId: string, date: Date): boolean => {
+    const dateStr = new Date(date.getTime() - date.getTimezoneOffset() * 60000).toISOString().split('T')[0];
+    const completion = completions.find(c => c.habitId === habitId && c.date === dateStr);
+    return completion?.xpGranted ?? false;
+  }, [completions]);
+
   const getWeeksData = useCallback((weeksCount: number = 1): WeekData[] => {
     const weeks: WeekData[] = [];
     const today = new Date();
@@ -93,8 +116,10 @@ export const HabitsProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     deleteHabit,
     toggleHabitCompletion,
     isHabitCompleted,
+    markXpGranted,
+    hasXpBeenGranted,
     getWeeksData
-  }), [habits, completions, addHabit, deleteHabit, toggleHabitCompletion, isHabitCompleted, getWeeksData]);
+  }), [habits, completions, addHabit, deleteHabit, toggleHabitCompletion, isHabitCompleted, markXpGranted, hasXpBeenGranted, getWeeksData]);
 
   return <HabitsContext.Provider value={value}>{children}</HabitsContext.Provider>;
 };

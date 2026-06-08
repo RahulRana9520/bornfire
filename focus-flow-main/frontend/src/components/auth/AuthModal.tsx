@@ -21,7 +21,7 @@ export function AuthModal({ isOpen, onClose, canDismiss = true }: AuthModalProps
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const { signInWithEmail, signUpWithEmail } = useAuth();
+  const { signInWithEmail, signUpWithEmail, signInWithGoogle, signInWithGithub } = useAuth();
 
   if (!isOpen) return null;
 
@@ -151,6 +151,34 @@ export function AuthModal({ isOpen, onClose, canDismiss = true }: AuthModalProps
               )}
             </button>
           </form>
+
+          {/* Social Auth */}
+          <div className="mt-8 space-y-4">
+            <div className="flex items-center gap-4">
+              <div className="h-[4px] bg-black flex-1" />
+              <span className="font-black uppercase text-[10px] tracking-widest text-[#777]">OR CONTINUE WITH</span>
+              <div className="h-[4px] bg-black flex-1" />
+            </div>
+            
+            <div className="grid grid-cols-2 gap-4">
+              <button 
+                type="button"
+                onClick={signInWithGoogle}
+                className="flex items-center justify-center gap-2 h-14 bg-white border-[4px] border-black shadow-[4px_4px_0px_0px_#000] active:shadow-none active:translate-x-[2px] active:translate-y-[2px] font-black uppercase text-sm tracking-wider transition-all hover:bg-[#f5f5f5]"
+              >
+                <Chrome className="w-5 h-5 text-[#DB4437]" />
+                Google
+              </button>
+              <button 
+                type="button"
+                onClick={signInWithGithub}
+                className="flex items-center justify-center gap-2 h-14 bg-black text-white border-[4px] border-black shadow-[4px_4px_0px_0px_#000] active:shadow-none active:translate-x-[2px] active:translate-y-[2px] font-black uppercase text-sm tracking-wider transition-all hover:bg-gray-900"
+              >
+                <Github className="w-5 h-5" />
+                GitHub
+              </button>
+            </div>
+          </div>
 
           {/* Footer Navigation */}
           <div className="mt-12 space-y-4 text-center">

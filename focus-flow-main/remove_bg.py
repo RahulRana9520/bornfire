@@ -18,8 +18,8 @@ def remove_white_bg(image_path):
     img.save(image_path, "PNG")
     print(f"Saved {image_path}")
 
-base_dir = r"e:\TaskSage2.0\focus-flow-main\frontend\public"
-files = ["app.png", "logo.png", "pwa-512x512.png"]
+base_dir = r"e:\TaskSage2.0\focus-flow-main\frontend\public\badges"
+files = ["focus_50.png"]
 
 for f in files:
     path = os.path.join(base_dir, f)

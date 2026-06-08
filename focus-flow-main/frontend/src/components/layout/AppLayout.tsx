@@ -4,7 +4,7 @@ import { Sidebar } from './Sidebar';
 import { Header } from './Header';
 import { AuthModal } from '@/components/auth/AuthModal';
 import { CheckInModal } from '@/components/auth/CheckInModal';
-import { InstallModal } from '@/components/auth/InstallModal';
+
 import { useAuth } from '@/contexts/AuthContext';
 import { useTaskContext } from '@/contexts/TaskContext';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
@@ -19,11 +19,11 @@ export function AppLayout({ children }: AppLayoutProps) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showCheckInModal, setShowCheckInModal] = useState(false);
-  const [showInstallModal, setShowInstallModal] = useState(false);
+
   
   const { user, shouldShowSignInPrompt, dismissSignInPrompt } = useAuth();
   const { userProfile, updateStreak, lastCheckIn, setLastCheckIn } = useTaskContext();
-  const { isInstallable } = usePWA();
+
 
   // Check if auth modal should be shown
   useEffect(() => {
@@ -48,14 +48,8 @@ export function AppLayout({ children }: AppLayoutProps) {
         setShowCheckInModal(true);
       }, 3000);
       return () => clearTimeout(timer);
-    } else if (isInstallable) {
-      // If no check-in needed, show PWA prompt
-      const timer = setTimeout(() => {
-        setShowInstallModal(true);
-      }, 4000);
-      return () => clearTimeout(timer);
     }
-  }, [user, lastCheckIn, isInstallable]);
+  }, [user, lastCheckIn]);
 
   const handleCheckIn = () => {
     const today = new Date().toDateString();
@@ -63,10 +57,7 @@ export function AppLayout({ children }: AppLayoutProps) {
     if (updateStreak) {
       updateStreak();
     }
-    // After check-in, if installable, show PWA prompt after a delay
-    if (isInstallable) {
-      setTimeout(() => setShowInstallModal(true), 2000);
-    }
+
   };
 
   const handleAuthModalClose = () => {
@@ -111,11 +102,7 @@ export function AppLayout({ children }: AppLayoutProps) {
         onClose={() => setShowCheckInModal(false)}
       />
 
-      {/* PWA Install Modal */}
-      <InstallModal 
-        isOpen={showInstallModal}
-        onClose={() => setShowInstallModal(false)}
-      />
+
     </div>
   );
 }

@@ -416,17 +416,33 @@ export function TaskProvider({ children }: { children: React.ReactNode }) {
     return progress;
   }, [tasks]);
 
-  // Update user profile when tasks change - only count TODAY's tasks
+  // Update user profile when tasks change - count all time for stats
   useEffect(() => {
-    const todayTasks = tasks.filter(task => isToday(new Date(task.createdAt)));
-    const completedTasks = todayTasks.filter(t => t.completed).length;
-    const totalFocusTime = todayTasks.filter(t => t.completed).reduce((sum, t) => sum + t.timeSpent, 0);
+    const completedTasks = tasks.filter(t => t.completed).length;
+    const totalFocusTime = tasks.reduce((sum, t) => sum + (t.timeSpent || 0), 0);
     
-    setUserProfile(prev => ({
-      ...prev,
-      completedTasks,
-      totalFocusTime,
-    }));
+    setUserProfile(prev => {
+      let updatedBadges = [...(prev.badges || [])];
+      
+      // Check for 50 Hours Focus badge (180,000 seconds)
+      const has50HoursBadge = updatedBadges.some(b => b.name === '50 Hours Focus');
+      if (totalFocusTime >= 180000 && !has50HoursBadge) {
+        updatedBadges.push({
+          id: 'focus-50',
+          name: '50 Hours Focus',
+          description: 'Focus for 50 hours total',
+          icon: '⏳',
+          earnedAt: new Date()
+        });
+      }
+
+      return {
+        ...prev,
+        completedTasks,
+        totalFocusTime,
+        badges: updatedBadges,
+      };
+    });
   }, [tasks, setUserProfile]);
 
   // Update streak when user checks in

@@ -9,7 +9,7 @@ import { cn } from '@/lib/utils';
 const dayLabels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
 const WeekGoals = () => {
-  const { habits, addHabit, deleteHabit, toggleHabitCompletion, isHabitCompleted, getWeeksData } = useHabitsContext();
+  const { habits, addHabit, deleteHabit, toggleHabitCompletion, isHabitCompleted, markXpGranted, hasXpBeenGranted, getWeeksData } = useHabitsContext();
   const { addXP } = useTaskContext();
   const [newHabitTitle, setNewHabitTitle] = useState('');
   const [isAddingHabit, setIsAddingHabit] = useState(false);
@@ -154,7 +154,10 @@ const WeekGoals = () => {
                         <button
                           onClick={() => {
                             if (canToggle) {
-                              if (!completed) addXP(15);
+                              if (!completed && !hasXpBeenGranted(habit.id, day)) {
+                                addXP(15);
+                                markXpGranted(habit.id, day);
+                              }
                               toggleHabitCompletion(habit.id, day);
                             }
                           }}

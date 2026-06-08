@@ -6,12 +6,12 @@ import { ProgressCard } from '@/components/progress/ProgressCard';
 import { WeeklyChart } from '@/components/progress/WeeklyChart';
 import { useTaskContext } from '@/contexts/TaskContext';
 import { formatTimeDisplay } from '@/lib/taskUtils';
+import { useCombinedProgress } from '@/hooks/useCombinedProgress';
 
 const Index = () => {
-  const { getTodayTasks, getTodayProgress, getWeeklyProgress, userProfile } = useTaskContext();
+  const { getTodayTasks, userProfile } = useTaskContext();
+  const { todayProgress, weeklyProgress } = useCombinedProgress();
   const todayTasks = getTodayTasks();
-  const todayProgress = getTodayProgress();
-  const weeklyProgress = getWeeklyProgress();
   
   // Calculate today's focus time
   const todayFocusTime = todayTasks.reduce((sum, task) => sum + task.timeSpent, 0);

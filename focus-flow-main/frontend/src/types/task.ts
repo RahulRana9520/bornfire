@@ -43,6 +43,7 @@ export interface Badge {
   earnedAt?: Date;
   progress?: number;
   target?: number;
+  imageUrl?: string;
 }
 
 export interface Friend {
@@ -77,6 +78,7 @@ export interface HabitCompletion {
   habitId: string;
   date: string; // YYYY-MM-DD format
   completed: boolean;
+  xpGranted?: boolean;
 }
 
 export interface WeekData {

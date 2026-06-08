@@ -114,17 +114,7 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
             );
           })}
 
-          {/* PWA Badge in Nav */}
-          {isInstallable && (
-            <button
-               onClick={() => installApp()}
-               className="w-full flex items-center gap-3 px-4 py-3 border-[3px] border-dashed border-black bg-[#00E5BC]/20 font-black uppercase text-[10px] tracking-widest hover:bg-[#00E5BC] transition-all"
-            >
-               <Smartphone className="w-5 h-5" />
-               <span>Portal App Ready</span>
-               <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse ml-auto" />
-            </button>
-          )}
+
         </nav>
 
         {/* Profile Card */}

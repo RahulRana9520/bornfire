@@ -22,8 +22,6 @@ export const NotificationScheduler = () => {
       // Prevent multiple notifications in the same hour
       if (lastCheck.current === timeKey) return;
 
-      // 1. DAILY REMINDERS (3 times a day)
-      // Check for tasks created today that are NOT completed
       const todayTasks = tasks.filter(t => {
         if (!t?.createdAt) return false;
         try {
@@ -34,46 +32,20 @@ export const NotificationScheduler = () => {
         }
       });
 
-      if (todayTasks.length > 0) {
-        // Morning (9 AM)
-        if (hour === 9) {
-          sendNotification('MISSION START 🛡️', {
-            body: `Bornfire: You have ${todayTasks.length} missions for today. Initialize focus.`,
-            tag: 'daily-reminder'
-          });
-          lastCheck.current = timeKey;
-        }
-        // Afternoon (2 PM)
-        if (hour === 14) {
-          sendNotification('MID-DAY AUDIT 📊', {
-            body: `${todayTasks.length} tasks remain in your queue. Mantain momentum.`,
-            tag: 'daily-reminder'
-          });
-          lastCheck.current = timeKey;
-        }
-        // Evening (7 PM)
-        if (hour === 19) {
-          sendNotification('FINAL PUSH ⚡', {
-            body: `Last chance to close those ${todayTasks.length} missions. Finish strong!`,
-            tag: 'daily-reminder'
-          });
-          lastCheck.current = timeKey;
-        }
-      }
-
-      // 2. WEEKEND ANALYSIS (Saturday/Sunday)
-      const isWeekend = day === 0 || day === 6;
-      if (isWeekend && habits.length > 0) {
+      // 1. EVERY 4 HOURS CHECK (e.g. 8, 12, 16, 20...)
+      // Check for pending daily tasks and week goals (habits)
+      if (hour % 4 === 0) {
         const incompleteHabits = habits.filter(h => !isHabitCompleted(h.id, now));
-        
-        // 11 AM "Slump" Check
-        if (incompleteHabits.length > 0 && hour === 11) {
-           sendNotification('WEEKEND AUDIT ⚠️', {
-             body: `Weekend Plan Check: You have ${incompleteHabits.length} habits not yet logged. Don't waste your weekend!`,
-             tag: 'weekend-reminder',
-             vibrate: [200, 100, 200]
-           } as any);
-           lastCheck.current = timeKey;
+        const totalPending = todayTasks.length + incompleteHabits.length;
+
+        if (totalPending > 0) {
+          const title = hour < 12 ? 'MORNING AUDIT 🛡️' : hour < 18 ? 'MID-DAY AUDIT 📊' : 'EVENING PUSH ⚡';
+          sendNotification(title, {
+            body: `Bornfire: You have ${totalPending} pending tasks & goals. Maintain momentum!`,
+            tag: '4-hour-reminder',
+            vibrate: [200, 100, 200]
+          } as any);
+          lastCheck.current = timeKey;
         }
       }
     };
