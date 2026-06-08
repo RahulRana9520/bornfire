@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Target, Plus, Trash2, Check } from 'lucide-react';
 import { useHabitsContext } from '@/contexts/HabitsContext';
+import { useTaskContext } from '@/contexts/TaskContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
@@ -9,6 +10,7 @@ const dayLabels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
 const WeekGoals = () => {
   const { habits, addHabit, deleteHabit, toggleHabitCompletion, isHabitCompleted, getWeeksData } = useHabitsContext();
+  const { addXP } = useTaskContext();
   const [newHabitTitle, setNewHabitTitle] = useState('');
   const [isAddingHabit, setIsAddingHabit] = useState(false);
 
@@ -150,7 +152,12 @@ const WeekGoals = () => {
                     return (
                       <div key={dayIndex} className="flex items-center justify-center border-r-[2px] border-black/5 last:border-r-0">
                         <button
-                          onClick={() => canToggle && toggleHabitCompletion(habit.id, day)}
+                          onClick={() => {
+                            if (canToggle) {
+                              if (!completed) addXP(15);
+                              toggleHabitCompletion(habit.id, day);
+                            }
+                          }}
                           disabled={!canToggle}
                           className={cn(
                             "w-10 h-10 rounded-none border-[3px] flex items-center justify-center transition-all",

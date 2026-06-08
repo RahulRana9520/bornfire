@@ -25,6 +25,7 @@ interface TaskContextType {
   addFriendById: (uniqueId: string) => Promise<{ success: boolean; error?: string }>;
   lastCheckIn: string | null;
   setLastCheckIn: (value: string | null | ((prev: string | null) => string | null)) => void;
+  addXP: (amount: number) => void;
 }
 
 const TaskContext = createContext<TaskContextType | undefined>(undefined);
@@ -282,6 +283,36 @@ export function TaskProvider({ children }: { children: React.ReactNode }) {
     setTasks(prev => prev.filter(task => task.id !== taskId));
   }, [setTasks]);
 
+  const addXP = useCallback((amount: number) => {
+    setUserProfile(prev => {
+      const nextXP = prev.xp + amount;
+      const nextLevel = calculateLevel(nextXP);
+      const nextLeague = getLeagueByLevel(nextLevel);
+      
+      if (user) {
+        supabase
+          .from('users')
+          .update({
+            xp: nextXP,
+            level: nextLevel,
+            league: nextLeague,
+          })
+          .eq('id', user.id)
+          .then(({ error }) => {
+            if (error) console.error('Error updating XP in Supabase:', error);
+            else setRefreshCount(prevRefresh => prevRefresh + 1);
+          });
+      }
+
+      return {
+        ...prev,
+        xp: nextXP,
+        level: nextLevel,
+        league: nextLeague,
+      };
+    });
+  }, [user, setUserProfile]);
+
   const toggleTaskComplete = useCallback((taskId: string) => {
     setTasks(prev => {
       const updatedTasks = prev.map(task => {
@@ -301,35 +332,9 @@ export function TaskProvider({ children }: { children: React.ReactNode }) {
     const task = tasks.find(t => t.id === taskId);
     if (task && !task.completed && isToday(new Date(task.createdAt))) {
       const xpGained = getTaskCompletionXP(); // Fixed 20 XP per task
-      setUserProfile(prev => {
-        const nextXP = prev.xp + xpGained;
-        const nextLevel = calculateLevel(nextXP);
-        const nextLeague = getLeagueByLevel(nextLevel);
-        
-        if (user) {
-          supabase
-            .from('users')
-            .update({
-              xp: nextXP,
-              level: nextLevel,
-              league: nextLeague,
-            })
-            .eq('id', user.id)
-            .then(({ error }) => {
-              if (error) console.error('Error updating XP in Supabase:', error);
-              else setRefreshCount(prevRefresh => prevRefresh + 1);
-            });
-        }
-
-        return {
-          ...prev,
-          xp: nextXP,
-          level: nextLevel,
-          league: nextLeague,
-        };
-      });
+      addXP(xpGained);
     }
-  }, [setTasks, tasks, user, setUserProfile]);
+  }, [setTasks, tasks, addXP]);
 
   const startTimer = useCallback((taskId: string) => {
     // Stop any other running timers first
@@ -643,6 +648,7 @@ export function TaskProvider({ children }: { children: React.ReactNode }) {
     getWeeklyProgress,
     lastCheckIn,
     setLastCheckIn,
+    addXP,
   }), [
     tasks,
     userProfile,
@@ -663,6 +669,7 @@ export function TaskProvider({ children }: { children: React.ReactNode }) {
     getWeeklyProgress,
     lastCheckIn,
     setLastCheckIn,
+    addXP,
   ]);
 
   return (
