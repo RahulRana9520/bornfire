@@ -168,6 +168,28 @@ const ProgressPage = () => {
           )}
           
           {/* Locked badges placeholder */}
+          {(!userProfile.badges || !userProfile.badges.some(b => b.name === '3-Day Streak')) && (
+            <div className="bg-white/50 border-[4px] border-dashed border-black p-4 flex flex-col items-center justify-center text-center opacity-70 filter grayscale">
+              <div className="w-16 h-16 sm:w-20 sm:h-20 bg-[#e0e0e0] border-[4px] border-black rounded-full flex items-center justify-center mb-4">
+                <span className="text-3xl sm:text-4xl">🔒</span>
+              </div>
+              <div className="font-black uppercase tracking-tighter text-sm sm:text-base leading-none mb-2">3-Day Streak</div>
+              <div className="text-[10px] sm:text-xs font-bold uppercase tracking-widest leading-tight">
+                Maintain a 3-day streak
+              </div>
+            </div>
+          )}
+          {(!userProfile.badges || !userProfile.badges.some(b => b.name === '7-Day Streak')) && (
+            <div className="bg-white/50 border-[4px] border-dashed border-black p-4 flex flex-col items-center justify-center text-center opacity-70 filter grayscale">
+              <div className="w-16 h-16 sm:w-20 sm:h-20 bg-[#e0e0e0] border-[4px] border-black rounded-full flex items-center justify-center mb-4">
+                <span className="text-3xl sm:text-4xl">🔒</span>
+              </div>
+              <div className="font-black uppercase tracking-tighter text-sm sm:text-base leading-none mb-2">7-Day Streak</div>
+              <div className="text-[10px] sm:text-xs font-bold uppercase tracking-widest leading-tight">
+                Maintain a 7-day streak
+              </div>
+            </div>
+          )}
           {(!userProfile.badges || !userProfile.badges.some(b => b.name === '50 Hours Focus')) && (
             <div className="bg-white/50 border-[4px] border-dashed border-black p-4 flex flex-col items-center justify-center text-center opacity-70 filter grayscale">
               <div className="w-16 h-16 sm:w-20 sm:h-20 bg-[#e0e0e0] border-[4px] border-black rounded-full flex items-center justify-center mb-4">
@@ -176,6 +198,17 @@ const ProgressPage = () => {
               <div className="font-black uppercase tracking-tighter text-sm sm:text-base leading-none mb-2">50 Hours Focus</div>
               <div className="text-[10px] sm:text-xs font-bold uppercase tracking-widest leading-tight">
                 Focus for 50 hours total
+              </div>
+            </div>
+          )}
+          {(!userProfile.badges || !userProfile.badges.some(b => b.name === 'Early Bird')) && (
+            <div className="bg-white/50 border-[4px] border-dashed border-black p-4 flex flex-col items-center justify-center text-center opacity-70 filter grayscale">
+              <div className="w-16 h-16 sm:w-20 sm:h-20 bg-[#e0e0e0] border-[4px] border-black rounded-full flex items-center justify-center mb-4">
+                <span className="text-3xl sm:text-4xl">🔒</span>
+              </div>
+              <div className="font-black uppercase tracking-tighter text-sm sm:text-base leading-none mb-2">Early Bird</div>
+              <div className="text-[10px] sm:text-xs font-bold uppercase tracking-widest leading-tight">
+                Complete a task before 8 AM
               </div>
             </div>
           )}

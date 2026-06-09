@@ -333,8 +333,26 @@ export function TaskProvider({ children }: { children: React.ReactNode }) {
     if (task && !task.completed && isToday(new Date(task.createdAt))) {
       const xpGained = getTaskCompletionXP(); // Fixed 20 XP per task
       addXP(xpGained);
+
+      // Check Early Bird badge (completed before 8 AM)
+      const currentHour = new Date().getHours();
+      if (currentHour < 8) {
+        setUserProfile(prev => {
+          let updatedBadges = [...(prev.badges || [])];
+          if (!updatedBadges.some(b => b.name === 'Early Bird')) {
+            updatedBadges.push({
+              id: 'early-bird',
+              name: 'Early Bird',
+              description: 'Complete a task before 8 AM',
+              icon: '🌅',
+              earnedAt: new Date()
+            });
+          }
+          return { ...prev, badges: updatedBadges };
+        });
+      }
     }
-  }, [setTasks, tasks, addXP]);
+  }, [setTasks, tasks, addXP, setUserProfile]);
 
   const startTimer = useCallback((taskId: string) => {
     // Stop any other running timers first
@@ -432,6 +450,27 @@ export function TaskProvider({ children }: { children: React.ReactNode }) {
           name: '50 Hours Focus',
           description: 'Focus for 50 hours total',
           icon: '⏳',
+          earnedAt: new Date()
+        });
+      }
+
+      // Check for Streak badges based on current local streak
+      if (prev.streak >= 3 && !updatedBadges.some(b => b.name === '3-Day Streak')) {
+        updatedBadges.push({
+          id: 'streak-3',
+          name: '3-Day Streak',
+          description: 'Maintain a 3-day streak',
+          icon: '🔥',
+          earnedAt: new Date()
+        });
+      }
+
+      if (prev.streak >= 7 && !updatedBadges.some(b => b.name === '7-Day Streak')) {
+        updatedBadges.push({
+          id: 'streak-7',
+          name: '7-Day Streak',
+          description: 'Maintain a 7-day streak',
+          icon: '🔥',
           earnedAt: new Date()
         });
       }
