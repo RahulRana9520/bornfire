@@ -16,6 +16,9 @@ export default defineConfig(({ mode }) => ({
       devOptions: {
         enabled: true
       },
+      workbox: {
+        navigateFallbackDenylist: [/^\/GroupGame/],
+      },
       includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'pwa-512x512.png'],
       manifest: {
         name: 'Bornfire | Squad Portal',

@@ -4,9 +4,10 @@ import "./index.css";
 import { registerSW } from 'virtual:pwa-register';
 
 // Register PWA service worker for offline support
-registerSW({
+const updateSW = registerSW({
   onNeedRefresh() {
-    // We can add a toast notification here later
+    // Automatically apply update and reload seamlessly without bothering the user
+    updateSW(true);
   },
   onOfflineReady() {
     // App is ready for offline use
