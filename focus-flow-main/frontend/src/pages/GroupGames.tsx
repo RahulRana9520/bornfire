@@ -305,9 +305,12 @@ const GroupGames = () => {
         {/* Game Info Card */}
         <div className="lg:col-span-1 space-y-6">
           <div className="bg-white border-[4px] border-black shadow-[8px_8px_0px_0px_#000] overflow-hidden group">
-            <div className="h-48 bg-[#FFDE00] border-b-[4px] border-black flex items-center justify-center relative">
-              <span className="text-6xl font-black italic tracking-tighter opacity-10 absolute rotate-[-10deg]">TOWER</span>
-              <Gamepad2 className="w-20 h-20 group-hover:scale-110 transition-transform" />
+            <div className="h-48 border-b-[4px] border-black relative overflow-hidden group-hover:opacity-90 transition-opacity">
+              <img 
+                src="/GroupGame/game1_thumb.png" 
+                alt="Tower Builder Game Screenshot" 
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
+              />
             </div>
             <div className="p-6">
               <h3 className="text-2xl font-black uppercase italic tracking-tighter">Tower Builder</h3>

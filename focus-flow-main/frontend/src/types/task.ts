@@ -33,6 +33,9 @@ export interface UserProfile {
   totalFocusTime: number; // in seconds
   completedTasks: number;
   badges: Badge[];
+  privacy_show_online?: boolean;
+  privacy_show_progress?: boolean;
+  privacy_show_leaderboard?: boolean;
 }
 
 export interface Badge {

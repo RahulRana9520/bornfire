@@ -255,3 +255,11 @@
   border-bottom-color: #888888 !important;
   background-color: #000000 !important;
 }
+
+/* Reduce Animations */
+.reduce-animations * {
+  animation-duration: 0.001ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.001ms !important;
+  scroll-behavior: auto !important;
+}

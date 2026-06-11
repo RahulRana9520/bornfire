@@ -7,12 +7,14 @@ import { useAuth } from '@/contexts/AuthContext';
 import { usePWA } from '@/hooks/usePWA';
 import { useNotifications } from '@/contexts/NotificationContext';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useTaskContext } from '@/contexts/TaskContext';
 
 const Settings = () => {
   const { signOut } = useAuth();
   const { isInstallable, installApp } = usePWA();
   const { permission, requestPermission } = useNotifications();
-  const { theme, toggleTheme } = useTheme();
+  const { theme, toggleTheme, reduceAnimations, toggleReduceAnimations } = useTheme();
+  const { userProfile, updatePrivacySettings } = useTaskContext();
 
   const settingsGroups = [
     {
@@ -136,9 +138,27 @@ const Settings = () => {
                   <span className="font-black uppercase text-xs tracking-wider">{item.label}</span>
                   {item.type === 'toggle' && (
                     <Switch 
-                      checked={item.label === 'Dark Mode' ? theme === 'dark' : undefined}
-                      defaultChecked={item.label !== 'Dark Mode' ? item.defaultValue : undefined}
-                      onCheckedChange={item.label === 'Dark Mode' ? toggleTheme : undefined}
+                      checked={
+                        item.label === 'Dark Mode' ? theme === 'dark' : 
+                        item.label === 'Reduce Animations' ? reduceAnimations : 
+                        item.label === 'Show Online Status' ? userProfile.privacy_show_online :
+                        item.label === 'Show Progress to Friends' ? userProfile.privacy_show_progress :
+                        item.label === 'Appear on Leaderboard' ? userProfile.privacy_show_leaderboard :
+                        undefined
+                      }
+                      defaultChecked={
+                        item.label !== 'Dark Mode' && 
+                        item.label !== 'Reduce Animations' && 
+                        !item.label.includes('Show') && 
+                        !item.label.includes('Appear') ? item.defaultValue : undefined
+                      }
+                      onCheckedChange={(checked) => {
+                        if (item.label === 'Dark Mode') toggleTheme();
+                        else if (item.label === 'Reduce Animations') toggleReduceAnimations();
+                        else if (item.label === 'Show Online Status') updatePrivacySettings('privacy_show_online', checked);
+                        else if (item.label === 'Show Progress to Friends') updatePrivacySettings('privacy_show_progress', checked);
+                        else if (item.label === 'Appear on Leaderboard') updatePrivacySettings('privacy_show_leaderboard', checked);
+                      }}
                       className="data-[state=checked]:bg-[#00E5BC] border-2 border-black" 
                     />
                   )}

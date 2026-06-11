@@ -6,6 +6,8 @@ interface ThemeContextType {
   theme: Theme;
   setTheme: (theme: Theme) => void;
   toggleTheme: () => void;
+  reduceAnimations: boolean;
+  toggleReduceAnimations: () => void;
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
@@ -28,6 +30,16 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     setTheme(theme === 'light' ? 'dark' : 'light');
   };
 
+  const [reduceAnimations, setReduceAnimations] = useState<boolean>(() => {
+    return localStorage.getItem('bornfire_reduce_animations') === 'true';
+  });
+
+  const toggleReduceAnimations = () => {
+    const newVal = !reduceAnimations;
+    setReduceAnimations(newVal);
+    localStorage.setItem('bornfire_reduce_animations', String(newVal));
+  };
+
   useEffect(() => {
     const root = window.document.documentElement;
     if (theme === 'dark') {
@@ -35,10 +47,16 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     } else {
       root.classList.remove('dark');
     }
-  }, [theme]);
+
+    if (reduceAnimations) {
+      root.classList.add('reduce-animations');
+    } else {
+      root.classList.remove('reduce-animations');
+    }
+  }, [theme, reduceAnimations]);
 
   return (
-    <ThemeContext.Provider value={{ theme, setTheme, toggleTheme }}>
+    <ThemeContext.Provider value={{ theme, setTheme, toggleTheme, reduceAnimations, toggleReduceAnimations }}>
       {children}
     </ThemeContext.Provider>
   );

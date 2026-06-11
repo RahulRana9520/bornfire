@@ -26,6 +26,7 @@ interface TaskContextType {
   lastCheckIn: string | null;
   setLastCheckIn: (value: string | null | ((prev: string | null) => string | null)) => void;
   addXP: (amount: number) => void;
+  updatePrivacySettings: (key: 'privacy_show_online' | 'privacy_show_progress' | 'privacy_show_leaderboard', value: boolean) => Promise<void>;
 }
 
 const TaskContext = createContext<TaskContextType | undefined>(undefined);
@@ -145,6 +146,9 @@ export function TaskProvider({ children }: { children: React.ReactNode }) {
           league: getLeagueByLevel(finalLevel),
           streak: finalStreak,
           longestStreak: finalLongestStreak,
+          privacy_show_online: profileData.privacy_show_online ?? true,
+          privacy_show_progress: profileData.privacy_show_progress ?? true,
+          privacy_show_leaderboard: profileData.privacy_show_leaderboard ?? true,
         }));
       }
 
@@ -185,7 +189,7 @@ export function TaskProvider({ children }: { children: React.ReactNode }) {
         
         const { data: friendProfiles, error: fError } = await supabase
           .from('users')
-          .select('id, username, league, xp, updated_at')
+          .select('id, username, league, xp, updated_at, privacy_show_online, privacy_show_progress')
           .in('id', friendIds);
 
         if (friendProfiles) {
@@ -200,20 +204,22 @@ export function TaskProvider({ children }: { children: React.ReactNode }) {
           const mappedFriends: Friend[] = friendProfiles.map(u => {
             // Check if online (updated_at within 90 seconds)
             const lastActive = u.updated_at ? new Date(u.updated_at).getTime() : 0;
-            const isOnline = (now - lastActive) < 90 * 1000;
+            let isOnline = (now - lastActive) < 90 * 1000;
+            if (u.privacy_show_online === false) isOnline = false;
 
             // Filter tasks for this friend
             const myTasks = friendTasksArr ? friendTasksArr.filter(t => t.user_id === u.id) : [];
 
             // Check if currently working (any task has is_timer_running = true)
             // Note: only count them as working if they are also online!
-            const isWorking = isOnline && myTasks.some(t => t.is_timer_running);
+            let isWorking = isOnline && myTasks.some(t => t.is_timer_running);
+            if (u.privacy_show_online === false) isWorking = false;
 
             // Calculate daily progress (for tasks created today)
             const todayStr = new Date().toDateString();
             const todayTasks = myTasks.filter(t => new Date(t.created_at).toDateString() === todayStr);
             let dailyProgress = 0;
-            if (todayTasks.length > 0) {
+            if (u.privacy_show_progress !== false && todayTasks.length > 0) {
               const completedTasksCount = todayTasks.filter(t => t.completed).length;
               dailyProgress = Math.round((completedTasksCount / todayTasks.length) * 100);
             }
@@ -238,6 +244,7 @@ export function TaskProvider({ children }: { children: React.ReactNode }) {
       const { data: leaderboardData } = await supabase
         .from('users')
         .select('id, username, xp, league')
+        .eq('privacy_show_leaderboard', true)
         .order('xp', { ascending: false })
         .limit(10);
 
@@ -283,35 +290,30 @@ export function TaskProvider({ children }: { children: React.ReactNode }) {
     setTasks(prev => prev.filter(task => task.id !== taskId));
   }, [setTasks]);
 
-  const addXP = useCallback((amount: number) => {
+  const addXP = useCallback(async (amount: number) => {
     setUserProfile(prev => {
-      const nextXP = prev.xp + amount;
-      const nextLevel = calculateLevel(nextXP);
-      const nextLeague = getLeagueByLevel(nextLevel);
+      let newXp = prev.xp + amount;
+      const newLevel = calculateLevel(newXp);
+      const newLeague = getLeagueByLevel(newLevel);
       
+      // Update DB if logged in
       if (user) {
-        supabase
-          .from('users')
-          .update({
-            xp: nextXP,
-            level: nextLevel,
-            league: nextLeague,
-          })
-          .eq('id', user.id)
-          .then(({ error }) => {
-            if (error) console.error('Error updating XP in Supabase:', error);
-            else setRefreshCount(prevRefresh => prevRefresh + 1);
-          });
+        supabase.from('users').update({ xp: newXp, level: newLevel, league: newLeague }).eq('id', user.id).then(({ error }) => {
+          if (error) console.error('Error updating XP in Supabase:', error);
+          else setRefreshCount(prevRefresh => prevRefresh + 1);
+        });
       }
 
-      return {
-        ...prev,
-        xp: nextXP,
-        level: nextLevel,
-        league: nextLeague,
-      };
+      return { ...prev, xp: newXp, level: newLevel, league: newLeague };
     });
-  }, [user, setUserProfile]);
+  }, [user]);
+
+  const updatePrivacySettings = useCallback(async (key: 'privacy_show_online' | 'privacy_show_progress' | 'privacy_show_leaderboard', value: boolean) => {
+    setUserProfile(prev => ({ ...prev, [key]: value }));
+    if (user) {
+      await supabase.from('users').update({ [key]: value }).eq('id', user.id);
+    }
+  }, [user]);
 
   const toggleTaskComplete = useCallback((taskId: string) => {
     setTasks(prev => {
@@ -704,6 +706,7 @@ export function TaskProvider({ children }: { children: React.ReactNode }) {
     lastCheckIn,
     setLastCheckIn,
     addXP,
+    updatePrivacySettings,
   }), [
     tasks,
     userProfile,
