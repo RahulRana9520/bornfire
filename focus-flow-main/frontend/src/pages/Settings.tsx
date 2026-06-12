@@ -8,6 +8,7 @@ import { usePWA } from '@/hooks/usePWA';
 import { useNotifications } from '@/contexts/NotificationContext';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useTaskContext } from '@/contexts/TaskContext';
+import AccountSettingsModal, { AccountAction } from '@/components/settings/AccountSettingsModal';
 
 const Settings = () => {
   const { signOut } = useAuth();
@@ -15,6 +16,7 @@ const Settings = () => {
   const { permission, requestPermission } = useNotifications();
   const { theme, toggleTheme, reduceAnimations, toggleReduceAnimations } = useTheme();
   const { userProfile, updatePrivacySettings } = useTaskContext();
+  const [activeModal, setActiveModal] = useState<AccountAction>(null);
 
   const settingsGroups = [
     {
@@ -130,12 +132,18 @@ const Settings = () => {
               {group.items.map((item) => (
                 <div 
                   key={item.label}
+                  onClick={() => {
+                    if (item.label === 'Edit Profile') setActiveModal('edit_profile');
+                    if (item.label === 'Change Password') setActiveModal('change_password');
+                    if (item.label === 'Connected Accounts') setActiveModal('connected_accounts');
+                  }}
                   className={cn(
-                    "flex items-center justify-between px-6 py-4",
-                    item.type === 'link' && "hover:bg-[#FF89BB]/10 cursor-pointer transition-colors"
+                    "flex items-center justify-between px-6 py-4 select-none",
+                    item.type === 'link' && "hover:bg-[#FF89BB]/10 cursor-pointer transition-colors active:bg-[#FF89BB]/20"
                   )}
+                  role={item.type === 'link' ? "button" : undefined}
                 >
-                  <span className="font-black uppercase text-xs tracking-wider">{item.label}</span>
+                  <span className="font-black uppercase text-xs tracking-wider pointer-events-none">{item.label}</span>
                   {item.type === 'toggle' && (
                     <Switch 
                       checked={
@@ -192,6 +200,7 @@ const Settings = () => {
           </Button>
         </div>
       </div>
+      <AccountSettingsModal action={activeModal} onClose={() => setActiveModal(null)} />
     </div>
   );
 };
