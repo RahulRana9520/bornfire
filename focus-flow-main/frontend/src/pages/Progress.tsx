@@ -110,7 +110,7 @@ const ProgressPage = () => {
       </div>
 
       {/* Weekly Chart */}
-      <div className="bg-white border-[4px] border-black p-4 sm:p-6 shadow-[8px_8px_0px_0px_#000]">
+      <div id="tour-xp-chart" className="bg-white border-[4px] border-black p-4 sm:p-6 shadow-[8px_8px_0px_0px_#000]">
         <h3 className="font-black text-xl uppercase tracking-tighter mb-4 flex items-center gap-2">
           <Target className="w-6 h-6 stroke-[3px]" />
           Weekly Output

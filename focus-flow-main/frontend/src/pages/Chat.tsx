@@ -141,6 +141,7 @@ const Chat = () => {
           {/* Filter Toggle */}
           <div className="flex gap-2 bg-black/5 p-1 rounded-none border-[3px] border-black shadow-[4px_4px_0px_0px_#000]">
             <Button
+              id="tour-squad-chat"
               variant={filter === 'friends' ? 'default' : 'ghost'}
               size="sm"
               onClick={() => setFilter('friends')}
@@ -152,6 +153,7 @@ const Chat = () => {
               Friends
             </Button>
             <Button
+              id="tour-global-chat"
               variant={filter === 'global' ? 'default' : 'ghost'}
               size="sm"
               onClick={() => setFilter('global')}

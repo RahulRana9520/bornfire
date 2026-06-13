@@ -8,6 +8,8 @@ import { TaskProvider } from "@/contexts/TaskContext";
 import { HabitsProvider } from "@/contexts/HabitsContext";
 import { NotificationProvider } from "@/contexts/NotificationContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
+import { OnboardingProvider } from "@/contexts/OnboardingContext";
+import { OnboardingOverlay } from "@/components/onboarding/OnboardingOverlay";
 import { NotificationScheduler } from "@/components/notifications/NotificationScheduler";
 import { AppLayout } from "@/components/layout/AppLayout";
 import Index from "./pages/Index";
@@ -34,19 +36,22 @@ const App = () => (
             <Toaster />
             <Sonner />
             <BrowserRouter>
-              <AppLayout>
-                <Routes>
-                  <Route path="/" element={<Index />} />
-                  <Route path="/week-goals" element={<WeekGoals />} />
-                  <Route path="/progress" element={<Progress />} />
-                  <Route path="/friends" element={<Friends />} />
-                  <Route path="/chat" element={<Chat />} />
-                  <Route path="/group-games" element={<GroupGames />} />
-                  <Route path="/leaderboard" element={<Leaderboard />} />
-                  <Route path="/settings" element={<Settings />} />
-                  <Route path="*" element={<NotFound />} />
-                </Routes>
-              </AppLayout>
+              <OnboardingProvider>
+                <AppLayout>
+                  <OnboardingOverlay />
+                  <Routes>
+                    <Route path="/" element={<Index />} />
+                    <Route path="/week-goals" element={<WeekGoals />} />
+                    <Route path="/progress" element={<Progress />} />
+                    <Route path="/friends" element={<Friends />} />
+                    <Route path="/chat" element={<Chat />} />
+                    <Route path="/group-games" element={<GroupGames />} />
+                    <Route path="/leaderboard" element={<Leaderboard />} />
+                    <Route path="/settings" element={<Settings />} />
+                    <Route path="*" element={<NotFound />} />
+                  </Routes>
+                </AppLayout>
+              </OnboardingProvider>
             </BrowserRouter>
           </TooltipProvider>
         </TaskProvider>

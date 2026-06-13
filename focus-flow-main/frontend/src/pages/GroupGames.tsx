@@ -303,7 +303,7 @@ const GroupGames = () => {
       {/* Main Content */}
       <div className="grid lg:grid-cols-3 gap-8">
         {/* Game Info Card */}
-        <div className="lg:col-span-1 space-y-6">
+        <div id="tour-create-game" className="lg:col-span-1 space-y-6">
           <div className="bg-white border-[4px] border-black shadow-[8px_8px_0px_0px_#000] overflow-hidden group">
             <div className="h-48 border-b-[4px] border-black relative overflow-hidden group-hover:opacity-90 transition-opacity">
               <img 

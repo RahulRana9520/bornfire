@@ -22,6 +22,7 @@ export function AddTaskForm() {
       setPriority('medium');
       setEstimatedMinutes('30');
       setIsExpanded(false);
+      document.dispatchEvent(new CustomEvent('task-added'));
     }
   };
 

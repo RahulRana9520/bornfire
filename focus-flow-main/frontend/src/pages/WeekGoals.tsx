@@ -25,6 +25,7 @@ const WeekGoals = () => {
       addHabit(newHabitTitle.trim());
       setNewHabitTitle('');
       setIsAddingHabit(false);
+      document.dispatchEvent(new CustomEvent('habit-added'));
     }
   };
 
@@ -42,8 +43,9 @@ const WeekGoals = () => {
 
   return (
     <div className="space-y-4 sm:space-y-6 lg:space-y-8 animate-fade-in pb-10 pt-16 sm:pt-0">
-      {/* Header */}
-      <div className="bg-[#FFDE00] border-[4px] border-black p-6 sm:p-8 shadow-[8px_8px_0px_0px_#000] relative overflow-hidden">
+      <div id="tour-add-habit" className="space-y-4">
+        {/* Header */}
+        <div className="bg-[#FFDE00] border-[4px] border-black p-6 sm:p-8 shadow-[8px_8px_0px_0px_#000] relative overflow-hidden">
         {/* Decorative background element */}
         <div className="absolute -right-4 -top-4 w-24 h-24 bg-white/20 rounded-full blur-2xl" />
         
@@ -92,6 +94,7 @@ const WeekGoals = () => {
           </div>
         </form>
       )}
+      </div>
 
       {/* Habits Scroll Container */}
       <div className="bg-white border-[4px] border-black shadow-[8px_8px_0px_0px_#000] overflow-hidden">
@@ -196,7 +199,7 @@ const WeekGoals = () => {
 
       {/* Progress Summary */}
       {habits.length > 0 && (
-        <div className="bg-card rounded-2xl p-8 border border-border/50 shadow-soft hover:shadow-md-enhanced transition-all hover-lift text-center">
+        <div id="tour-week-progress" className="bg-card rounded-2xl p-8 border border-border/50 shadow-soft hover:shadow-md-enhanced transition-all hover-lift text-center">
           {(() => {
             const totalPossible = habits.length * 7;
             let completedCount = 0;

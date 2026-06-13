@@ -58,6 +58,7 @@ const Leaderboard = () => {
         {/* Filter buttons */}
         <div className="flex gap-2">
           <Button
+            id="tour-friend-rank"
             variant={filter === 'friends' ? 'default' : 'outline'}
             size="sm"
             onClick={() => setFilter('friends')}
@@ -67,6 +68,7 @@ const Leaderboard = () => {
             Friends
           </Button>
           <Button
+            id="tour-global-rank"
             variant={filter === 'global' ? 'default' : 'outline'}
             size="sm"
             onClick={() => setFilter('global')}
