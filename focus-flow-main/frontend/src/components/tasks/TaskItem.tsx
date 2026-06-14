@@ -15,13 +15,17 @@ export function TaskItem({ task, isEditable }: TaskItemProps) {
   const { toggleTaskComplete, startTimer, stopTimer, updateTaskTime, deleteTask, updateTask } = useTaskContext();
   const [localTime, setLocalTime] = useState(task.remainingTime ?? task.estimatedTime ?? 0);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  
+  // Use a ref to track the latest timeSpent to avoid stale closures in the interval
+  const timeSpentRef = useRef(task.timeSpent || 0);
 
-  // Sync local time with task remaining time when task changes (but not during active countdown)
+  // Sync local time and timeSpent with task changes (but not during active countdown)
   useEffect(() => {
     if (!task.isTimerRunning) {
       setLocalTime(task.remainingTime ?? task.estimatedTime ?? 0);
+      timeSpentRef.current = task.timeSpent || 0;
     }
-  }, [task.remainingTime, task.estimatedTime, task.isTimerRunning]);
+  }, [task.remainingTime, task.estimatedTime, task.timeSpent, task.isTimerRunning]);
 
   useEffect(() => {
     // Clear any existing interval
@@ -34,11 +38,12 @@ export function TaskItem({ task, isEditable }: TaskItemProps) {
       intervalRef.current = setInterval(() => {
         setLocalTime(prevTime => {
           const newTime = Math.max(0, prevTime - 1);
+          timeSpentRef.current += 1;
           
-          // Update context less frequently to avoid re-render issues
+          // Update context
           updateTask(task.id, { 
             remainingTime: newTime,
-            timeSpent: task.timeSpent + 1
+            timeSpent: timeSpentRef.current
           });
           
           // Auto-complete task when timer reaches 0
