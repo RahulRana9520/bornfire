@@ -32,8 +32,11 @@ const ProgressPage = () => {
       </div>
 
       {/* Profile Stats */}
-      <div className="bg-white border-[2px] sm:border-[4px] border-black p-4 sm:p-6 lg:p-8 shadow-[3px_3px_0px_0px_#00E5BC] sm:shadow-[8px_8px_0px_0px_#00E5BC]">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6">
+      <div className="bg-white border-[2px] sm:border-[4px] border-black p-4 sm:p-6 lg:p-8 shadow-[3px_3px_0px_0px_#00E5BC] sm:shadow-[8px_8px_0px_0px_#00E5BC] relative">
+        <div className="absolute top-0 right-0 bg-black text-white text-[9px] sm:text-[10px] font-black px-2 sm:px-3 py-1 uppercase tracking-widest border-b-[2px] sm:border-b-[4px] border-l-[2px] sm:border-l-[4px] border-black">
+          ID: {userProfile.uniqueId || '#PENDING'}
+        </div>
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6 mt-4 sm:mt-0">
           <div className="w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 bg-[#FF89BB] border-[2px] sm:border-[4px] border-black flex items-center justify-center shadow-[2px_2px_0px_0px_#000] sm:shadow-[4px_4px_0px_0px_#000] shrink-0">
             <span className="text-3xl sm:text-4xl lg:text-5xl font-black uppercase text-black">
               {userProfile.username.charAt(0)}

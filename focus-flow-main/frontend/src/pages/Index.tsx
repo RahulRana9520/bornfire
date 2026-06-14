@@ -1,5 +1,6 @@
 import React from 'react';
-import { Calendar, Target, Clock, Sparkles } from 'lucide-react';
+import { Calendar, Target, Clock, Sparkles, Settings } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { AddTaskForm } from '@/components/tasks/AddTaskForm';
 import { TaskList } from '@/components/tasks/TaskList';
 import { ProgressCard } from '@/components/progress/ProgressCard';
@@ -19,7 +20,15 @@ const Index = () => {
   return (
     <div className="space-y-4 sm:space-y-6 lg:space-y-8 animate-fade-in pb-4">
       {/* Header — mobile: compact stacked, desktop: side-by-side */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-6 p-4 sm:p-6 border-[2px] sm:border-[3px] border-black bg-white shadow-[3px_3px_0px_0px_#000] sm:shadow-[4px_4px_0px_0px_#000]">
+      <div className="relative flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-6 p-4 sm:p-6 border-[2px] sm:border-[3px] border-black bg-white shadow-[3px_3px_0px_0px_#000] sm:shadow-[4px_4px_0px_0px_#000]">
+        {/* Settings gear — mobile only, top-right corner */}
+        <Link
+          to="/settings"
+          className="absolute top-3 right-3 lg:hidden p-2 min-w-[44px] min-h-[44px] flex items-center justify-center text-black/40 dark:text-white/40 hover:text-black dark:hover:text-white active:scale-90 transition-all"
+          aria-label="Settings"
+        >
+          <Settings className="w-5 h-5 stroke-[2px]" />
+        </Link>
         <div className="space-y-1">
           <div className="flex items-center gap-2 sm:gap-3">
             <div className="bg-[#FFDE00] border-[2px] sm:border-[3px] border-black p-1.5 sm:p-2 shadow-[2px_2px_0px_0px_#000]">

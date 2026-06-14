@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
-import { Send, Hash, MessageSquare, Loader2, Users, Globe } from 'lucide-react';
+import { Send, Hash, MessageSquare, Loader2, Users, Globe, UserPlus } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTaskContext } from '@/contexts/TaskContext';
@@ -138,8 +139,20 @@ const Chat = () => {
             </div>
           </div>
 
-          {/* Filter Toggle */}
-          <div className="flex gap-2 bg-black/5 p-1 rounded-none border-[3px] border-black shadow-[4px_4px_0px_0px_#000]">
+          {/* Right Controls */}
+          <div className="flex items-center gap-2 lg:gap-4">
+            {filter === 'friends' && (
+              <Link 
+                to="/friends" 
+                className="flex items-center justify-center w-8 h-8 lg:w-10 lg:h-10 bg-[#FFDE00] border-[2px] lg:border-[3px] border-black shadow-[2px_2px_0px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none transition-all"
+                title="Invite Friends"
+              >
+                <UserPlus className="w-4 h-4 lg:w-5 lg:h-5 text-black" />
+              </Link>
+            )}
+
+            {/* Filter Toggle */}
+            <div className="flex gap-1 lg:gap-2 bg-black/5 p-1 rounded-none border-[2px] lg:border-[3px] border-black shadow-[2px_2px_0px_0px_#000] lg:shadow-[4px_4px_0px_0px_#000]">
             <Button
               id="tour-squad-chat"
               variant={filter === 'friends' ? 'default' : 'ghost'}
@@ -165,6 +178,7 @@ const Chat = () => {
               Global
             </Button>
           </div>
+        </div>
         </div>
 
         {/* Messages area (Scrollable) */}
