@@ -118,12 +118,22 @@ const AccountSettingsModal = ({ action, onClose }: AccountSettingsModalProps) =>
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      const { error } = await supabase.from('users').delete().eq('id', user.id);
-      if (error) throw error;
+      // 1. Try to completely delete the user using the RPC (removes from auth.users AND public.users)
+      const { error: rpcError } = await supabase.rpc('delete_user');
+      
+      if (rpcError) {
+        // Fallback: If RPC doesn't exist, just delete their public profile
+        console.warn('RPC delete_user failed or not found. Make sure to run delete_user_rpc.sql in Supabase!', rpcError);
+        const { error } = await supabase.from('users').delete().eq('id', user.id);
+        if (error) throw error;
+      }
 
       await signOut();
+      onClose();
+      window.location.href = '/'; // Redirect to home so they are logged out properly
     } catch (err: any) {
       setError(err.message || 'Failed to decompose account');
+    } finally {
       setLoading(false);
     }
   };
