@@ -127,15 +127,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const shouldShowSignInPrompt = useCallback(() => {
-    if (user || signInDismissed || !firstVisit) return false;
-
-    const firstVisitDate = new Date(firstVisit);
-    const now = new Date();
-    const daysSinceFirstVisit = Math.floor((now.getTime() - firstVisitDate.getTime()) / (1000 * 60 * 60 * 24));
-
-    // Show prompt after 1-2 days (randomly between 1 and 2 days)
-    return daysSinceFirstVisit >= 1;
-  }, [user, signInDismissed, firstVisit]);
+    if (user || signInDismissed) return false;
+    return true;
+  }, [user, signInDismissed]);
 
   const dismissSignInPrompt = useCallback(() => {
     setSignInDismissed(true);

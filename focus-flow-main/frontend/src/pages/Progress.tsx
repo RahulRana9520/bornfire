@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
-import { TrendingUp, Clock, CheckCircle2, Flame, Award, Target, Trophy, X } from 'lucide-react';
+import { TrendingUp, Clock, CheckCircle2, Flame, Award, Target, Trophy, X, LogIn, LogOut } from 'lucide-react';
 import { useTaskContext } from '@/contexts/TaskContext';
+import { useAuth } from '@/contexts/AuthContext';
+import { AuthModal } from '@/components/auth/AuthModal';
 import { WeeklyChart } from '@/components/progress/WeeklyChart';
 import { formatTimeDisplay, getLeagueName, xpForNextLevel } from '@/lib/taskUtils';
 import { cn } from '@/lib/utils';
@@ -9,8 +11,10 @@ import { Button } from '@/components/ui/button';
 
 const ProgressPage = () => {
   const { userProfile } = useTaskContext();
+  const { user, signOut } = useAuth();
   const { weeklyProgress } = useCombinedProgress();
   const [showLeagueModal, setShowLeagueModal] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
   
   const xpToNext = xpForNextLevel(userProfile.level);
   const currentLevelXP = xpForNextLevel(userProfile.level - 1);
@@ -35,8 +39,25 @@ const ProgressPage = () => {
 
       {/* Profile Stats */}
       <div className="bg-white border-[2px] sm:border-[4px] border-black p-4 sm:p-6 lg:p-8 shadow-[3px_3px_0px_0px_#00E5BC] sm:shadow-[8px_8px_0px_0px_#00E5BC] relative">
-        <div className="absolute top-0 right-0 bg-black text-white text-[9px] sm:text-[10px] font-black px-2 sm:px-3 py-1 uppercase tracking-widest border-b-[2px] sm:border-b-[4px] border-l-[2px] sm:border-l-[4px] border-black">
-          ID: {userProfile.uniqueId || '#PENDING'}
+        <div className="absolute top-0 right-0 flex flex-col items-end z-20">
+          <div className="bg-black text-white text-[9px] sm:text-[10px] font-black px-2 sm:px-3 py-1 uppercase tracking-widest border-b-[2px] sm:border-b-[4px] border-l-[2px] sm:border-l-[4px] border-black">
+            ID: {userProfile.uniqueId || '#PENDING'}
+          </div>
+          {user ? (
+            <button 
+              onClick={() => signOut()}
+              className="bg-[#FF89BB] text-black flex items-center gap-1 text-[9px] sm:text-[10px] font-black px-2 sm:px-3 py-1 uppercase tracking-widest border-b-[2px] sm:border-b-[4px] border-l-[2px] sm:border-l-[4px] border-black hover:bg-[#FFDE00] transition-colors cursor-pointer active:translate-y-[1px]"
+            >
+              <LogOut className="w-3 h-3" /> Log Out
+            </button>
+          ) : (
+            <button 
+              onClick={() => setShowAuthModal(true)}
+              className="bg-[#00E5BC] text-black flex items-center gap-1 text-[9px] sm:text-[10px] font-black px-2 sm:px-3 py-1 uppercase tracking-widest border-b-[2px] sm:border-b-[4px] border-l-[2px] sm:border-l-[4px] border-black hover:bg-[#FFDE00] transition-colors cursor-pointer active:translate-y-[1px]"
+            >
+              <LogIn className="w-3 h-3" /> Sign In
+            </button>
+          )}
         </div>
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6 mt-4 sm:mt-0">
           <div className="w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 bg-[#FF89BB] border-[2px] sm:border-[4px] border-black flex items-center justify-center shadow-[2px_2px_0px_0px_#000] sm:shadow-[4px_4px_0px_0px_#000] shrink-0">
@@ -301,6 +322,13 @@ const ProgressPage = () => {
           </div>
         </div>
       )}
+
+      {/* Auth Modal */}
+      <AuthModal
+        isOpen={showAuthModal}
+        onClose={() => setShowAuthModal(false)}
+        canDismiss={true}
+      />
     </div>
   );
 };
