@@ -1,14 +1,16 @@
-import React from 'react';
-import { TrendingUp, Clock, CheckCircle2, Flame, Award, Target, Trophy } from 'lucide-react';
+import React, { useState } from 'react';
+import { TrendingUp, Clock, CheckCircle2, Flame, Award, Target, Trophy, X } from 'lucide-react';
 import { useTaskContext } from '@/contexts/TaskContext';
 import { WeeklyChart } from '@/components/progress/WeeklyChart';
 import { formatTimeDisplay, getLeagueName, xpForNextLevel } from '@/lib/taskUtils';
 import { cn } from '@/lib/utils';
 import { useCombinedProgress } from '@/hooks/useCombinedProgress';
+import { Button } from '@/components/ui/button';
 
 const ProgressPage = () => {
   const { userProfile } = useTaskContext();
   const { weeklyProgress } = useCombinedProgress();
+  const [showLeagueModal, setShowLeagueModal] = useState(false);
   
   const xpToNext = xpForNextLevel(userProfile.level);
   const currentLevelXP = xpForNextLevel(userProfile.level - 1);
@@ -45,13 +47,19 @@ const ProgressPage = () => {
           <div className="flex-1 w-full">
             <div className="flex items-center gap-4 mb-2">
               <h2 className="text-xl sm:text-2xl lg:text-3xl font-black uppercase tracking-tighter">{userProfile.username}</h2>
-              <span className={cn(
-
-                "px-3 py-1 border-[3px] border-black text-xs font-black uppercase tracking-widest shadow-[2px_2px_0px_0px_#000]",
-                `bg-league-${userProfile.league}`
-              )}>
-                {getLeagueName(userProfile.league)} League
-              </span>
+              <div 
+                className="cursor-pointer hover:scale-105 active:scale-95 transition-transform"
+                onClick={() => setShowLeagueModal(true)}
+                title="View League Levels"
+              >
+                <div className="w-10 h-10 sm:w-12 sm:h-12 border-[3px] border-black bg-white flex items-center justify-center shadow-[2px_2px_0px_0px_#000] p-1">
+                  <img 
+                    src={`/badges/${userProfile.league}.png`} 
+                    alt={userProfile.league} 
+                    className="w-full h-full object-contain" 
+                  />
+                </div>
+              </div>
             </div>
             
             <div className="mt-4">
@@ -218,6 +226,81 @@ const ProgressPage = () => {
           )}
         </div>
       </div>
+      {/* League Levels Modal */}
+      {showLeagueModal && (
+        <div className="fixed inset-0 bg-foreground/50 backdrop-blur-sm z-[100] flex items-center justify-center p-4 animate-fade-in">
+          <div className="w-full max-w-4xl bg-white border-[4px] border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] p-4 sm:p-6 md:p-8 pt-12 sm:pt-8 relative flex flex-col max-h-[90vh] overflow-y-auto animate-scale-in">
+            {/* Close button */}
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="absolute top-4 right-4 border-[3px] border-black bg-white hover:bg-black hover:text-white transition-none shadow-[2px_2px_0px_0px_#000] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none z-50"
+              onClick={() => setShowLeagueModal(false)}
+            >
+              <X className="w-5 h-5" />
+            </Button>
+
+            {/* Header */}
+            <div className="text-center mb-6 mt-4 sm:mt-0">
+              <h2 className="text-xl sm:text-2xl md:text-3xl font-black uppercase italic tracking-tighter bg-[#FFDE00] border-[4px] border-black py-2 sm:py-3 px-4 sm:px-6 inline-block shadow-[4px_4px_0px_0px_#000] transform -rotate-1 max-w-full break-words">
+                🏆 League Levels 🏆
+              </h2>
+              <p className="text-xs font-black uppercase text-[#555] tracking-widest mt-6">
+                Your Bornfire Level determines your League!
+              </p>
+            </div>
+
+            {/* Leagues Comparison Grid */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4 my-4">
+              {[
+                { name: 'Bronze', levels: 'LVL 1 - 19', bg: 'bg-[#ff7a00]/10' },
+                { name: 'Silver', levels: 'LVL 20 - 39', bg: 'bg-[#a0a0a0]/10' },
+                { name: 'Gold', levels: 'LVL 40 - 59', bg: 'bg-[#ffd700]/10' },
+                { name: 'Platinum', levels: 'LVL 60 - 79', bg: 'bg-[#00e5bc]/10' },
+                { name: 'Diamond', levels: 'LVL 80+', bg: 'bg-[#00ccff]/10' },
+              ].map((lg) => {
+                const isCurrent = lg.name.toLowerCase() === userProfile.league;
+                return (
+                  <div 
+                    key={lg.name}
+                    className={cn(
+                      "border-[3px] sm:border-[4px] border-black p-3 sm:p-4 flex flex-col items-center text-center relative",
+                      lg.bg,
+                      isCurrent ? "shadow-[4px_4px_0px_0px_#000] bg-yellow-50" : ""
+                    )}
+                  >
+                    {isCurrent && (
+                      <span className="absolute -top-3 bg-black text-white text-[8px] font-black uppercase px-2 py-0.5 border-2 border-black tracking-widest">
+                        Current
+                      </span>
+                    )}
+                    <div className="w-12 h-12 sm:w-16 sm:h-16 border-[3px] border-black bg-white flex items-center justify-center p-1 sm:p-1.5 shadow-[2px_2px_0px_0px_#000] mb-3 sm:mb-4">
+                      <img 
+                        src={`/badges/${lg.name.toLowerCase()}.png`} 
+                        alt={lg.name} 
+                        className="w-full h-full object-contain" 
+                      />
+                    </div>
+                    <h3 className="font-black text-sm sm:text-lg uppercase tracking-tight mb-1">{lg.name}</h3>
+                    <span className="text-[9px] sm:text-[10px] font-black uppercase text-[#555] tracking-wider mb-2 sm:mb-3">League</span>
+                    <div className="w-full border-t-2 border-black border-dashed my-1 sm:my-2" />
+                    <div className="bg-white border-2 border-black py-1 px-2 sm:px-3 text-[9px] sm:text-[10px] font-black uppercase tracking-wider shadow-[2px_2px_0px_0px_#000]">
+                      {lg.levels}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Bottom info section */}
+            <div className="mt-4 border-[3px] border-black bg-[#00E5BC]/10 p-4 text-center">
+              <p className="text-xs sm:text-sm font-bold uppercase">
+                Keep completing tasks to earn XP and rank up your league!
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
