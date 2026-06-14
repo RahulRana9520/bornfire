@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { Loader2, User, Key, Link as LinkIcon, Github, Chrome, CheckCircle2 } from 'lucide-react';
+import { Loader2, User, Key, Link as LinkIcon, Github, Chrome, CheckCircle2, AlertTriangle } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { supabase } from '@/lib/supabase';
 import { useTaskContext } from '@/contexts/TaskContext';
+import { useAuth } from '@/contexts/AuthContext';
 import { UserIdentity } from '@supabase/supabase-js';
 
-export type AccountAction = 'edit_profile' | 'change_password' | 'connected_accounts' | null;
+export type AccountAction = 'edit_profile' | 'change_password' | 'connected_accounts' | 'delete_account' | null;
 
 interface AccountSettingsModalProps {
   action: AccountAction;
@@ -17,6 +18,7 @@ interface AccountSettingsModalProps {
 const AccountSettingsModal = ({ action, onClose }: AccountSettingsModalProps) => {
   // @ts-ignore - we just added updateUsername to TaskContext
   const { userProfile, updatePrivacySettings, updateUsername } = useTaskContext();
+  const { signOut } = useAuth();
   
   // States
   const [loading, setLoading] = useState(false);
@@ -105,6 +107,23 @@ const AccountSettingsModal = ({ action, onClose }: AccountSettingsModalProps) =>
     } catch (err: any) {
       setError(err.message);
     } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
+
+      const { error } = await supabase.from('users').delete().eq('id', user.id);
+      if (error) throw error;
+
+      await signOut();
+    } catch (err: any) {
+      setError(err.message || 'Failed to decompose account');
       setLoading(false);
     }
   };
@@ -199,6 +218,31 @@ const AccountSettingsModal = ({ action, onClose }: AccountSettingsModalProps) =>
             </div>
           </div>
         );
+
+      case 'delete_account':
+        return (
+          <div className="space-y-6">
+            <div className="p-4 bg-red-100 border-[3px] border-red-500 text-red-700 font-bold text-sm uppercase tracking-wider">
+              Warning: This action is irreversible. If you decompose your account, it will be totally deleted and not recoverable. All your data, tasks, and leaderboard rankings will be permanently removed.
+            </div>
+            
+            <Button 
+              onClick={handleDeleteAccount}
+              disabled={loading}
+              className="w-full bg-red-500 hover:bg-red-600 text-white border-[3px] border-black h-14 font-black uppercase tracking-widest shadow-[4px_4px_0px_0px_#000]"
+            >
+              {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Yes, Decompose My Account'}
+            </Button>
+            <Button
+              onClick={onClose}
+              disabled={loading}
+              variant="outline"
+              className="w-full bg-white border-[3px] border-black h-14 font-black uppercase tracking-widest text-black shadow-[4px_4px_0px_0px_#000]"
+            >
+              Cancel
+            </Button>
+          </div>
+        );
       
       default:
         return null;
@@ -209,6 +253,7 @@ const AccountSettingsModal = ({ action, onClose }: AccountSettingsModalProps) =>
     edit_profile: { title: 'Edit Profile', icon: User },
     change_password: { title: 'Change Password', icon: Key },
     connected_accounts: { title: 'Connected Accounts', icon: LinkIcon },
+    delete_account: { title: 'Decompose Account', icon: AlertTriangle },
   };
 
   if (!action) return null;

@@ -194,9 +194,10 @@ const Settings = () => {
           </Button>
           <Button 
             variant="outline" 
+            onClick={() => setActiveModal('delete_account')}
             className="flex-1 bg-white border-[3px] border-black px-6 py-6 font-black uppercase text-destructive shadow-[4px_4px_0px_0px_#000] hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all"
           >
-            Decommission Account
+            Decompose Account
           </Button>
         </div>
       </div>
