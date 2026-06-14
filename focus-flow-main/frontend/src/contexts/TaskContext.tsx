@@ -27,6 +27,7 @@ interface TaskContextType {
   setLastCheckIn: (value: string | null | ((prev: string | null) => string | null)) => void;
   addXP: (amount: number) => void;
   updatePrivacySettings: (key: 'privacy_show_online' | 'privacy_show_progress' | 'privacy_show_leaderboard', value: boolean) => Promise<void>;
+  updateUsername: (newUsername: string) => Promise<void>;
 }
 
 const TaskContext = createContext<TaskContextType | undefined>(undefined);
@@ -311,8 +312,19 @@ export function TaskProvider({ children }: { children: React.ReactNode }) {
   const updatePrivacySettings = useCallback(async (key: 'privacy_show_online' | 'privacy_show_progress' | 'privacy_show_leaderboard', value: boolean) => {
     setUserProfile(prev => ({ ...prev, [key]: value }));
     if (user) {
-      await supabase.from('users').update({ [key]: value }).eq('id', user.id);
+      const { error } = await supabase.from('users').update({ [key]: value }).eq('id', user.id);
+      if (error) console.error(`Error updating ${key}:`, error);
     }
+  }, [user]);
+
+  const updateUsername = useCallback(async (newUsername: string) => {
+    if (!user) throw new Error("Must be logged in to update username");
+    
+    const { error } = await supabase.from('users').update({ username: newUsername }).eq('id', user.id);
+    if (error) throw error;
+    
+    setUserProfile(prev => ({ ...prev, username: newUsername }));
+    setRefreshCount(prev => prev + 1); // trigger leaderboard refresh
   }, [user]);
 
   const toggleTaskComplete = useCallback((taskId: string) => {
@@ -707,6 +719,7 @@ export function TaskProvider({ children }: { children: React.ReactNode }) {
     setLastCheckIn,
     addXP,
     updatePrivacySettings,
+    updateUsername,
   }), [
     tasks,
     userProfile,
@@ -728,6 +741,7 @@ export function TaskProvider({ children }: { children: React.ReactNode }) {
     lastCheckIn,
     setLastCheckIn,
     addXP,
+    updateUsername,
   ]);
 
   return (

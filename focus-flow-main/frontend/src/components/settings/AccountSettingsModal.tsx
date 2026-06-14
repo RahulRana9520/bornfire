@@ -15,7 +15,8 @@ interface AccountSettingsModalProps {
 }
 
 const AccountSettingsModal = ({ action, onClose }: AccountSettingsModalProps) => {
-  const { userProfile, updatePrivacySettings } = useTaskContext();
+  // @ts-ignore - we just added updateUsername to TaskContext
+  const { userProfile, updatePrivacySettings, updateUsername } = useTaskContext();
   
   // States
   const [loading, setLoading] = useState(false);
@@ -70,15 +71,13 @@ const AccountSettingsModal = ({ action, onClose }: AccountSettingsModalProps) =>
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      await supabase.from('users').update({ username }).eq('id', user.id);
+      // @ts-ignore - we just added updateUsername to TaskContext
+      if (updateUsername) await updateUsername(username);
       
-      // Update local context (since we don't have a specific updateUsername function, 
-      // we'll trigger a refresh by updating a dummy privacy setting, or just reload)
-      // Wait, we can just update the window.location or we could add updateUsername to TaskContext.
-      // For now, let's just show success.
-      setSuccess('Profile updated successfully! Refresh to see changes globally.');
+      setSuccess('Profile updated successfully!');
     } catch (err: any) {
-      setError(err.message);
+      // Sometimes errors come as err.message, sometimes err.error_description
+      setError(err.message || 'Failed to update username. The username might already be taken.');
     } finally {
       setLoading(false);
     }
