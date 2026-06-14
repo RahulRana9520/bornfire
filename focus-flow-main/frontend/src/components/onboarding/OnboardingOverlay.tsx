@@ -78,13 +78,18 @@ export const OnboardingOverlay: React.FC = () => {
   // Calculate positions
   let cloudTop = 0;
   let cloudLeft = 0;
+  let cloudWidth = 300;
+  
   if (targetRect) {
+    // Dynamic width for mobile
+    cloudWidth = window.innerWidth < 400 ? window.innerWidth - 40 : 300;
+    
     // Position cloud slightly offset
     cloudTop = targetRect.bottom + 20;
-    cloudLeft = targetRect.left + (targetRect.width / 2) - 150;
+    cloudLeft = targetRect.left + (targetRect.width / 2) - (cloudWidth / 2);
     
-    // Clamp cloud Left/Right
-    cloudLeft = Math.max(20, Math.min(cloudLeft, window.innerWidth - 340));
+    // Clamp cloud Left/Right with 20px padding
+    cloudLeft = Math.max(20, Math.min(cloudLeft, window.innerWidth - cloudWidth - 20));
     
     // Clamp cloud Top/Bottom (if it goes off the bottom of the screen, move it above)
     if (cloudTop + 250 > window.innerHeight) {
@@ -124,8 +129,8 @@ export const OnboardingOverlay: React.FC = () => {
         <>
           {/* Transparent Cloud */}
           <div 
-            className="absolute z-[110] w-[300px] pointer-events-auto transition-all duration-500 ease-in-out"
-            style={{ top: `${cloudTop}px`, left: `${cloudLeft}px` }}
+            className="absolute z-[110] pointer-events-auto transition-all duration-500 ease-in-out"
+            style={{ top: `${cloudTop}px`, left: `${cloudLeft}px`, width: `${cloudWidth}px` }}
           >
             {/* Cloud Shape - Custom Neo-Brutalist transparent cloud */}
             <div className="relative bg-white/90 dark:bg-zinc-900/90 backdrop-blur-sm border-[4px] border-black dark:border-zinc-700 p-6 rounded-[2rem] shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,0.1)] animate-in fade-in zoom-in duration-300">
