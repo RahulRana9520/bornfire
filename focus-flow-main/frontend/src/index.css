@@ -4,6 +4,24 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ============================================
+   MOBILE-FIRST GLOBAL RESETS
+   ============================================ */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  /* Prevent horizontal scroll at the root */
+  overflow-x: hidden;
+}
+
+/* ============================================
+   DESIGN TOKENS (CSS Custom Properties)
+   ============================================ */
 @layer base {
   :root {
     /* Neo-Brutalism Design Tokens */
@@ -38,9 +56,9 @@
 
     --radius: 0px; /* Sharp corners for authentic brutalism */
 
-    /* Neo-Brutalist Shadows */
-    --neo-shadow: 4px 4px 0px 0px #000;
-    --neo-shadow-lg: 8px 8px 0px 0px #000;
+    /* Neo-Brutalist Shadows — Mobile-scaled */
+    --neo-shadow: 3px 3px 0px 0px #000;
+    --neo-shadow-lg: 5px 5px 0px 0px #000;
     --neo-shadow-active: 1px 1px 0px 0px #000;
 
     /* League Colors */
@@ -51,16 +69,34 @@
     --league-diamond: 200 100% 50%;
 
     /* Status Colors */
-    --success: 142 76% 45%; /* Vibrant Green */
+    --success: 142 76% 45%;
     --success-foreground: 0 0% 0%;
     --success-light: 142 76% 90%;
     
-    --warning: 32 95% 55%; /* Vibrant Orange/Amber */
+    --warning: 32 95% 55%;
     --warning-foreground: 0 0% 0%;
     --warning-light: 32 95% 90%;
     
-    --gold: 48 100% 50%; /* Vibrant Gold/Yellow */
+    --gold: 48 100% 50%;
     --gold-light: 48 100% 90%;
+
+    /* Spacing scale for mobile-first */
+    --space-xs: 4px;
+    --space-sm: 8px;
+    --space-md: 16px;
+    --space-lg: 24px;
+    --space-xl: 32px;
+
+    /* Safe area insets for modern mobile */
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  /* Desktop shadow scale-up */
+  @media (min-width: 1024px) {
+    :root {
+      --neo-shadow: 4px 4px 0px 0px #000;
+      --neo-shadow-lg: 8px 8px 0px 0px #000;
+    }
   }
 
   .dark {
@@ -69,8 +105,8 @@
     --card: 0 0% 10%;
     --card-foreground: 0 0% 100%;
     --border: 0 0% 100%;
-    --neo-shadow: 4px 4px 0px 0px #fff;
-    --neo-shadow-lg: 8px 8px 0px 0px #fff;
+    --neo-shadow: 3px 3px 0px 0px #888;
+    --neo-shadow-lg: 5px 5px 0px 0px #888;
 
     --success: 142 76% 45%;
     --success-foreground: 0 0% 0%;
@@ -83,53 +119,129 @@
     --gold: 48 100% 50%;
     --gold-light: 48 100% 20%;
   }
+
+  @media (min-width: 1024px) {
+    .dark {
+      --neo-shadow: 4px 4px 0px 0px #888;
+      --neo-shadow-lg: 8px 8px 0px 0px #888;
+    }
+  }
 }
 
+/* ============================================
+   BASE STYLES — MOBILE FIRST
+   ============================================ */
 @layer base {
   * {
-    @apply border-black transition-none; /* Brutalism is instant, no soft transitions */
+    @apply border-black transition-none;
   }
 
   body {
     @apply bg-background text-foreground;
     font-family: 'Space Grotesk', sans-serif;
     background-image: radial-gradient(#000 1px, transparent 1px);
-    background-size: 24px 24px; /* The "Dot Grid" from your reference */
+    background-size: 24px 24px;
     background-color: #fefefe;
+    /* Prevent horizontal scroll */
+    overflow-x: hidden;
+    width: 100%;
+    /* Smooth scrolling but respect reduced motion */
+    -webkit-overflow-scrolling: touch;
   }
 
   h1, h2, h3, h4, h5, h6 {
     @apply font-black tracking-tighter uppercase;
   }
+
+  /* ============================================
+     PREVENT iOS INPUT ZOOM — CRITICAL FIX
+     All interactive text fields must be >= 16px
+     ============================================ */
+  input,
+  textarea,
+  select,
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="number"],
+  input[type="search"],
+  input[type="tel"],
+  input[type="url"] {
+    font-size: 16px !important;
+  }
+
+  @media (min-width: 640px) {
+    input,
+    textarea,
+    select {
+      font-size: inherit !important;
+    }
+  }
+
+  /* Ensure images, media, and containers don't overflow */
+  img, video, canvas, svg {
+    max-width: 100%;
+    height: auto;
+  }
 }
 
+/* ============================================
+   NEO-BRUTALIST UTILITY CLASSES
+   Shadows are now responsive via CSS vars
+   ============================================ */
 @layer utilities {
   .neo-brutal {
-    @apply border-[3px] border-black shadow-[4px_4px_0px_0px_#000] bg-white transition-all active:translate-x-[2px] active:translate-y-[2px] active:shadow-[1px_1px_0px_0px_#000];
+    @apply border-[2px] border-black bg-white transition-all active:translate-x-[2px] active:translate-y-[2px];
+    box-shadow: var(--neo-shadow);
+  }
+  .neo-brutal:active {
+    box-shadow: var(--neo-shadow-active);
   }
 
   .neo-brutal-pink {
-    @apply border-[3px] border-black shadow-[4px_4px_0px_0px_#000] bg-[#FF89BB] hover:bg-[#FF66AA];
+    @apply border-[2px] border-black bg-[#FF89BB] hover:bg-[#FF66AA];
+    box-shadow: var(--neo-shadow);
   }
 
   .neo-brutal-yellow {
-    @apply border-[3px] border-black shadow-[4px_4px_0px_0px_#000] bg-[#FFDE00] hover:bg-[#FFD300];
+    @apply border-[2px] border-black bg-[#FFDE00] hover:bg-[#FFD300];
+    box-shadow: var(--neo-shadow);
   }
 
   .neo-brutal-teal {
-    @apply border-[3px] border-black shadow-[4px_4px_0px_0px_#000] bg-[#00E5BC] hover:bg-[#00D1A7];
+    @apply border-[2px] border-black bg-[#00E5BC] hover:bg-[#00D1A7];
+    box-shadow: var(--neo-shadow);
   }
 
   .neo-brutal-white {
-    @apply border-[3px] border-black shadow-[4px_4px_0px_0px_#000] bg-white;
+    @apply border-[2px] border-black bg-white;
+    box-shadow: var(--neo-shadow);
   }
 
   .neo-input {
-    @apply border-[3px] border-black rounded-none px-4 py-2 focus:ring-0 focus:border-black outline-none shadow-[2px_2px_0px_0px_#000];
+    @apply border-[2px] border-black rounded-none px-4 py-2 focus:ring-0 focus:border-black outline-none;
+    box-shadow: 2px 2px 0px 0px #000;
+    font-size: 16px; /* Prevent iOS zoom */
+  }
+
+  /* Desktop: restore 3px borders for bolder look */
+  @media (min-width: 1024px) {
+    .neo-brutal,
+    .neo-brutal-pink,
+    .neo-brutal-yellow,
+    .neo-brutal-teal,
+    .neo-brutal-white {
+      border-width: 3px;
+    }
+    .neo-input {
+      border-width: 3px;
+    }
   }
 }
 
-/* Neo-Brutalist Dark Mode Custom Overrides */
+/* ============================================
+   DARK MODE OVERRIDES
+   ============================================ */
 .dark {
   background-color: #000000;
   color: #ffffff;
@@ -201,31 +313,31 @@
   border-color: #888888 !important;
   background-color: #121212 !important;
   color: #ffffff !important;
-  box-shadow: 4px 4px 0px 0px #888888 !important;
+  box-shadow: var(--neo-shadow) !important;
 }
 
 .dark .neo-brutal-white {
   border-color: #888888 !important;
   background-color: #121212 !important;
   color: #ffffff !important;
-  box-shadow: 4px 4px 0px 0px #888888 !important;
+  box-shadow: var(--neo-shadow) !important;
 }
 
 .dark .neo-brutal-yellow {
   border-color: #888888 !important;
-  box-shadow: 4px 4px 0px 0px #888888 !important;
-  color: #000000 !important; /* Keep black text inside vibrant buttons */
+  box-shadow: var(--neo-shadow) !important;
+  color: #000000 !important;
 }
 
 .dark .neo-brutal-pink {
   border-color: #888888 !important;
-  box-shadow: 4px 4px 0px 0px #888888 !important;
+  box-shadow: var(--neo-shadow) !important;
   color: #000000 !important;
 }
 
 .dark .neo-brutal-teal {
   border-color: #888888 !important;
-  box-shadow: 4px 4px 0px 0px #888888 !important;
+  box-shadow: var(--neo-shadow) !important;
   color: #000000 !important;
 }
 
@@ -242,7 +354,8 @@
   background-color: #0c0c0c !important;
 }
 
-.dark [class*="border-r-[3px]"] {
+.dark [class*="border-r-[3px]"],
+.dark [class*="border-r-[4px]"] {
   border-right-color: #888888 !important;
 }
 
@@ -251,15 +364,40 @@
 }
 
 /* App Header & Layout */
-.dark header[class*="border-b-[3px]"] {
+.dark header[class*="border-b-[3px]"],
+.dark header[class*="border-b-[4px]"] {
   border-bottom-color: #888888 !important;
   background-color: #000000 !important;
 }
 
-/* Reduce Animations */
+/* ============================================
+   REDUCED MOTION
+   ============================================ */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
 .reduce-animations * {
   animation-duration: 0.001ms !important;
   animation-iteration-count: 1 !important;
   transition-duration: 0.001ms !important;
   scroll-behavior: auto !important;
+}
+
+/* ============================================
+   BOTTOM NAV SAFE AREA
+   ============================================ */
+.pb-safe-bottom {
+  padding-bottom: calc(4.5rem + var(--safe-bottom));
+}
+
+@media (min-width: 1024px) {
+  .pb-safe-bottom {
+    padding-bottom: 0;
+  }
 }

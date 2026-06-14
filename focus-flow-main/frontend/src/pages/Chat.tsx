@@ -197,7 +197,7 @@ const Chat = () => {
         </div>
 
         {/* Bottom Input Area */}
-        <div className="flex-shrink-0 border-t-[4px] border-black bg-white p-3 lg:p-6 lg:px-10 shadow-[0_-10px_20px_rgba(0,0,0,0.05)]">
+        <div className="flex-shrink-0 border-t-[3px] sm:border-t-[4px] border-black bg-white p-3 lg:p-6 lg:px-10 shadow-[0_-10px_20px_rgba(0,0,0,0.05)] pb-[calc(0.75rem+4.5rem)] lg:pb-6">
           <form onSubmit={handleSendMessage} className="flex gap-2 lg:gap-4">
             <input
               type="text"

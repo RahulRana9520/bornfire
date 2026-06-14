@@ -42,10 +42,10 @@ const WeekGoals = () => {
   };
 
   return (
-    <div className="space-y-4 sm:space-y-6 lg:space-y-8 animate-fade-in pb-10 pt-16 sm:pt-0">
+    <div className="space-y-4 sm:space-y-6 lg:space-y-8 animate-fade-in pb-4">
       <div id="tour-add-habit" className="space-y-4">
         {/* Header */}
-        <div className="bg-[#FFDE00] border-[4px] border-black p-6 sm:p-8 shadow-[8px_8px_0px_0px_#000] relative overflow-hidden">
+        <div className="bg-[#FFDE00] border-[2px] sm:border-[4px] border-black p-4 sm:p-6 lg:p-8 shadow-[3px_3px_0px_0px_#000] sm:shadow-[8px_8px_0px_0px_#000] relative overflow-hidden">
         {/* Decorative background element */}
         <div className="absolute -right-4 -top-4 w-24 h-24 bg-white/20 rounded-full blur-2xl" />
         
@@ -97,7 +97,7 @@ const WeekGoals = () => {
       </div>
 
       {/* Habits Scroll Container */}
-      <div className="bg-white border-[4px] border-black shadow-[8px_8px_0px_0px_#000] overflow-hidden">
+      <div className="bg-white border-[2px] sm:border-[4px] border-black shadow-[3px_3px_0px_0px_#000] sm:shadow-[8px_8px_0px_0px_#000] overflow-hidden">
         {habits.length === 0 ? (
           <div className="text-center py-16 text-muted-foreground bg-white">
             <Target className="w-12 h-12 mx-auto mb-4 opacity-20" />

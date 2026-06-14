@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Sidebar } from './Sidebar';
-import { Header } from './Header';
+import { BottomNav } from './BottomNav';
 import { AuthModal } from '@/components/auth/AuthModal';
 import { CheckInModal } from '@/components/auth/CheckInModal';
 
@@ -69,23 +69,34 @@ export function AppLayout({ children }: AppLayoutProps) {
   const isChatPage = location.pathname === '/chat';
 
   return (
-    <div className="min-h-screen bg-white flex">
+    <div className="min-h-[100dvh] bg-white flex">
+      {/* Desktop sidebar — hidden on mobile */}
       <Sidebar isOpen={isSidebarOpen} onToggle={() => setIsSidebarOpen(!isSidebarOpen)} />
       
       <main className={cn(
-        "flex-1 min-h-screen",
-        "transition-all duration-300 ease-out",
+        "flex-1 min-h-[100dvh] w-full",
         "lg:ml-72"
       )}>
         <div className={cn(
-          "animate-fade-in transition-all duration-300",
+          "w-full",
           isChatPage 
-            ? "w-full min-h-screen" 
-            : "max-w-6xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-6 lg:py-8 pt-10 lg:pt-8"
+            ? "min-h-[100dvh]" 
+            : [
+                /* Mobile: compact padding, bottom nav clearance */
+                "px-4 py-4 pb-24",
+                /* Tablet */
+                "sm:px-5 sm:py-5",
+                /* Desktop */
+                "lg:px-8 lg:py-8 lg:pb-8",
+                "max-w-6xl mx-auto"
+              ].join(" ")
         )}>
           {children}
         </div>
       </main>
+
+      {/* Mobile bottom tab bar */}
+      <BottomNav />
 
       {/* Auth Modal */}
       <AuthModal
@@ -106,4 +117,3 @@ export function AppLayout({ children }: AppLayoutProps) {
     </div>
   );
 }
-

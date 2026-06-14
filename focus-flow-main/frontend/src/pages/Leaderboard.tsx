@@ -43,11 +43,11 @@ const Leaderboard = () => {
   }));
 
   return (
-    <div className="space-y-8 animate-fade-in">
+    <div className="space-y-4 sm:space-y-6 lg:space-y-8 animate-fade-in pb-4">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="space-y-2">
-          <h1 className="text-4xl sm:text-5xl font-black uppercase italic tracking-tighter bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text text-transparent pr-6 overflow-visible">
+          <h1 className="text-2xl sm:text-4xl lg:text-5xl font-black uppercase italic tracking-tighter bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text text-transparent pr-2 sm:pr-6 overflow-visible">
             LEADERBOARD
           </h1>
           <p className="text-muted-foreground text-base font-medium">
@@ -82,7 +82,7 @@ const Leaderboard = () => {
 
       {/* Top 3 podium */}
       {sortedLeaderboard.length > 0 && (
-        <div className="grid grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-3 gap-2 sm:gap-4 lg:gap-6 mb-4 sm:mb-8">
           {[1, 0, 2].map((actualIndex) => {
             const actualEntry = sortedLeaderboard[actualIndex];
             if (!actualEntry) return <div key={`empty-${actualIndex}`} />;

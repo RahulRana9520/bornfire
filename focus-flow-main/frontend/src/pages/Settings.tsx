@@ -58,10 +58,10 @@ const Settings = () => {
   ];
 
   return (
-    <div className="space-y-8 animate-fade-in pb-20">
+    <div className="space-y-4 sm:space-y-6 lg:space-y-8 animate-fade-in pb-4">
       {/* Header */}
-      <div className="bg-[#FFDE00] border-[4px] border-black p-8 shadow-[8px_8px_0px_0px_#000]">
-        <h1 className="text-3xl sm:text-4xl font-black flex items-center gap-4 uppercase italic tracking-tighter">
+      <div className="bg-[#FFDE00] border-[2px] sm:border-[4px] border-black p-4 sm:p-6 lg:p-8 shadow-[3px_3px_0px_0px_#000] sm:shadow-[8px_8px_0px_0px_#000]">
+        <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black flex items-center gap-3 sm:gap-4 uppercase italic tracking-tighter">
           <SettingsIcon className="w-10 h-10" />
           Settings
         </h1>
@@ -71,10 +71,10 @@ const Settings = () => {
       </div>
 
       {/* PWA & Notification Controls */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 lg:gap-8">
         {/* install prompt */}
         {isInstallable && (
-          <div className="bg-[#00E5BC] border-[4px] border-black p-6 shadow-[6px_6px_0px_0px_#000] flex flex-col items-center justify-between gap-6">
+          <div className="bg-[#00E5BC] border-[2px] sm:border-[4px] border-black p-4 sm:p-6 shadow-[3px_3px_0px_0px_#000] sm:shadow-[6px_6px_0px_0px_#000] flex flex-col items-center justify-between gap-4 sm:gap-6">
             <div className="flex items-center gap-4 w-full">
               <div className="w-14 h-14 bg-white border-[3px] border-black flex items-center justify-center shadow-[3px_3px_0px_0px_#000]">
                 <Smartphone className="w-8 h-8 text-black" />
@@ -96,7 +96,7 @@ const Settings = () => {
 
         {/* notification prompt */}
         {permission !== 'granted' && (
-          <div className="bg-[#FF89BB] border-[4px] border-black p-6 shadow-[6px_6px_0px_0px_#000] flex flex-col items-center justify-between gap-6">
+          <div className="bg-[#FF89BB] border-[2px] sm:border-[4px] border-black p-4 sm:p-6 shadow-[3px_3px_0px_0px_#000] sm:shadow-[6px_6px_0px_0px_#000] flex flex-col items-center justify-between gap-4 sm:gap-6">
             <div className="flex items-center gap-4 w-full">
               <div className="w-14 h-14 bg-white border-[3px] border-black flex items-center justify-center shadow-[3px_3px_0px_0px_#000]">
                 <Bell className="w-8 h-8 text-black" />
@@ -118,11 +118,11 @@ const Settings = () => {
       </div>
 
       {/* Settings groups */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 lg:gap-8">
         {settingsGroups.map((group) => (
           <div 
             key={group.title}
-            className="bg-white border-[4px] border-black shadow-[6px_6px_0px_0px_#000] overflow-hidden"
+            className="bg-white border-[2px] sm:border-[4px] border-black shadow-[3px_3px_0px_0px_#000] sm:shadow-[6px_6px_0px_0px_#000] overflow-hidden"
           >
             <div className="px-6 py-4 border-b-[4px] border-black bg-black text-white flex items-center gap-3">
               <group.icon className="w-5 h-5" />
@@ -181,7 +181,7 @@ const Settings = () => {
       </div>
 
       {/* Danger zone */}
-      <div className="bg-[#FF89BB]/10 border-[4px] border-black p-8 shadow-[8px_8px_0px_0px_#000]">
+      <div className="bg-[#FF89BB]/10 border-[2px] sm:border-[4px] border-black p-4 sm:p-6 lg:p-8 shadow-[3px_3px_0px_0px_#000] sm:shadow-[8px_8px_0px_0px_#000]">
         <h3 className="font-black uppercase italic text-destructive text-xl mb-6">Danger Zone</h3>
         <div className="flex flex-col sm:flex-row gap-4">
           <Button 

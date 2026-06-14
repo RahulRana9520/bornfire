@@ -33,11 +33,11 @@ const Friends = () => {
   };
 
   return (
-    <div className="space-y-8 animate-fade-in p-2 sm:p-6 pb-20">
+    <div className="space-y-4 sm:space-y-6 lg:space-y-8 animate-fade-in pb-4">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
         <div>
-          <h1 className="text-[32px] sm:text-[40px] font-black uppercase italic tracking-tighter leading-none">
+          <h1 className="text-2xl sm:text-[32px] lg:text-[40px] font-black uppercase italic tracking-tighter leading-none">
             Watch Friends
           </h1>
           <p className="text-muted-foreground mt-2 font-bold uppercase text-[12px] tracking-widest">
@@ -47,7 +47,7 @@ const Friends = () => {
       </div>
 
       {/* Invite System (Neo-Brutalist Add Bar) */}
-      <div id="tour-add-friend" className="bg-white border-[4px] border-black shadow-[8px_8px_0px_0px_#000] p-6 rounded-2xl">
+      <div id="tour-add-friend" className="bg-white border-[2px] sm:border-[4px] border-black shadow-[3px_3px_0px_0px_#000] sm:shadow-[8px_8px_0px_0px_#000] p-4 sm:p-6">
         <h3 className="text-sm font-black uppercase tracking-widest mb-4 flex items-center gap-2">
           <UserPlus className="w-5 h-5 text-primary fill-primary/20" />
           Invite by Bornfire ID
@@ -89,7 +89,7 @@ const Friends = () => {
             <span className="w-3 h-3 rounded-full bg-[#00E5BC] border-2 border-black" />
             Live Status ({onlineFriends.length})
           </h3>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
             {onlineFriends.map(friend => (
               <FriendCard key={friend.id} friend={friend} />
             ))}
@@ -103,7 +103,7 @@ const Friends = () => {
           <h3 className="font-black text-[10px] uppercase tracking-[4px] text-muted-foreground">
             Stationary ({offlineFriends.length})
           </h3>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
             {offlineFriends.map(friend => (
               <FriendCard key={friend.id} friend={friend} />
             ))}
@@ -113,7 +113,7 @@ const Friends = () => {
 
       {/* Empty state */}
       {friends.length === 0 && (
-        <div className="text-center py-20 bg-white border-[4px] border-black shadow-[10px_10px_0px_0px_#000] rounded-3xl">
+        <div className="text-center py-12 sm:py-20 bg-white border-[2px] sm:border-[4px] border-black shadow-[3px_3px_0px_0px_#000] sm:shadow-[10px_10px_0px_0px_#000]">
           <Users className="w-20 h-20 mx-auto mb-6 text-muted-foreground/30" />
           <h3 className="text-2xl font-black uppercase italic">Squad Empty</h3>
           <p className="text-muted-foreground mt-2 font-bold uppercase text-[10px] tracking-[2px]">

@@ -8,14 +8,8 @@ import {
   MessageSquare, 
   Trophy, 
   Settings, 
-  ChevronRight,
-  LogOut,
-  Calendar,
-  X,
   LogIn,
   User,
-  Menu,
-  Smartphone,
   Gamepad2
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -26,6 +20,7 @@ import { usePWA } from '@/hooks/usePWA';
 import { AuthModal } from '@/components/auth/AuthModal';
 import { getLeagueName } from '@/lib/taskUtils';
 import { UserMenu } from './UserMenu';
+import { X } from 'lucide-react';
 
 interface SidebarProps {
   isOpen: boolean;
@@ -53,22 +48,13 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
 
   return (
     <>
-      {/* Mobile overlay */}
-      {isOpen && (
-        <div 
-          className="fixed inset-0 bg-foreground/30 backdrop-blur-sm z-40 lg:hidden animate-fade-in"
-          onClick={onToggle}
-        />
-      )}
-
-      {/* Sidebar */}
+      {/* Sidebar — Desktop only */}
       <aside
         className={cn(
-          "fixed left-0 top-0 z-50 h-screen w-[280px] sm:w-72 bg-white border-r-[4px] border-black",
-          "transform transition-transform duration-300 ease-out",
-          "flex flex-col overflow-hidden",
-          isOpen ? "translate-x-0" : "-translate-x-full",
-          "lg:translate-x-0 lg:fixed"
+          "fixed left-0 top-0 z-50 h-[100dvh] w-72 bg-white border-r-[4px] border-black",
+          "flex-col overflow-hidden",
+          /* Hidden on mobile, visible on desktop */
+          "hidden lg:flex"
         )}
       >
         {/* Header */}
@@ -79,14 +65,6 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
             </div>
             <span className="font-black text-2xl text-black tracking-tighter uppercase">Bornfire</span>
           </div>
-          <Button 
-            variant="ghost" 
-            size="icon" 
-            className="lg:hidden border-2 border-black bg-white hover:bg-black hover:text-white transition-none"
-            onClick={onToggle}
-          >
-            <X className="w-5 h-5" />
-          </Button>
         </div>
 
         {/* Navigation */}
@@ -97,7 +75,6 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
               <NavLink
                 key={item.to}
                 to={item.to}
-                onClick={() => window.innerWidth < 1024 && onToggle()}
                 className={cn(
                   "flex items-center gap-3 px-4 py-3 border-[3px] border-black font-black uppercase text-sm transition-none",
                   isActive
@@ -113,8 +90,6 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
               </NavLink>
             );
           })}
-
-
         </nav>
 
         {/* Profile Card */}
@@ -198,20 +173,6 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
         </div>
       </aside>
 
-      {/* Mobile toggle button */}
-      <Button
-        variant="default"
-        size="icon"
-        className={cn(
-          "fixed top-3 left-3 sm:top-4 sm:left-4 z-[60] lg:hidden shadow-lg hover:shadow-xl transition-all",
-          "bg-primary text-primary-foreground w-12 h-12 sm:w-10 sm:h-10",
-          isOpen && "opacity-0 pointer-events-none scale-90"
-        )}
-        onClick={onToggle}
-      >
-        <Menu className="w-6 h-6 sm:w-5 sm:h-5" />
-      </Button>
-
       {/* Auth Modal */}
       <AuthModal
         isOpen={showAuthModal}
@@ -243,8 +204,8 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
               </p>
             </div>
 
-            {/* Leagues Comparison Grid (Clash of Clans Inspired!) */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 my-4">
+            {/* Leagues Comparison Grid */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4 my-4">
               {[
                 { name: 'Bronze', levels: 'LVL 1 - 19', bg: 'bg-[#ff7a00]/10' },
                 { name: 'Silver', levels: 'LVL 20 - 39', bg: 'bg-[#a0a0a0]/10' },
@@ -257,7 +218,7 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
                   <div 
                     key={lg.name}
                     className={cn(
-                      "border-[4px] border-black p-4 flex flex-col items-center text-center relative",
+                      "border-[3px] sm:border-[4px] border-black p-3 sm:p-4 flex flex-col items-center text-center relative",
                       lg.bg,
                       isCurrent ? "shadow-[4px_4px_0px_0px_#000] bg-yellow-50" : ""
                     )}
@@ -267,17 +228,17 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
                         Current
                       </span>
                     )}
-                    <div className="w-16 h-16 border-[3px] border-black bg-white flex items-center justify-center p-1.5 shadow-[2px_2px_0px_0px_#000] mb-4">
+                    <div className="w-12 h-12 sm:w-16 sm:h-16 border-[3px] border-black bg-white flex items-center justify-center p-1 sm:p-1.5 shadow-[2px_2px_0px_0px_#000] mb-3 sm:mb-4">
                       <img 
                         src={`/badges/${lg.name.toLowerCase()}.png`} 
                         alt={lg.name} 
                         className="w-full h-full object-contain" 
                       />
                     </div>
-                    <h3 className="font-black text-lg uppercase tracking-tight mb-1">{lg.name}</h3>
-                    <span className="text-[10px] font-black uppercase text-[#555] tracking-wider mb-3">League</span>
-                    <div className="w-full border-t-2 border-black border-dashed my-2" />
-                    <div className="bg-white border-2 border-black py-1 px-3 text-[10px] font-black uppercase tracking-wider shadow-[2px_2px_0px_0px_#000]">
+                    <h3 className="font-black text-sm sm:text-lg uppercase tracking-tight mb-1">{lg.name}</h3>
+                    <span className="text-[9px] sm:text-[10px] font-black uppercase text-[#555] tracking-wider mb-2 sm:mb-3">League</span>
+                    <div className="w-full border-t-2 border-black border-dashed my-1 sm:my-2" />
+                    <div className="bg-white border-2 border-black py-1 px-2 sm:px-3 text-[9px] sm:text-[10px] font-black uppercase tracking-wider shadow-[2px_2px_0px_0px_#000]">
                       {lg.levels}
                     </div>
                   </div>

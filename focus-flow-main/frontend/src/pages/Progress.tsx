@@ -15,12 +15,12 @@ const ProgressPage = () => {
   const xpProgress = ((userProfile.xp - currentLevelXP) / (xpToNext - currentLevelXP)) * 100;
 
   return (
-    <div className="space-y-6 lg:space-y-8 animate-fade-in pb-10">
+    <div className="space-y-4 sm:space-y-6 lg:space-y-8 animate-fade-in pb-4">
       {/* Header */}
-      <div className="bg-[#FFDE00] border-[4px] border-black p-6 sm:p-8 shadow-[8px_8px_0px_0px_#000] relative overflow-hidden">
+      <div className="bg-[#FFDE00] border-[2px] sm:border-[4px] border-black p-4 sm:p-6 lg:p-8 shadow-[3px_3px_0px_0px_#000] sm:shadow-[8px_8px_0px_0px_#000] relative overflow-hidden">
         <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="space-y-1">
-            <h1 className="text-3xl sm:text-4xl font-black uppercase italic tracking-tighter flex items-center gap-3">
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black uppercase italic tracking-tighter flex items-center gap-2 sm:gap-3">
               <TrendingUp className="w-8 h-8 sm:w-10 sm:h-10 stroke-[3px]" />
               Daily Progress
             </h1>
@@ -32,17 +32,18 @@ const ProgressPage = () => {
       </div>
 
       {/* Profile Stats */}
-      <div className="bg-white border-[4px] border-black p-6 sm:p-8 shadow-[8px_8px_0px_0px_#00E5BC]">
+      <div className="bg-white border-[2px] sm:border-[4px] border-black p-4 sm:p-6 lg:p-8 shadow-[3px_3px_0px_0px_#00E5BC] sm:shadow-[8px_8px_0px_0px_#00E5BC]">
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6">
-          <div className="w-20 h-20 sm:w-24 sm:h-24 bg-[#FF89BB] border-[4px] border-black flex items-center justify-center shadow-[4px_4px_0px_0px_#000] shrink-0">
-            <span className="text-4xl sm:text-5xl font-black uppercase text-black">
+          <div className="w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 bg-[#FF89BB] border-[2px] sm:border-[4px] border-black flex items-center justify-center shadow-[2px_2px_0px_0px_#000] sm:shadow-[4px_4px_0px_0px_#000] shrink-0">
+            <span className="text-3xl sm:text-4xl lg:text-5xl font-black uppercase text-black">
               {userProfile.username.charAt(0)}
             </span>
           </div>
           <div className="flex-1 w-full">
             <div className="flex items-center gap-4 mb-2">
-              <h2 className="text-2xl sm:text-3xl font-black uppercase tracking-tighter">{userProfile.username}</h2>
+              <h2 className="text-xl sm:text-2xl lg:text-3xl font-black uppercase tracking-tighter">{userProfile.username}</h2>
               <span className={cn(
+
                 "px-3 py-1 border-[3px] border-black text-xs font-black uppercase tracking-widest shadow-[2px_2px_0px_0px_#000]",
                 `bg-league-${userProfile.league}`
               )}>
@@ -67,50 +68,50 @@ const ProgressPage = () => {
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-        <div className="bg-[#FFDE00] border-[4px] border-black p-6 shadow-[6px_6px_0px_0px_#000] hover:-translate-y-1 hover:translate-x-1 hover:shadow-[4px_4px_0px_0px_#000] transition-all">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6">
+        <div className="bg-[#FFDE00] border-[2px] sm:border-[4px] border-black p-4 sm:p-6 shadow-[3px_3px_0px_0px_#000] sm:shadow-[6px_6px_0px_0px_#000] hover:-translate-y-1 hover:translate-x-1 hover:shadow-[2px_2px_0px_0px_#000] sm:hover:shadow-[4px_4px_0px_0px_#000] transition-all">
           <div className="flex items-center gap-2 mb-2">
             <Clock className="w-5 h-5 stroke-[3px]" />
             <span className="text-xs font-black uppercase tracking-widest">Focus Time</span>
           </div>
-          <div className="text-3xl sm:text-4xl font-black uppercase tracking-tighter">
+          <div className="text-2xl sm:text-3xl lg:text-4xl font-black uppercase tracking-tighter">
             {formatTimeDisplay(userProfile.totalFocusTime)}
           </div>
         </div>
 
-        <div className="bg-[#00E5BC] border-[4px] border-black p-6 shadow-[6px_6px_0px_0px_#000] hover:-translate-y-1 hover:translate-x-1 hover:shadow-[4px_4px_0px_0px_#000] transition-all">
+        <div className="bg-[#00E5BC] border-[2px] sm:border-[4px] border-black p-4 sm:p-6 shadow-[3px_3px_0px_0px_#000] sm:shadow-[6px_6px_0px_0px_#000] hover:-translate-y-1 hover:translate-x-1 hover:shadow-[2px_2px_0px_0px_#000] sm:hover:shadow-[4px_4px_0px_0px_#000] transition-all">
           <div className="flex items-center gap-2 mb-2">
             <CheckCircle2 className="w-5 h-5 stroke-[3px]" />
             <span className="text-xs font-black uppercase tracking-widest">Completed</span>
           </div>
-          <div className="text-3xl sm:text-4xl font-black uppercase tracking-tighter">
+          <div className="text-2xl sm:text-3xl lg:text-4xl font-black uppercase tracking-tighter">
             {userProfile.completedTasks}
           </div>
         </div>
 
-        <div className="bg-[#FF89BB] border-[4px] border-black p-6 shadow-[6px_6px_0px_0px_#000] hover:-translate-y-1 hover:translate-x-1 hover:shadow-[4px_4px_0px_0px_#000] transition-all">
+        <div className="bg-[#FF89BB] border-[2px] sm:border-[4px] border-black p-4 sm:p-6 shadow-[3px_3px_0px_0px_#000] sm:shadow-[6px_6px_0px_0px_#000] hover:-translate-y-1 hover:translate-x-1 hover:shadow-[2px_2px_0px_0px_#000] sm:hover:shadow-[4px_4px_0px_0px_#000] transition-all">
           <div className="flex items-center gap-2 mb-2">
             <Flame className="w-5 h-5 stroke-[3px]" />
             <span className="text-xs font-black uppercase tracking-widest">Streak</span>
           </div>
-          <div className="text-3xl sm:text-4xl font-black uppercase tracking-tighter">
+          <div className="text-2xl sm:text-3xl lg:text-4xl font-black uppercase tracking-tighter">
             {userProfile.streak} <span className="text-xl">DAYS</span>
           </div>
         </div>
 
-        <div className="bg-white border-[4px] border-black p-6 shadow-[6px_6px_0px_0px_#000] hover:-translate-y-1 hover:translate-x-1 hover:shadow-[4px_4px_0px_0px_#000] transition-all">
+        <div className="bg-white border-[2px] sm:border-[4px] border-black p-4 sm:p-6 shadow-[3px_3px_0px_0px_#000] sm:shadow-[6px_6px_0px_0px_#000] hover:-translate-y-1 hover:translate-x-1 hover:shadow-[2px_2px_0px_0px_#000] sm:hover:shadow-[4px_4px_0px_0px_#000] transition-all">
           <div className="flex items-center gap-2 mb-2">
             <Trophy className="w-5 h-5 stroke-[3px]" />
             <span className="text-xs font-black uppercase tracking-widest">Best</span>
           </div>
-          <div className="text-3xl sm:text-4xl font-black uppercase tracking-tighter">
+          <div className="text-2xl sm:text-3xl lg:text-4xl font-black uppercase tracking-tighter">
             {userProfile.longestStreak} <span className="text-xl">DAYS</span>
           </div>
         </div>
       </div>
 
       {/* Weekly Chart */}
-      <div id="tour-xp-chart" className="bg-white border-[4px] border-black p-4 sm:p-6 shadow-[8px_8px_0px_0px_#000]">
+      <div id="tour-xp-chart" className="bg-white border-[2px] sm:border-[4px] border-black p-4 sm:p-6 shadow-[3px_3px_0px_0px_#000] sm:shadow-[8px_8px_0px_0px_#000]">
         <h3 className="font-black text-xl uppercase tracking-tighter mb-4 flex items-center gap-2">
           <Target className="w-6 h-6 stroke-[3px]" />
           Weekly Output
@@ -119,7 +120,7 @@ const ProgressPage = () => {
       </div>
 
       {/* Badges */}
-      <div className="bg-[#00E5BC] border-[4px] border-black p-6 sm:p-8 shadow-[8px_8px_0px_0px_#000] relative mt-12">
+      <div className="bg-[#00E5BC] border-[2px] sm:border-[4px] border-black p-4 sm:p-6 lg:p-8 shadow-[3px_3px_0px_0px_#000] sm:shadow-[8px_8px_0px_0px_#000] relative mt-8 sm:mt-12">
         <div className="absolute -top-6 left-6 bg-white border-[4px] border-black px-6 py-2 shadow-[4px_4px_0px_0px_#000] transform -rotate-2">
           <h3 className="font-black text-xl md:text-2xl uppercase tracking-tighter flex items-center gap-3">
             <Award className="w-6 h-6 sm:w-8 sm:h-8 stroke-[3px]" />
@@ -127,7 +128,7 @@ const ProgressPage = () => {
           </h3>
         </div>
         
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6 mt-8">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6 mt-6 sm:mt-8">
           {userProfile.badges && userProfile.badges.length > 0 ? (
             userProfile.badges.map((badge) => (
               <div 
