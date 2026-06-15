@@ -1,5 +1,5 @@
 import React from 'react';
-import { Calendar, Target, Clock, Sparkles, Settings } from 'lucide-react';
+import { Calendar, Target, Clock, Sparkles, Settings, Sun, Moon } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { AddTaskForm } from '@/components/tasks/AddTaskForm';
 import { TaskList } from '@/components/tasks/TaskList';
@@ -8,10 +8,12 @@ import { WeeklyChart } from '@/components/progress/WeeklyChart';
 import { useTaskContext } from '@/contexts/TaskContext';
 import { formatTimeDisplay } from '@/lib/taskUtils';
 import { useCombinedProgress } from '@/hooks/useCombinedProgress';
+import { useTheme } from '@/contexts/ThemeContext';
 
 const Index = () => {
   const { getTodayTasks, userProfile } = useTaskContext();
   const { todayProgress, weeklyProgress } = useCombinedProgress();
+  const { theme, toggleTheme } = useTheme();
   const todayTasks = getTodayTasks();
   
   // Calculate today's focus time
@@ -57,6 +59,15 @@ const Index = () => {
             </span>
           </div>
         )}
+
+        {/* Theme toggle — mobile only, bottom-right corner */}
+        <button
+          onClick={toggleTheme}
+          className="absolute bottom-3 right-3 lg:hidden w-8 h-8 border-[2px] border-black bg-[#FFDE00] flex items-center justify-center hover:bg-yellow-400 transition-colors shadow-[2px_2px_0px_0px_#000]"
+          title="Toggle Theme"
+        >
+          {theme === 'dark' ? <Moon className="w-4 h-4 text-black stroke-[3px]" /> : <Sun className="w-4 h-4 text-black stroke-[3px]" />}
+        </button>
       </div>
 
       {/* Stats Row — 2x2 grid on mobile, 4 columns on desktop */}

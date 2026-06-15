@@ -10,7 +10,9 @@ import {
   Settings, 
   LogIn,
   User,
-  Gamepad2
+  Gamepad2,
+  Sun,
+  Moon
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -21,6 +23,7 @@ import { AuthModal } from '@/components/auth/AuthModal';
 import { getLeagueName } from '@/lib/taskUtils';
 import { UserMenu } from './UserMenu';
 import { X } from 'lucide-react';
+import { useTheme } from '@/contexts/ThemeContext';
 
 interface SidebarProps {
   isOpen: boolean;
@@ -43,6 +46,7 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
   const { userProfile } = useTaskContext();
   const { user } = useAuth();
   const { isInstallable, installApp } = usePWA();
+  const { theme, toggleTheme } = useTheme();
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showLeagueModal, setShowLeagueModal] = useState(false);
 
@@ -58,13 +62,20 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
         )}
       >
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b-[4px] border-black bg-[#FFDE00]">
+        <div className="flex items-center justify-between p-6 border-b-[4px] border-black bg-[#FFDE00] relative">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 border-[3px] border-black bg-white flex items-center justify-center p-1 shadow-[2px_2px_0px_0px_#000]">
                <img src="/app.png" alt="Logo" className="w-full h-full" />
             </div>
             <span className="font-black text-2xl text-black tracking-tighter uppercase">Bornfire</span>
           </div>
+          <button
+            onClick={toggleTheme}
+            className="absolute bottom-2 right-2 w-8 h-8 border-[2px] border-black bg-white flex items-center justify-center hover:bg-gray-100 transition-colors shadow-[2px_2px_0px_0px_#000]"
+            title="Toggle Theme"
+          >
+            {theme === 'dark' ? <Moon className="w-4 h-4 text-black stroke-[3px]" /> : <Sun className="w-4 h-4 text-black stroke-[3px]" />}
+          </button>
         </div>
 
         {/* Navigation */}
@@ -162,13 +173,6 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
               </Button>
             )}
 
-            {/* Streak */}
-            <div className="flex items-center justify-between pt-2 border-t-2 border-black dashed">
-              <span className="text-[10px] font-black uppercase">STREAK</span>
-              <div className="flex items-center gap-1 bg-[#00E5BC] border-2 border-black px-2 py-0.5 shadow-[2px_2px_0px_0px_#000]">
-                <span className="font-black text-xs">{userProfile.streak}D</span>
-              </div>
-            </div>
           </div>
         </div>
       </aside>
