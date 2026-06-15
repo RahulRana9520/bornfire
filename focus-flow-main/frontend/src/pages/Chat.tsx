@@ -76,8 +76,8 @@ const Chat = () => {
     setTimeout(() => { scrollRef.current?.scrollIntoView({ behavior: 'smooth' }); }, 100);
   };
 
-  const handleSendMessage = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSendMessage = async (e?: React.FormEvent | React.KeyboardEvent) => {
+    if (e) e.preventDefault();
     
     if (!user) {
       alert('PORTAL ERROR: You must be logged in to access the Squad Feed.');
@@ -129,8 +129,8 @@ const Chat = () => {
                 <Users className="w-4 h-4 lg:w-5 lg:h-5 text-white" />
               )}
             </div>
-            <div>
-              <h2 className="text-lg lg:text-2xl font-black uppercase italic tracking-tighter leading-none">
+            <div className="min-w-0 flex-1">
+              <h2 className="text-lg lg:text-2xl font-black uppercase italic tracking-tighter leading-none truncate">
                 {filter === 'friends' ? 'Squad Chat' : 'Global Feed'}
               </h2>
               <p className="text-[8px] lg:text-[10px] font-black text-muted-foreground uppercase opacity-70 mt-1 tracking-widest text-[#00E5BC]">
@@ -199,7 +199,7 @@ const Chat = () => {
                     </span>
                     <span className="text-[8px] font-bold text-black/20 italic">{new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                   </div>
-                  <div className={`p-3 lg:p-4 border-[3px] lg:border-[4px] border-black shadow-[4px_4px_0px_0px_#000] lg:shadow-[6px_6px_0px_0px_#000] font-bold text-sm lg:text-[16px] max-w-[90%] lg:max-w-[85%]
+                  <div className={`p-3 lg:p-4 border-[3px] lg:border-[4px] border-black shadow-[4px_4px_0px_0px_#000] lg:shadow-[6px_6px_0px_0px_#000] font-bold text-sm lg:text-[16px] max-w-[90%] lg:max-w-[85%] break-words whitespace-pre-wrap
                     ${isMe ? 'bg-[#FFDE00] rounded-l-xl lg:rounded-l-2xl rounded-tr-xl lg:rounded-tr-2xl' : 'bg-white rounded-r-xl lg:rounded-r-2xl rounded-tl-xl lg:rounded-tl-2xl'}`}>
                     {msg.content}
                   </div>
@@ -213,12 +213,18 @@ const Chat = () => {
         {/* Bottom Input Area */}
         <div className="flex-shrink-0 border-t-[3px] sm:border-t-[4px] border-black bg-white p-3 lg:p-6 lg:px-10 shadow-[0_-10px_20px_rgba(0,0,0,0.05)] pb-[calc(0.75rem+4.5rem)] lg:pb-6">
           <form onSubmit={handleSendMessage} className="flex gap-2 lg:gap-4">
-            <input
-              type="text"
+            <textarea
               placeholder={filter === 'friends' ? "Message your squad..." : "Broadcast to global feed..."}
               value={newMessage}
               onChange={(e) => setNewMessage(e.target.value)}
-              className="flex-1 h-12 lg:h-14 bg-white border-[3px] lg:border-[4px] border-black px-4 lg:px-6 font-bold text-base lg:text-lg focus:outline-none focus:bg-[#fcfcfc] transition-colors"
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                  e.preventDefault();
+                  handleSendMessage();
+                }
+              }}
+              rows={1}
+              className="flex-1 min-w-0 min-h-[48px] lg:min-h-[56px] max-h-[150px] py-2 lg:py-3 resize-y bg-white border-[3px] lg:border-[4px] border-black px-4 lg:px-6 font-bold text-base lg:text-lg focus:outline-none focus:bg-[#fcfcfc] transition-colors custom-scrollbar"
               style={{ fontSize: '16px' }} // Force 16px to prevent iOS zoom
               disabled={isSending}
             />

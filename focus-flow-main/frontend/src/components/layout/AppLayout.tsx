@@ -74,7 +74,7 @@ export function AppLayout({ children }: AppLayoutProps) {
       <Sidebar isOpen={isSidebarOpen} onToggle={() => setIsSidebarOpen(!isSidebarOpen)} />
       
       <main className={cn(
-        "flex-1 min-h-[100dvh] w-full",
+        "flex-1 min-w-0 min-h-[100dvh] w-full",
         "lg:ml-72"
       )}>
         <div className={cn(
