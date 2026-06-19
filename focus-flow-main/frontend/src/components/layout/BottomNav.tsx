@@ -12,7 +12,7 @@ import { cn } from '@/lib/utils';
 const bottomNavItems = [
   { to: '/', icon: LayoutGrid, label: 'Today' },
   { to: '/week-goals', icon: Target, label: 'Goals' },
-  { to: '/progress', icon: LineChart, label: 'Progress' },
+  { to: '/placement-prep', icon: Target, label: 'Prep' },
   { to: '/chat', icon: MessageSquare, label: 'Chat' },
   { to: '/leaderboard', icon: Trophy, label: 'Ranks' },
 ];

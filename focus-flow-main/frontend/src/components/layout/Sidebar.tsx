@@ -37,6 +37,7 @@ const navItems = [
   { to: '/friends', icon: Users, label: 'Watch Friends' },
   { to: '/chat', icon: MessageSquare, label: 'Squad Chat' },
   { to: '/group-games', icon: Gamepad2, label: 'Group Games' },
+  { to: '/placement-prep', icon: Target, label: 'Placement Prep' },
   { to: '/leaderboard', icon: Trophy, label: 'Leaderboard' },
 ];
 

@@ -12,6 +12,7 @@ import { OnboardingProvider } from "@/contexts/OnboardingContext";
 import { OnboardingOverlay } from "@/components/onboarding/OnboardingOverlay";
 import { NotificationScheduler } from "@/components/notifications/NotificationScheduler";
 import { AppLayout } from "@/components/layout/AppLayout";
+import { PlacementProvider } from "@/contexts/PlacementContext";
 import Index from "./pages/Index";
 import WeekGoals from "./pages/WeekGoals";
 import Progress from "./pages/Progress";
@@ -20,6 +21,7 @@ import Chat from "./pages/Chat";
 import GroupGames from "./pages/GroupGames";
 import Leaderboard from "./pages/Leaderboard";
 import Settings from "./pages/Settings";
+import PlacementPrep from "@/pages/PlacementPrep";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -37,8 +39,9 @@ const App = () => (
             <Sonner />
             <BrowserRouter>
               <OnboardingProvider>
-                <AppLayout>
-                  <OnboardingOverlay />
+                <PlacementProvider>
+                  <AppLayout>
+                    <OnboardingOverlay />
                   <Routes>
                     <Route path="/" element={<Index />} />
                     <Route path="/week-goals" element={<WeekGoals />} />
@@ -47,10 +50,12 @@ const App = () => (
                     <Route path="/chat" element={<Chat />} />
                     <Route path="/group-games" element={<GroupGames />} />
                     <Route path="/leaderboard" element={<Leaderboard />} />
+                    <Route path="/placement-prep" element={<PlacementPrep />} />
                     <Route path="/settings" element={<Settings />} />
                     <Route path="*" element={<NotFound />} />
                   </Routes>
                 </AppLayout>
+                </PlacementProvider>
               </OnboardingProvider>
             </BrowserRouter>
           </TooltipProvider>
