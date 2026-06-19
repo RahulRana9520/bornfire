@@ -38,7 +38,6 @@ const navItems = [
   { to: '/chat', icon: MessageSquare, label: 'Squad Chat' },
   { to: '/group-games', icon: Gamepad2, label: 'Group Games' },
   { to: '/leaderboard', icon: Trophy, label: 'Leaderboard' },
-  { to: '/settings', icon: Settings, label: 'Settings' },
 ];
 
 export function Sidebar({ isOpen, onToggle }: SidebarProps) {
@@ -105,7 +104,15 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
 
         {/* Profile Card */}
         <div className="p-4 border-t-[4px] border-black bg-[#FF89BB]/10">
-          <div className="neo-brutal-white p-4 space-y-4">
+          <div className="neo-brutal-white p-4 space-y-4 relative">
+            <NavLink 
+              to="/settings" 
+              className="absolute top-2 right-2 text-black/70 hover:text-black transition-colors"
+              title="Settings"
+            >
+              <Settings className="w-5 h-5" />
+            </NavLink>
+            
             {/* User info & Sign Out */}
             <div className="flex items-center gap-3">
               {user ? (
