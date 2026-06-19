@@ -107,7 +107,7 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
           <div className="neo-brutal-white p-4 space-y-4 relative">
             <NavLink 
               to="/settings" 
-              className="absolute top-2 right-2 text-black/70 hover:text-black transition-colors"
+              className="absolute top-2 right-2 text-black/70 dark:text-white/70 hover:text-black dark:hover:text-white transition-colors"
               title="Settings"
             >
               <Settings className="w-5 h-5" />
