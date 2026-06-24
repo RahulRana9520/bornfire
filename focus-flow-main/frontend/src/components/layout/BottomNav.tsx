@@ -14,7 +14,7 @@ const bottomNavItems = [
   { to: '/week-goals', icon: Target, label: 'Goals' },
   { to: '/placement-prep', icon: Target, label: 'Prep' },
   { to: '/chat', icon: MessageSquare, label: 'Chat' },
-  { to: '/leaderboard', icon: Trophy, label: 'Ranks' },
+  { to: '/progress', icon: LineChart, label: 'Progress' },
 ];
 
 export function BottomNav() {

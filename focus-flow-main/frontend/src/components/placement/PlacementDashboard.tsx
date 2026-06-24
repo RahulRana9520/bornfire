@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { usePlacementContext } from '@/contexts/PlacementContext';
-import { PlacementRoadmap } from './PlacementRoadmap';
-import { PlacementTodayView } from './PlacementTodayView';
-import { PlacementResources } from './PlacementResources';
+import { PlacementRoadmap } from '@/components/placement/PlacementRoadmap';
+import { PlacementTodayView } from '@/components/placement/PlacementTodayView';
+import { PlacementResources } from '@/components/placement/PlacementResources';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Calendar, Target, BookOpen, RefreshCw } from 'lucide-react';

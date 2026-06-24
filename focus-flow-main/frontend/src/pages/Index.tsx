@@ -22,7 +22,7 @@ const Index = () => {
   return (
     <div className="space-y-4 sm:space-y-6 lg:space-y-8 animate-fade-in pb-4">
       {/* Header — mobile: compact stacked, desktop: side-by-side */}
-      <div className="relative flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-6 p-4 sm:p-6 border-[2px] sm:border-[3px] border-black bg-white shadow-[3px_3px_0px_0px_#000] sm:shadow-[4px_4px_0px_0px_#000]">
+      <div className="relative flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-6 p-4 sm:p-6 pr-14 sm:pr-16 lg:pr-6 border-[2px] sm:border-[3px] border-black bg-white shadow-[3px_3px_0px_0px_#000] sm:shadow-[4px_4px_0px_0px_#000]">
         {/* Settings gear — mobile only, top-right corner */}
         <Link
           to="/settings"

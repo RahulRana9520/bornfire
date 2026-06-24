@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { TrendingUp, Clock, CheckCircle2, Flame, Award, Target, Trophy, X, LogIn, LogOut } from 'lucide-react';
 import { useTaskContext } from '@/contexts/TaskContext';
 import { useAuth } from '@/contexts/AuthContext';
@@ -33,6 +34,17 @@ const ProgressPage = () => {
             <p className="text-xs sm:text-sm font-bold uppercase tracking-widest opacity-70">
               Track your productivity and growth
             </p>
+          </div>
+          
+          {/* Ribbon-style Watch Rank Link for Mobile & Tablet */}
+          <div className="lg:hidden absolute -top-4 -right-12 w-40 h-16 bg-black flex items-end justify-center transform rotate-45 z-20 border-b-[2px] border-white shadow-[0_2px_4px_rgba(0,0,0,0.3)]">
+            <Link 
+              to="/leaderboard"
+              className="text-white text-[9px] font-black uppercase tracking-widest pb-1 hover:text-[#FFDE00] transition-colors flex items-center gap-1"
+            >
+              <Trophy className="w-3 h-3" />
+              Watch Rank
+            </Link>
           </div>
         </div>
       </div>
