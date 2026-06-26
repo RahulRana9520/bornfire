@@ -76,7 +76,20 @@ export function TaskProvider({ children }: { children: React.ReactNode }) {
         const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
         let newId = '#BF-';
         for (let i = 0; i < 6; i++) newId += chars.charAt(Math.floor(Math.random() * chars.length));
-        const newProfile = { id: user.id, email: user.email, username: user.email?.split('@')[0] || 'User', unique_id: newId, xp: 0, level: 1, league: 'bronze', streak: 0, longest_streak: 0 };
+        const newProfile = { 
+          id: user.id, 
+          email: user.email, 
+          username: user.email?.split('@')[0] || 'User', 
+          unique_id: newId, 
+          xp: 0, 
+          level: 1, 
+          league: 'bronze', 
+          streak: 0, 
+          longest_streak: 0,
+          privacy_show_online: true,
+          privacy_show_progress: true,
+          privacy_show_leaderboard: true
+        };
         await supabase.from('users').insert([newProfile]);
         profileData = newProfile;
       }
@@ -245,7 +258,7 @@ export function TaskProvider({ children }: { children: React.ReactNode }) {
       const { data: leaderboardData } = await supabase
         .from('users')
         .select('id, username, xp, league')
-        .eq('privacy_show_leaderboard', true)
+        .or('privacy_show_leaderboard.eq.true,privacy_show_leaderboard.is.null')
         .order('xp', { ascending: false })
         .limit(10);
 
@@ -521,26 +534,17 @@ export function TaskProvider({ children }: { children: React.ReactNode }) {
       }
 
       // 2. Add to friends table (Mutual Handshake)
-      // We insert TWO rows: Me -> Friend AND Friend -> Me
-      const { error: insertError } = await supabase
+      // We insert TWO rows independently to prevent a single unique violation from rolling back both
+      const { error: error1 } = await supabase
         .from('friends')
-        .insert([
-          {
-            user_id: user.id,
-            friend_id: targetUser.id,
-            status: 'accepted'
-          },
-          {
-            user_id: targetUser.id,
-            friend_id: user.id,
-            status: 'accepted'
-          }
-        ]);
+        .insert({ user_id: user.id, friend_id: targetUser.id, status: 'accepted' });
 
-      if (insertError) {
-        // If one direction exists, maybe the other doesn't, so we ignore conflict errors (23505)
-        if (insertError.code !== '23505') return { success: false, error: insertError.message };
-      }
+      const { error: error2 } = await supabase
+        .from('friends')
+        .insert({ user_id: targetUser.id, friend_id: user.id, status: 'accepted' });
+
+      if (error1 && error1.code !== '23505') return { success: false, error: error1.message };
+      if (error2 && error2.code !== '23505') return { success: false, error: error2.message };
 
       // Success - Trigger re-fetch
       setRefreshCount(prev => prev + 1);
