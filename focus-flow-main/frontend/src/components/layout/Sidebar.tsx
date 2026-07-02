@@ -12,7 +12,8 @@ import {
   User,
   Gamepad2,
   Sun,
-  Moon
+  Moon,
+  Home
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -31,7 +32,8 @@ interface SidebarProps {
 }
 
 const navItems = [
-  { to: '/', icon: LayoutGrid, label: 'Today' },
+  { to: '/', icon: Home, label: 'Dashboard' },
+  { to: '/today', icon: LayoutGrid, label: 'Today' },
   { to: '/week-goals', icon: Target, label: 'Week Goals' },
   { to: '/progress', icon: LineChart, label: 'Daily Progress' },
   { to: '/friends', icon: Users, label: 'Watch Friends' },

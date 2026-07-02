@@ -13,7 +13,8 @@ import { OnboardingOverlay } from "@/components/onboarding/OnboardingOverlay";
 import { NotificationScheduler } from "@/components/notifications/NotificationScheduler";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { PlacementProvider } from "@/contexts/PlacementContext";
-import Index from "./pages/Index";
+import Dashboard from "@/pages/Dashboard";
+import Today from "./pages/Today";
 import WeekGoals from "./pages/WeekGoals";
 import Progress from "./pages/Progress";
 import Friends from "./pages/Friends";
@@ -24,7 +25,7 @@ import Settings from "./pages/Settings";
 import PlacementPrep from "@/pages/PlacementPrep";
 import NotFound from "./pages/NotFound";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient(); // Initialize QueryClient
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -43,7 +44,8 @@ const App = () => (
                   <AppLayout>
                     <OnboardingOverlay />
                   <Routes>
-                    <Route path="/" element={<Index />} />
+                    <Route path="/" element={<Dashboard />} />
+                    <Route path="/today" element={<Today />} />
                     <Route path="/week-goals" element={<WeekGoals />} />
                     <Route path="/progress" element={<Progress />} />
                     <Route path="/friends" element={<Friends />} />

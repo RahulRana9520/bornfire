@@ -5,16 +5,17 @@ import {
   Target, 
   MessageSquare, 
   Trophy, 
-  LineChart
+  LineChart,
+  Home
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const bottomNavItems = [
-  { to: '/', icon: LayoutGrid, label: 'Today' },
+  { to: '/', icon: Home, label: 'Home' },
+  { to: '/today', icon: LayoutGrid, label: 'Today' },
   { to: '/week-goals', icon: Target, label: 'Goals' },
   { to: '/placement-prep', icon: Target, label: 'Prep' },
   { to: '/chat', icon: MessageSquare, label: 'Chat' },
-  { to: '/progress', icon: LineChart, label: 'Progress' },
 ];
 
 export function BottomNav() {

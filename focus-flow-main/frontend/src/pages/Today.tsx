@@ -10,7 +10,7 @@ import { formatTimeDisplay } from '@/lib/taskUtils';
 import { useCombinedProgress } from '@/hooks/useCombinedProgress';
 import { useTheme } from '@/contexts/ThemeContext';
 
-const Index = () => {
+const Today = () => {
   const { getTodayTasks, userProfile } = useTaskContext();
   const { todayProgress, weeklyProgress } = useCombinedProgress();
   const { theme, toggleTheme } = useTheme();
@@ -148,4 +148,4 @@ const Index = () => {
   );
 };
 
-export default Index;
+export default Today;

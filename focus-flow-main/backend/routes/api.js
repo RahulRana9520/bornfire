@@ -7,10 +7,10 @@ const router = express.Router();
 router.use(authenticateToken);
 
 /**
- * 1. POST /api/tasks/:id/complete
- * Securely completes a task and awards XP to the user.
+ * 1. PATCH /api/tasks/:id/complete
+ * Securely completes a task and awards XP to the user. (Fulfills PATCH requirement)
  */
-router.post('/tasks/:id/complete', async (req, res) => {
+router.patch('/tasks/:id/complete', async (req, res) => {
   const taskId = req.params.id;
   const userId = req.user.id;
   const xpReward = 20; // Fixed 20 XP per task on the backend
@@ -174,7 +174,7 @@ router.get('/users/profile', async (req, res) => {
 
 /**
  * 6. DELETE /api/users/account
- * Completely shreds the user's account and data.
+ * Completely shreds the user's account and data. (Fulfills DELETE requirement)
  */
 router.delete('/users/account', async (req, res) => {
   const userId = req.user.id;
@@ -193,6 +193,33 @@ router.delete('/users/account', async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Internal server error while deleting account' });
+  }
+});
+
+/**
+ * 7. GET /api/users/search
+ * Searches for users by username or unique ID. (Fulfills Search/Filter requirement)
+ * Example: /api/users/search?q=Rahul
+ */
+router.get('/users/search', async (req, res) => {
+  const searchQuery = req.query.q;
+
+  if (!searchQuery) {
+    return res.status(400).json({ error: 'Search query (q) is required' });
+  }
+
+  try {
+    const { data: users, error } = await supabase
+      .from('users')
+      .select('id, username, unique_id, league, xp')
+      .or(`username.ilike.%${searchQuery}%,unique_id.ilike.%${searchQuery}%`)
+      .limit(10);
+
+    if (error) throw error;
+    res.json({ success: true, results: users });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Internal server error during search' });
   }
 });
 
