@@ -1,0 +1,112 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model users {
+  id               String        @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  email            String        @unique
+  password_hash    String
+  role             String        @default("user")
+  created_at       DateTime?     @default(now()) @db.Timestamptz
+  updated_at       DateTime?     @default(now()) @db.Timestamptz
+
+  profiles         profiles?
+  tasks            tasks[]
+  habits           habits[]
+  user_badges      user_badges[]
+  friends_added    friends[]     @relation("UserAddedFriends")
+  friends_received friends[]     @relation("UserReceivedFriends")
+}
+
+model profiles {
+  id                    String    @id @db.Uuid
+  username              String    @unique
+  avatar_url            String?
+  xp                    Int?      @default(0)
+  level                 Int?      @default(1)
+  league                String?   @default("bronze")
+  streak                Int?      @default(0)
+  longest_streak        Int?      @default(0)
+  total_focus_time      Int?      @default(0)
+  completed_tasks_count Int?      @default(0)
+  last_checkin_date     DateTime? @db.Date
+  updated_at            DateTime? @default(now()) @db.Timestamptz
+
+  user                  users     @relation(fields: [id], references: [id], onDelete: Cascade)
+}
+
+model tasks {
+  id               String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  user_id          String?   @db.Uuid
+  title            String
+  completed        Boolean?  @default(false)
+  time_spent       Int?      @default(0)
+  estimated_time   Int?
+  remaining_time   Int?
+  is_timer_running Boolean?  @default(false)
+  priority         String?   @default("medium")
+  xp_reward        Int?      @default(10)
+  created_at       DateTime? @default(now()) @db.Timestamptz
+  completed_at     DateTime? @db.Timestamptz
+
+  user             users?    @relation(fields: [user_id], references: [id], onDelete: Cascade)
+}
+
+model habits {
+  id                String              @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  user_id           String?             @db.Uuid
+  title             String
+  created_at        DateTime?           @default(now()) @db.Timestamptz
+
+  user              users?              @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  habit_completions habit_completions[]
+}
+
+model habit_completions {
+  habit_id  String   @db.Uuid
+  date      DateTime @db.Date
+  completed Boolean? @default(true)
+
+  habit     habits   @relation(fields: [habit_id], references: [id], onDelete: Cascade)
+
+  @@id([habit_id, date])
+}
+
+model badges {
+  id           String        @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  name         String
+  description  String?
+  icon         String?
+  target_value Int?
+  badge_type   String?
+  user_badges  user_badges[]
+}
+
+model user_badges {
+  user_id   String    @db.Uuid
+  badge_id  String    @db.Uuid
+  earned_at DateTime? @default(now()) @db.Timestamptz
+  progress  Int?      @default(0)
+
+  user      users     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  badge     badges    @relation(fields: [badge_id], references: [id], onDelete: Cascade)
+
+  @@id([user_id, badge_id])
+}
+
+model friends {
+  user_id    String    @db.Uuid
+  friend_id  String    @db.Uuid
+  status     String?   @default("pending")
+  created_at DateTime? @default(now()) @db.Timestamptz
+
+  user       users     @relation("UserAddedFriends", fields: [user_id], references: [id], onDelete: Cascade)
+  friend     users     @relation("UserReceivedFriends", fields: [friend_id], references: [id], onDelete: Cascade)
+
+  @@id([user_id, friend_id])
+}
