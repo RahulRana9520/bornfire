@@ -292,17 +292,60 @@ export function TaskProvider({ children }: { children: React.ReactNode }) {
       xpReward: priority === 'high' ? 50 : priority === 'medium' ? 30 : 20,
     };
     setTasks(prev => [...prev, newTask]);
-  }, [setTasks]);
+    
+    // Sync to Supabase
+    if (user) {
+      supabase.from('tasks').insert({
+        id: newTask.id,
+        user_id: user.id,
+        title: newTask.title,
+        completed: newTask.completed,
+        time_spent: newTask.timeSpent,
+        estimated_time: newTask.estimatedTime,
+        remaining_time: newTask.remainingTime,
+        is_timer_running: newTask.isTimerRunning,
+        priority: newTask.priority,
+        xp_reward: newTask.xpReward,
+        created_at: newTask.createdAt.toISOString()
+      }).then(({ error }) => {
+        if (error) console.error('Error inserting task:', error);
+      });
+    }
+  }, [setTasks, user]);
 
   const updateTask = useCallback((taskId: string, updates: Partial<Task>) => {
     setTasks(prev => prev.map(task => 
       task.id === taskId ? { ...task, ...updates } : task
     ));
-  }, [setTasks]);
+
+    // Sync to Supabase
+    if (user) {
+      const dbUpdates: any = {};
+      if (updates.title !== undefined) dbUpdates.title = updates.title;
+      if (updates.completed !== undefined) dbUpdates.completed = updates.completed;
+      if (updates.timeSpent !== undefined) dbUpdates.time_spent = updates.timeSpent;
+      if (updates.estimatedTime !== undefined) dbUpdates.estimated_time = updates.estimatedTime;
+      if (updates.remainingTime !== undefined) dbUpdates.remaining_time = updates.remainingTime;
+      if (updates.isTimerRunning !== undefined) dbUpdates.is_timer_running = updates.isTimerRunning;
+      if (updates.priority !== undefined) dbUpdates.priority = updates.priority;
+      
+      if (Object.keys(dbUpdates).length > 0) {
+        supabase.from('tasks').update(dbUpdates).eq('id', taskId).eq('user_id', user.id).then(({ error }) => {
+          if (error) console.error('Error updating task in DB:', error);
+        });
+      }
+    }
+  }, [setTasks, user]);
 
   const deleteTask = useCallback((taskId: string) => {
     setTasks(prev => prev.filter(task => task.id !== taskId));
-  }, [setTasks]);
+
+    if (user) {
+      supabase.from('tasks').delete().eq('id', taskId).eq('user_id', user.id).then(({ error }) => {
+        if (error) console.error('Error deleting task in DB:', error);
+      });
+    }
+  }, [setTasks, user]);
 
   const addXP = useCallback(async (amount: number) => {
     setUserProfile(prev => {
@@ -341,10 +384,14 @@ export function TaskProvider({ children }: { children: React.ReactNode }) {
   }, [user]);
 
   const toggleTaskComplete = useCallback((taskId: string) => {
+    let newlyCompleted = false;
+    
     setTasks(prev => {
       const updatedTasks = prev.map(task => {
         if (task.id === taskId) {
           const newCompleted = !task.completed;
+          if (newCompleted) newlyCompleted = true;
+          
           if (newCompleted && task.isTimerRunning) {
             return { ...task, completed: true, isTimerRunning: false };
           }
@@ -354,6 +401,16 @@ export function TaskProvider({ children }: { children: React.ReactNode }) {
       });
       return updatedTasks;
     });
+
+    if (user) {
+      supabase.from('tasks').update({ 
+        completed: newlyCompleted,
+        completed_at: newlyCompleted ? new Date().toISOString() : null,
+        is_timer_running: false
+      }).eq('id', taskId).eq('user_id', user.id).then(({ error }) => {
+        if (error) console.error('Error toggling task completion in DB:', error);
+      });
+    }
 
     // Update XP when task is completed - only for TODAY's tasks
     const task = tasks.find(t => t.id === taskId);
@@ -379,7 +436,7 @@ export function TaskProvider({ children }: { children: React.ReactNode }) {
         });
       }
     }
-  }, [setTasks, tasks, addXP, setUserProfile]);
+  }, [setTasks, tasks, addXP, setUserProfile, user]);
 
   const startTimer = useCallback((taskId: string) => {
     // Stop any other running timers first

@@ -204,9 +204,16 @@ export function getLeagueName(league: League): string {
   return league.charAt(0).toUpperCase() + league.slice(1);
 }
 
-// Generate a unique ID
+// Generate a unique ID (valid UUID for Postgres)
 export function generateId(): string {
-  return Math.random().toString(36).substring(2, 11);
+  if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+    return crypto.randomUUID();
+  }
+  // Fallback for older environments
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+    const r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
+    return v.toString(16);
+  });
 }
 
 // Check if a date is today
