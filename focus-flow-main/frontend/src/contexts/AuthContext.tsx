@@ -77,25 +77,37 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     });
 
     if (!error && data.user) {
-      console.log('Auth signup successful, now creating public.users entry...');
-      // Create user profile in database
-      const { error: insertError } = await supabase.from('users').insert({
+      // Create user entry in public.users
+      const { error: insertUserError } = await supabase.from('users').insert({
         id: data.user.id,
         email: data.user.email,
-        username,
-        unique_id: generateBornfireId(),
-        xp: 0,
-        level: 1,
-        league: 'bronze',
-        streak: 0,
-        longest_streak: 0,
+        password_hash: 'managed_by_supabase_auth' // satisfy NOT NULL constraint
       });
 
-      if (insertError) {
-        console.error('DATABASE ERROR:', insertError.message);
-        console.error('Make sure "unique_id" column exists in DBeaver!');
+      if (insertUserError) {
+        console.error('DATABASE ERROR (users table):', insertUserError.message);
+        alert(`Signup Database Error: ${insertUserError.message}`);
       } else {
-        console.log('Database profile created with Unique ID!');
+        // Create user profile entry in public.profiles
+        const { error: insertProfileError } = await supabase.from('profiles').insert({
+          id: data.user.id,
+          username,
+          avatar_url: '',
+          xp: 0,
+          level: 1,
+          league: 'bronze',
+          streak: 0,
+          longest_streak: 0,
+          total_focus_time: 0,
+          completed_tasks_count: 0
+        });
+
+        if (insertProfileError) {
+          console.error('DATABASE ERROR (profiles table):', insertProfileError.message);
+          alert(`Signup Profile Error: ${insertProfileError.message}`);
+        } else {
+          console.log('Database profile created successfully!');
+        }
       }
     }
 

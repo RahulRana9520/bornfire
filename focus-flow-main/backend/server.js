@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
 const apiRoutes = require('./routes/api');
+const authRoutes = require('./routes/auth');
 
 const app = express();
 
@@ -10,7 +11,8 @@ app.use(cors());
 app.use(express.json());
 
 // Routes
-app.use('/api', apiRoutes);
+app.use('/api/auth', authRoutes); // Includes /login and /register with rate limiting
+app.use('/api', apiRoutes);       // Protected routes
 
 // Health check endpoint
 app.get('/health', (req, res) => {

@@ -24,6 +24,8 @@ import Leaderboard from "./pages/Leaderboard";
 import Settings from "./pages/Settings";
 import PlacementPrep from "@/pages/PlacementPrep";
 import NotFound from "./pages/NotFound";
+import Login from "./pages/Login";
+import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 
 const queryClient = new QueryClient(); // Initialize QueryClient
 
@@ -45,15 +47,16 @@ const App = () => (
                     <OnboardingOverlay />
                   <Routes>
                     <Route path="/" element={<Dashboard />} />
+                    <Route path="/login" element={<Login />} />
                     <Route path="/today" element={<Today />} />
                     <Route path="/week-goals" element={<WeekGoals />} />
                     <Route path="/progress" element={<Progress />} />
-                    <Route path="/friends" element={<Friends />} />
-                    <Route path="/chat" element={<Chat />} />
+                    <Route path="/friends" element={<ProtectedRoute><Friends /></ProtectedRoute>} />
+                    <Route path="/chat" element={<ProtectedRoute><Chat /></ProtectedRoute>} />
                     <Route path="/group-games" element={<GroupGames />} />
                     <Route path="/leaderboard" element={<Leaderboard />} />
                     <Route path="/placement-prep" element={<PlacementPrep />} />
-                    <Route path="/settings" element={<Settings />} />
+                    <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
                     <Route path="*" element={<NotFound />} />
                   </Routes>
                 </AppLayout>
