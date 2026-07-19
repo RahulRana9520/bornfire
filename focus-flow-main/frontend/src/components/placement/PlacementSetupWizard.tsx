@@ -48,22 +48,22 @@ export function PlacementSetupWizard() {
 
   const areas = ['DSA', 'Aptitude', 'CS Core', 'Projects', 'Resume', 'HR Interview', 'Mock Tests', 'Communication'];
 
-  if (isGenerating) {
-    return (
-      <div className="flex flex-col items-center justify-center p-12 bg-white border-[3px] border-black shadow-[8px_8px_0px_0px_#000]">
-        <Loader2 className="w-16 h-16 animate-spin text-black mb-6" />
-        <h2 className="text-2xl font-black uppercase tracking-tight mb-2">Generating Roadmap...</h2>
-        <p className="text-muted-foreground uppercase text-xs font-bold text-center">
-          Our AI is building the perfect day-by-day plan for {profile.targetCompany}.<br/>
-          This takes about 10-20 seconds.
-        </p>
-      </div>
-    );
-  }
+  // We will handle the isGenerating overlay within the main return statement.
 
   return (
-    <div className="bg-white border-[3px] sm:border-[4px] border-black p-4 sm:p-8 shadow-[6px_6px_0px_0px_#000] sm:shadow-[12px_12px_0px_0px_#000]">
-      <div className="flex items-center gap-3 mb-8">
+    <div className="relative bg-white border-[3px] sm:border-[4px] border-black p-4 sm:p-8 shadow-[6px_6px_0px_0px_#000] sm:shadow-[12px_12px_0px_0px_#000]">
+      {isGenerating && (
+        <div className="absolute inset-0 z-50 bg-white/80 backdrop-blur-sm flex flex-col items-center justify-center p-12 border-[3px] border-black m-[-3px] sm:m-[-4px]">
+          <Loader2 className="w-16 h-16 animate-spin text-black mb-6" />
+          <h2 className="text-2xl font-black uppercase tracking-tight mb-2 text-center">Generating Roadmap...</h2>
+          <p className="text-black uppercase text-xs font-bold text-center">
+            Our AI is building the perfect day-by-day plan for {profile.targetCompany || 'your target'}.<br/>
+            This takes about 10-20 seconds.
+          </p>
+        </div>
+      )}
+
+      <div className={cn("flex items-center gap-3 mb-8 transition-opacity", isGenerating && "opacity-20 pointer-events-none")}>
         <div className="w-12 h-12 bg-[#FF89BB] border-[3px] border-black flex items-center justify-center shadow-[2px_2px_0px_0px_#000]">
           <Rocket className="w-6 h-6" />
         </div>
@@ -73,7 +73,7 @@ export function PlacementSetupWizard() {
         </div>
       </div>
 
-      <div className="space-y-8">
+      <div className={cn("space-y-8 transition-opacity", isGenerating && "opacity-20 pointer-events-none")}>
         {/* Basic Info */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-2">
@@ -191,10 +191,16 @@ export function PlacementSetupWizard() {
 
         <Button
           onClick={handleGenerate}
-          disabled={!profile.targetCompany || profile.daysAvailable < 1}
-          className="w-full h-16 bg-[#FFDE00] hover:bg-[#E5C700] text-black border-[4px] border-black rounded-none shadow-[4px_4px_0px_0px_#000] hover:shadow-none hover:translate-x-[4px] hover:translate-y-[4px] transition-all font-black uppercase text-xl mt-8"
+          disabled={!profile.targetCompany || profile.daysAvailable < 1 || isGenerating}
+          className="w-full h-16 bg-[#FFDE00] hover:bg-[#E5C700] text-black border-[4px] border-black rounded-none shadow-[4px_4px_0px_0px_#000] hover:shadow-none hover:translate-x-[4px] hover:translate-y-[4px] transition-all font-black uppercase text-xl mt-8 disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          Generate My Plan
+          {isGenerating ? (
+            <span className="flex items-center gap-2">
+              <Loader2 className="w-6 h-6 animate-spin" /> Generating...
+            </span>
+          ) : (
+            'Generate My Plan'
+          )}
         </Button>
       </div>
     </div>
