@@ -17,11 +17,7 @@ interface HabitsContextType {
 
 const HabitsContext = createContext<HabitsContextType | undefined>(undefined);
 
-const initialHabits: Habit[] = [
-  { id: 'h1', title: 'Wake up at 6AM', createdAt: new Date() },
-  { id: 'h2', title: 'Exercise', createdAt: new Date() },
-  { id: 'h3', title: 'Read for 30 mins', createdAt: new Date() },
-];
+const initialHabits: Habit[] = [];
 
 export const HabitsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [habits, setHabits] = useLocalStorage<Habit[]>('tasksage_habits', initialHabits);

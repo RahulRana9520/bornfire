@@ -3,11 +3,7 @@ import { useLocalStorage } from './useLocalStorage';
 import { Habit, HabitCompletion, WeekData } from '@/types/task';
 import { generateId } from '@/lib/taskUtils';
 
-const initialHabits: Habit[] = [
-  { id: 'h1', title: 'Wake up at 6AM', createdAt: new Date() },
-  { id: 'h2', title: 'Exercise', createdAt: new Date() },
-  { id: 'h3', title: 'Read for 30 mins', createdAt: new Date() },
-];
+const initialHabits: Habit[] = [];
 
 const initialCompletions: HabitCompletion[] = [];
 
