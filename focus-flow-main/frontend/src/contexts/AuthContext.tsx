@@ -86,27 +86,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (insertUserError) {
         console.error('DATABASE ERROR (users table):', insertUserError.message);
         alert(`Signup Database Error: ${insertUserError.message}`);
-      } else {
-        // Create user profile entry in public.profiles
-        const { error: insertProfileError } = await supabase.from('profiles').insert({
-          id: data.user.id,
-          username,
-          avatar_url: '',
-          xp: 0,
-          level: 1,
-          league: 'bronze',
-          streak: 0,
-          longest_streak: 0,
-          total_focus_time: 0,
-          completed_tasks_count: 0
-        });
-
-        if (insertProfileError) {
-          console.error('DATABASE ERROR (profiles table):', insertProfileError.message);
-          alert(`Signup Profile Error: ${insertProfileError.message}`);
-        } else {
-          console.log('Database profile created successfully!');
-        }
       }
     }
 
