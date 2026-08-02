@@ -80,8 +80,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       // Create user entry in public.users
       const { error: insertUserError } = await supabase.from('users').insert({
         id: data.user.id,
-        email: data.user.email,
-        password_hash: 'managed_by_supabase_auth' // satisfy NOT NULL constraint
+        email: data.user.email
       });
 
       if (insertUserError) {
