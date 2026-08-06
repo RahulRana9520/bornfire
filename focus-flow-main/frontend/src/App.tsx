@@ -27,6 +27,8 @@ import NotFound from "./pages/NotFound";
 import Login from "./pages/Login";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 
+import { AnalyticsTracker } from "@/components/analytics/AnalyticsTracker";
+
 const queryClient = new QueryClient(); // Initialize QueryClient
 
 const App = () => (
@@ -41,6 +43,7 @@ const App = () => (
             <Toaster />
             <Sonner />
             <BrowserRouter>
+              <AnalyticsTracker />
               <OnboardingProvider>
                 <PlacementProvider>
                   <AppLayout>
