@@ -33,6 +33,27 @@ Track your productivity, consistency, and growth over time with our gamified das
 
 ![Daily Progress Dashboard](frontend/public/Progress.png)
 
+## ⚙️ Backend & Database Integration
+
+This project uses **Supabase (PostgreSQL)** as our database provider.
+
+### Why Supabase?
+- **Built-in Auth**: It securely integrates authentication out-of-the-box, allowing secure, seamless sign-ins.
+- **Real-time Capabilities**: Easy access to real-time sync when friends complete tasks.
+- **PostgreSQL Power**: Under the hood, it gives us robust relational features, strong consistency, and performance we can rely on using standard SQL or Prisma.
+- **All 6+ API endpoints** in this project are already connected and fully reading/writing to this live database!
+
+### Schema Diagram
+![Database Schema Diagram](./focus-flow-main/frontend/public/databasepic.png)
+
+### Set up the database
+To set up the database locally and link it to your project:
+1. Make sure you have created your Supabase project (Dashboard URL: `https://supabase.com/dashboard/project/hthdcmbgiolpvcxduvni`).
+2. Copy the `.env.example` to `.env` in the root folder.
+3. Update the `DATABASE_URL` in your `.env` with your actual Postgres connection string (e.g. `postgresql://postgres.[ref]:[password]@aws-0-[region].pooler.supabase.com:6543/postgres`).
+4. If using Prisma, run `npx prisma generate` and `npx prisma db push` to push the schema defined in `schema.prisma`. 
+5. *Alternatively*, open your Supabase **SQL Editor** and run the code in `backend/schema.sql` to set up the tables and permissions.
+
 ---
 
 ## 🛠️ Technology Stack
