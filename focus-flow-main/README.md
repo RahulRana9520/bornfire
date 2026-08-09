@@ -44,7 +44,7 @@ This project uses **Supabase (PostgreSQL)** as our database provider.
 - **All 6+ API endpoints** in this project are already connected and fully reading/writing to this live database!
 
 ### Schema Diagram
-![Database Schema Diagram](./focus-flow-main/frontend/public/databasepic.png)
+![Database Schema Diagram](./frontend/public/databasepic.png)
 
 ### Set up the database
 To set up the database locally and link it to your project:
