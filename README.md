@@ -14,12 +14,12 @@ Bornfire includes an intelligent preparation roadmap generator. Users can set th
 #### Setup & Customization
 Configure your preparation timeline, daily hours, and target companies (e.g., Google, Amazon, Infosys). Identify focus topics (DSA, Aptitude, Projects, System Design) and tag weak areas to personalize the level of preparation.
 
-![Placement Setup Dashboard](frontend/public/placement1.png)
+![Placement Setup Dashboard](./focus-flow-main/frontend/public/placement1.png)
 
 #### Personalized Actionable Roadmaps
 Once generated, the system creates a structured, day-by-day checklist. Each day has a target theme, categorized tasks (DSA, HR Interview, etc.), estimated completion time, and XP rewards.
 
-![Generated Placement Roadmap](frontend/public/placement2.png)
+![Generated Placement Roadmap](./focus-flow-main/frontend/public/placement2.png)
 
 ---
 
@@ -31,7 +31,7 @@ Track your productivity, consistency, and growth over time with our gamified das
 - **Weekly Outputs:** Visualize your weekly consistency and daily focus percentage.
 - **Trophy Room:** Unlock achievements and badges (e.g., 3-Day Streak, 7-Day Streak, Early Bird, 50 Hours Focus) to stay motivated.
 
-![Daily Progress Dashboard](frontend/public/Progress.png)
+![Daily Progress Dashboard](./focus-flow-main/frontend/public/Progress.png)
 
 ## ⚙️ Backend & Database Integration
 
@@ -44,7 +44,7 @@ This project uses **Supabase (PostgreSQL)** as our database provider.
 - **All 6+ API endpoints** in this project are already connected and fully reading/writing to this live database!
 
 ### Schema Diagram
-![Database Schema Diagram](./frontend/public/databasepic.png)
+![Database Schema Diagram](./focus-flow-main/frontend/public/databasepic.png)
 
 ### Set up the database
 To set up the database locally and link it to your project:
