@@ -6,6 +6,13 @@ With features ranging from daily productivity tracking to AI-powered personalize
 
 ---
 
+## 📺 Video Tutorial
+
+Learn how to use Bornfire (Focus Flow) in this step-by-step video tutorial:
+👉 **[Watch the Tutorial on YouTube](https://youtu.be/CHGjs06xR4E)**
+
+---
+
 ## 🚀 Key Features
 
 ### 1. 🎯 AI-Powered Placement Prep
