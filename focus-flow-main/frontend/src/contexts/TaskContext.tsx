@@ -63,6 +63,46 @@ export function TaskProvider({ children }: { children: React.ReactNode }) {
   const [refreshCount, setRefreshCount] = React.useState(0);
   const { user } = useAuth();
 
+  // Check and reset streak if broken (works for both guests and logged-in users)
+  useEffect(() => {
+    if (!lastCheckIn) return;
+
+    const lastDate = new Date(lastCheckIn);
+    if (isNaN(lastDate.getTime())) return;
+
+    // Get start of today (midnight)
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    // Get start of yesterday (midnight)
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    yesterday.setHours(0, 0, 0, 0);
+
+    // Get start of last check-in date (midnight)
+    const lastCheckInMidnight = new Date(lastDate);
+    lastCheckInMidnight.setHours(0, 0, 0, 0);
+
+    // If last checkin was before yesterday, streak is broken
+    if (lastCheckInMidnight.getTime() < yesterday.getTime()) {
+      console.log('Streak broken. Resetting current streak to 0.');
+      setUserProfile(prev => ({
+        ...prev,
+        streak: 0
+      }));
+
+      if (user) {
+        supabase
+          .from('users')
+          .update({ streak: 0 })
+          .eq('id', user.id)
+          .then(({ error }) => {
+            if (error) console.error('Error resetting streak in Supabase:', error);
+          });
+      }
+    }
+  }, [lastCheckIn, user, setUserProfile]);
+
   // Sync profile, friends, and leaderboard with Supabase if logged in
   useEffect(() => {
     if (!user) return;
@@ -122,8 +162,12 @@ export function TaskProvider({ children }: { children: React.ReactNode }) {
         }
 
         // Sync local storage checkin status
-        if (lastCheckinDate === localTodayStr) {
-          setLastCheckIn(new Date().toDateString());
+        if (lastCheckinDate) {
+          const parts = lastCheckinDate.split('-');
+          if (parts.length === 3) {
+            const dateObj = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
+            setLastCheckIn(dateObj.toDateString());
+          }
         }
 
         const localProfileStr = localStorage.getItem('tasksage_profile');

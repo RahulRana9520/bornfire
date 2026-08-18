@@ -109,14 +109,24 @@ router.post('/users/checkin', async (req, res) => {
     if (profileError) throw profileError;
 
     // Use server's timezone-aware date
-    const localTodayStr = new Date().toISOString().split('T')[0];
+    const today = new Date();
+    const localTodayStr = today.toISOString().split('T')[0];
     
     if (profile.last_checkin_date === localTodayStr) {
       return res.json({ success: true, message: 'Already checked in today', streak: profile.streak });
     }
 
-    const newStreak = profile.streak + 1;
-    const newLongestStreak = Math.max(newStreak, profile.longest_streak);
+    // Check if the last check-in was yesterday
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    const localYesterdayStr = yesterday.toISOString().split('T')[0];
+
+    let newStreak = 1;
+    if (profile.last_checkin_date === localYesterdayStr) {
+      newStreak = (profile.streak || 0) + 1;
+    }
+
+    const newLongestStreak = Math.max(newStreak, profile.longest_streak || 0);
 
     await supabase.from('users')
       .update({ streak: newStreak, longest_streak: newLongestStreak, last_checkin_date: localTodayStr })
