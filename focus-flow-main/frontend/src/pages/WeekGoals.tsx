@@ -106,10 +106,10 @@ const WeekGoals = () => {
         ) : (
           <div className="overflow-x-auto custom-scrollbar">
             {/* Current Week Container */}
-            <div className="min-w-[700px] sm:min-w-full">
+            <div className="min-w-[750px] sm:min-w-full">
               {/* Week Header */}
               <div className="bg-[#00E5BC] px-6 py-4 border-b-[4px] border-black flex items-center justify-between">
-                <h3 className="font-black text-sm uppercase italic tracking-widest">
+                <h3 className="font-black text-sm uppercase italic tracking-widest text-black">
                   Current Week
                   <span className="ml-3 font-bold not-italic opacity-60">
                     [{currentWeek.startDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - {currentWeek.endDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}]
@@ -118,32 +118,34 @@ const WeekGoals = () => {
               </div>
 
               {/* Day Headers (Sticky Header) */}
-              <div className="grid grid-cols-[160px_repeat(7,1fr)_60px] gap-0 border-b-[4px] border-black bg-white">
-                <div className="sticky left-0 bg-[#00E5BC] border-r-[4px] border-black z-20 text-[10px] font-black uppercase tracking-widest px-4 py-4">Habit</div>
+              <div className="grid grid-cols-[180px_repeat(7,1fr)_60px] sm:grid-cols-[200px_repeat(7,1fr)_60px] gap-0 border-b-[4px] border-black bg-white dark:bg-card">
+                <div className="sticky left-0 bg-[#00E5BC] border-r-[4px] border-black z-20 text-[10px] font-black uppercase tracking-widest px-4 py-4 flex items-center text-black">Habit</div>
 
                 {currentWeek.days.map((day, dayIndex) => (
                   <div 
                     key={dayIndex} 
                     className={cn(
                       "text-[10px] font-black text-center uppercase tracking-tighter py-4 border-r-[2px] border-black/10 last:border-r-0 flex flex-col items-center justify-center gap-0.5",
-                      isToday(day) ? "bg-[#FFDE00]/30 text-black" : "text-black/60"
+                      isToday(day) ? "bg-[#FFDE00]/30 text-black dark:text-white" : "text-black/60 dark:text-white/60"
                     )}
                   >
                     <div>{dayLabels[dayIndex]}</div>
                     <div className="text-[12px] font-black">{day.getDate()}</div>
                   </div>
                 ))}
-                <div className="bg-white" />
+                <div className="bg-white dark:bg-card" />
               </div>
 
               {/* Habit Rows */}
               {habits.map((habit) => (
                 <div 
                   key={habit.id}
-                  className="grid grid-cols-[160px_repeat(7,1fr)_60px] gap-0 border-b-[2px] border-black hover:bg-black/[0.02] transition-colors group"
+                  className="grid grid-cols-[180px_repeat(7,1fr)_60px] sm:grid-cols-[200px_repeat(7,1fr)_60px] gap-0 border-b-[2px] border-black hover:bg-black/[0.02] dark:hover:bg-white/[0.02] transition-colors group"
                 >
-                  <div className="sticky left-0 bg-white group-hover:bg-[#fcfcfc] z-10 text-xs font-black uppercase italic tracking-tighter truncate px-4 py-6 border-r-[4px] border-black flex items-center">
-                    {habit.title}
+                  <div className="sticky left-0 bg-white dark:bg-card group-hover:bg-[#fcfcfc] dark:group-hover:bg-muted/50 z-10 px-3 sm:px-4 py-3 sm:py-4 border-r-[4px] border-black flex items-center min-w-0">
+                    <span className="text-xs font-black uppercase italic tracking-normal break-words whitespace-normal leading-snug w-full">
+                      {habit.title}
+                    </span>
                   </div>
                   {currentWeek.days.map((day, dayIndex) => {
                     const completed = isHabitCompleted(habit.id, day);
@@ -169,10 +171,10 @@ const WeekGoals = () => {
                             "w-10 h-10 rounded-none border-[3px] flex items-center justify-center transition-all",
                             completed 
                               ? "bg-black border-black text-white shadow-[3px_3px_0px_0px_#00E5BC]" 
-                              : "border-black bg-white",
+                              : "border-black bg-white dark:bg-card text-foreground",
                             isTodayDate && !completed && "border-[#FFDE00] bg-[#FFDE00]/10 shadow-[3px_3px_0px_0px_#000]",
                             isFutureDate && "opacity-20 cursor-not-allowed",
-                            canToggle && !completed && "cursor-pointer hover:bg-black/10"
+                            canToggle && !completed && "cursor-pointer hover:bg-black/10 dark:hover:bg-white/10"
                           )}
                         >
                           {completed && <Check className="w-5 h-5 stroke-[4px]" />}
@@ -185,7 +187,7 @@ const WeekGoals = () => {
                       variant="ghost"
                       size="icon-sm"
                       onClick={() => deleteHabit(habit.id)}
-                      className="opacity-20 group-hover:opacity-100 transition-opacity text-black hover:text-destructive"
+                      className="opacity-20 group-hover:opacity-100 transition-opacity text-black dark:text-white hover:text-destructive"
                     >
                       <Trash2 className="w-4 h-4" />
                     </Button>
